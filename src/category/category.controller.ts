@@ -10,7 +10,7 @@ import {
 import { CategoryService } from './category.service';
 import { Category } from './category.entity';
 
-@Controller('category')
+@Controller('categories')
 export class CategoryController {
   constructor(
     @Inject(CategoryService)

@@ -1,3 +1,4 @@
+import { Product } from 'src/product/product.entity';
 import {
   Entity,
   Column,
@@ -21,4 +22,7 @@ export class Category {
 
   @OneToMany(() => Category, (categroy) => categroy.parentCategory)
   childCategories: Category[];
+
+  @OneToMany(() => Product, (product) => product.category)
+  products: Product[];
 }
