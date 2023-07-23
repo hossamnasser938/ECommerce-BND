@@ -7,20 +7,29 @@ import { Repository } from 'typeorm';
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private categroyRespositoy: Repository<Category>,
+    private categroyRepositoy: Repository<Category>,
   ) {}
 
-  findAll(): Promise<Category[]> {
-    return this.categroyRespositoy.find();
+  async findAll(): Promise<Category[]> {
+    return await this.categroyRepositoy.find({
+      relations: { parentCategory: true },
+    });
   }
 
-  findOne(id: number): Promise<Category | null> {
-    return this.categroyRespositoy.findOneBy({ id });
+  findOneById(id: number): Promise<Category | null> {
+    return this.categroyRepositoy.findOne({
+      where: { id },
+      relations: { parentCategory: true, childCategories: true },
+    });
   }
 
-  createOne(name: string): Promise<Category> {
+  async createOne(name: string, parentCategoryId?: number): Promise<Category> {
+    const parentCategory = await this.findOneById(parentCategoryId);
     const category = new Category();
     category.name = name;
-    return this.categroyRespositoy.save(category);
+    if (parentCategory) {
+      category.parentCategory = parentCategory;
+    }
+    return this.categroyRepositoy.save(category);
   }
 }
