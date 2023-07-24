@@ -6,9 +6,14 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { IAuthTokenPayload } from './auth-token-payload.model';
+import { UserService } from 'src/user/user.service';
 
 export class AuthGuard implements CanActivate {
-  constructor(@Inject(JwtService) private jwtService: JwtService) {}
+  constructor(
+    @Inject(JwtService) private jwtService: JwtService,
+    @Inject(UserService) private userService: UserService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
@@ -18,8 +23,12 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException();
       }
 
-      const payload = await this.jwtService.verifyAsync(token);
-      request.user = payload;
+      const payload = await this.jwtService.verifyAsync<IAuthTokenPayload>(
+        token,
+      );
+
+      const user = await this.userService.findOne(payload.email);
+      request.user = user;
       return true;
     } catch (err) {
       throw new UnauthorizedException();

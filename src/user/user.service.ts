@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { Role } from 'src/auth/auth.enums';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,12 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  async createOne(email: string, password: string, name: string) {
+  async createOne(
+    email: string,
+    password: string,
+    name: string,
+    roles: Role[] = [Role.User],
+  ) {
     const potentialDuplicateUser = await this.findOne(email);
     if (potentialDuplicateUser) {
       throw new ConflictException();
@@ -27,6 +33,7 @@ export class UserService {
     user.email = email;
     user.password = password;
     user.name = name;
+    user.roles = JSON.stringify(roles);
 
     return this.userRepository.save(user);
   }

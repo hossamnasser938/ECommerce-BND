@@ -2,6 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { hash, compare } from 'bcrypt';
+import { IAuthTokenPayload } from './auth-token-payload.model';
 
 const SALT = 10;
 
@@ -24,7 +25,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload: IAuthTokenPayload = { sub: user.id, email: user.email };
 
     const jwt = this.jwtService.sign(payload);
     return { access_token: jwt };
