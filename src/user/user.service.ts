@@ -13,6 +13,10 @@ export class UserService {
     return this.userRepository.find();
   }
 
+  findOne(email: string) {
+    return this.userRepository.findOneBy({ email });
+  }
+
   createOne(email: string, password: string, name: string) {
     const user = new User();
     user.email = email;
