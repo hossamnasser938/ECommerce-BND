@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -17,7 +17,12 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  createOne(email: string, password: string, name: string) {
+  async createOne(email: string, password: string, name: string) {
+    const potentialDuplicateUser = await this.findOne(email);
+    if (potentialDuplicateUser) {
+      throw new ConflictException();
+    }
+
     const user = new User();
     user.email = email;
     user.password = password;

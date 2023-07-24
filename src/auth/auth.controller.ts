@@ -23,6 +23,15 @@ export class AuthController {
     return this.authService.signIn(email, password);
   }
 
+  @Post('signup')
+  signUp(
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Body('name') name: string,
+  ) {
+    return this.authService.signUp(email, password, name);
+  }
+
   @UseGuards(AuthGuard)
   @Get('me')
   findAuthUser(@Request() request) {
