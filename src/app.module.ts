@@ -6,6 +6,8 @@ import { Category } from './category/category.entity';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { Product } from './product/product.entity';
+import { UserModule } from './user/user.module';
+import { User } from './user/user.entity';
 
 @Module({
   imports: [
@@ -16,11 +18,12 @@ import { Product } from './product/product.entity';
       username: 'root',
       password: 'rootpass',
       database: 'ecommerce',
-      entities: [Category, Product],
+      entities: [Category, Product, User],
       synchronize: true,
     }),
     CategoryModule,
     ProductModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
