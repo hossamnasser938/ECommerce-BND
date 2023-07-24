@@ -6,9 +6,15 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from './category.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Reflector } from '@nestjs/core';
+import { Roles } from 'src/auth/auth.decorators';
+import { Role } from 'src/auth/auth.enums';
 
 @Controller('categories')
 export class CategoryController {
@@ -27,6 +33,8 @@ export class CategoryController {
     return this.categoryService.findOneById(id);
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Post()
   createOne(
     @Body('name') name: string,

@@ -7,8 +7,14 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Reflector } from '@nestjs/core';
+import { Roles } from 'src/auth/auth.decorators';
+import { Role } from 'src/auth/auth.enums';
 
 @Controller('products')
 export class ProductController {
@@ -29,6 +35,8 @@ export class ProductController {
     return this.productService.findOneById(id);
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Post()
   createOne(
     @Body('name') name: string,
