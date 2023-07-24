@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './category/category.entity';
 import { CategoryModule } from './category/category.module';
@@ -33,7 +31,7 @@ import { AUTH_CONSTANTS } from './auth/auth.constants';
     UserModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
