@@ -15,6 +15,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { CreateCategoryDTO } from './models/create-category.dto';
 
 @Controller('categories')
 export class CategoryController {
@@ -36,10 +37,7 @@ export class CategoryController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Post()
-  createOne(
-    @Body('name') name: string,
-    @Body('parentCategoryId', ParseIntPipe) parentCategoryId: number,
-  ) {
-    return this.categoryService.createOne(name, parentCategoryId);
+  createOne(@Body() createCategoryDTO: CreateCategoryDTO) {
+    return this.categoryService.createOne(createCategoryDTO);
   }
 }

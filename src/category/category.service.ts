@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './category.entity';
 import { Repository } from 'typeorm';
+import { CreateCategoryDTO } from './models/create-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -23,7 +24,9 @@ export class CategoryService {
     });
   }
 
-  async createOne(name: string, parentCategoryId?: number): Promise<Category> {
+  async createOne(createCategoryDTO: CreateCategoryDTO): Promise<Category> {
+    const { name, parentCategoryId } = createCategoryDTO;
+
     const parentCategory = await this.findOneById(parentCategoryId);
     const category = new Category();
     category.name = name;

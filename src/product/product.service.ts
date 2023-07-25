@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './product.entity';
 import { Repository } from 'typeorm';
 import { CategoryService } from 'src/category/category.service';
+import { CreateProductDTO } from './models/create-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -27,12 +28,9 @@ export class ProductService {
     return this.productRespository.findBy({ category });
   }
 
-  async createOne(
-    name: string,
-    description: string,
-    amount: number,
-    categoryId: number,
-  ) {
+  async createOne(createProductDTO: CreateProductDTO) {
+    const { name, description, amount, categoryId } = createProductDTO;
+
     const category = await this.categoryService.findOneById(categoryId);
 
     const product = new Product();

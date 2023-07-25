@@ -15,6 +15,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { CreateProductDTO } from './models/create-product.dto';
 
 @Controller('products')
 export class ProductController {
@@ -38,12 +39,7 @@ export class ProductController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Post()
-  createOne(
-    @Body('name') name: string,
-    @Body('description') description: string,
-    @Body('amount', ParseIntPipe) amount: number,
-    @Body('categoryId', ParseIntPipe) categoryId: number,
-  ) {
-    return this.productService.createOne(name, description, amount, categoryId);
+  createOne(@Body() createProductDTO: CreateProductDTO) {
+    return this.productService.createOne(createProductDTO);
   }
 }
