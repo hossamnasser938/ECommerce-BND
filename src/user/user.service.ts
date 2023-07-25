@@ -21,7 +21,7 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  async createOne(createUserDTO: CreateUserDTO, roles = [Role.User]) {
+  async createOne(createUserDTO: CreateUserDTO, roles: Role[]) {
     const { email, password, name } = createUserDTO;
 
     const potentialDuplicateUser = await this.findOne(email);

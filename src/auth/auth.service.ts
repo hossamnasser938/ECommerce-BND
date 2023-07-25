@@ -5,6 +5,7 @@ import { hash, compare } from 'bcrypt';
 import { IAuthTokenPayload } from './models/auth-token-payload.model';
 import { SignInDTO } from './models/signin.dto';
 import { CreateUserDTO } from 'src/user/models/create-user.dto';
+import { Role } from './auth.enums';
 
 const SALT = 10;
 
@@ -35,9 +36,9 @@ export class AuthService {
     return { access_token: jwt };
   }
 
-  async signUp(createUserDTO: CreateUserDTO) {
+  async signUp(createUserDTO: CreateUserDTO, roles: Role[] = [Role.User]) {
     createUserDTO.password = await hash(createUserDTO.password, SALT);
 
-    return this.userService.createOne(createUserDTO);
+    return this.userService.createOne(createUserDTO, roles);
   }
 }

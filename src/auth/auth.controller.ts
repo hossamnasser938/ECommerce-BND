@@ -13,6 +13,10 @@ import { UserService } from 'src/user/user.service';
 import { SignInDTO } from './models/signin.dto';
 import { User } from 'src/user/user.entity';
 import { CreateUserDTO } from 'src/user/models/create-user.dto';
+import { Role } from './auth.enums';
+import { Roles } from './auth.decorators';
+import { RolesGuard } from './roles.guard';
+import { Reflector } from '@nestjs/core';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +33,13 @@ export class AuthController {
   @Post('signup')
   signUp(@Body() createUserDTO: CreateUserDTO) {
     return this.authService.signUp(createUserDTO);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @Post('signup-admin')
+  signUpAdmin(@Body() createUserDTO: CreateUserDTO) {
+    return this.authService.signUp(createUserDTO, [Role.Admin]);
   }
 
   @UseGuards(AuthGuard)
