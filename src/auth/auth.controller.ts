@@ -11,8 +11,8 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserService } from 'src/user/user.service';
 import { SignInDTO } from './models/signin.dto';
-import { SignUpDTO } from './models/signup.dto';
 import { User } from 'src/user/user.entity';
+import { CreateUserDTO } from 'src/user/models/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,8 +27,8 @@ export class AuthController {
   }
 
   @Post('signup')
-  signUp(@Body() signUpDTO: SignUpDTO) {
-    return this.authService.signUp(signUpDTO);
+  signUp(@Body() createUserDTO: CreateUserDTO) {
+    return this.authService.signUp(createUserDTO);
   }
 
   @UseGuards(AuthGuard)

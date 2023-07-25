@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +18,8 @@ import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
 import { CreateProductDTO } from './models/create-product.dto';
+import { UpdateProductDTO } from './models/update-product.dto';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 @Controller('products')
 export class ProductController {
@@ -41,5 +45,27 @@ export class ProductController {
   @Post()
   createOne(@Body() createProductDTO: CreateProductDTO) {
     return this.productService.createOne(createProductDTO);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @Put(':id')
+  async updateOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDTO: UpdateProductDTO,
+  ) {
+    const successfullyUpdated = await this.productService.updateOneById(
+      id,
+      updateProductDTO,
+    );
+    return updateDeleteResponse(successfullyUpdated);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @Delete(':id')
+  async deleteOne(@Param('id', ParseIntPipe) id: number) {
+    const successfullyDeleted = await this.productService.deleteOneById(id);
+    return updateDeleteResponse(successfullyDeleted);
   }
 }

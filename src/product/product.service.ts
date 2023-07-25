@@ -4,6 +4,8 @@ import { Product } from './product.entity';
 import { Repository } from 'typeorm';
 import { CategoryService } from 'src/category/category.service';
 import { CreateProductDTO } from './models/create-product.dto';
+import { UpdateProductDTO } from './models/update-product.dto';
+import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 
 @Injectable()
 export class ProductService {
@@ -43,5 +45,15 @@ export class ProductService {
     product.category = category;
 
     return this.productRespository.save(product);
+  }
+
+  async updateOneById(id: number, updateProductDTO: UpdateProductDTO) {
+    const result = await this.productRespository.update(id, updateProductDTO);
+    return checkTypeORMUpdateDeleteResult(result);
+  }
+
+  async deleteOneById(id: number) {
+    const result = await this.productRespository.delete(id);
+    return checkTypeORMUpdateDeleteResult(result);
   }
 }

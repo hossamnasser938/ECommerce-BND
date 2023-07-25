@@ -4,7 +4,7 @@ import { UserService } from 'src/user/user.service';
 import { hash, compare } from 'bcrypt';
 import { IAuthTokenPayload } from './models/auth-token-payload.model';
 import { SignInDTO } from './models/signin.dto';
-import { SignUpDTO } from './models/signup.dto';
+import { CreateUserDTO } from 'src/user/models/create-user.dto';
 
 const SALT = 10;
 
@@ -35,11 +35,9 @@ export class AuthService {
     return { access_token: jwt };
   }
 
-  async signUp(signUpDTO: SignUpDTO) {
-    const { email, password, name } = signUpDTO;
+  async signUp(createUserDTO: CreateUserDTO) {
+    createUserDTO.password = await hash(createUserDTO.password, SALT);
 
-    const hashedPassword = await hash(password, SALT);
-
-    return this.userService.createOne(email, hashedPassword, name);
+    return this.userService.createOne(createUserDTO);
   }
 }

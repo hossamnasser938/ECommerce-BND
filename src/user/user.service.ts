@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Role } from 'src/auth/auth.enums';
+import { CreateUserDTO } from './models/create-user.dto';
+import { UpdateUserDTO } from './models/update-user.dto';
+import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 
 @Injectable()
 export class UserService {
@@ -18,12 +21,9 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  async createOne(
-    email: string,
-    password: string,
-    name: string,
-    roles: Role[] = [Role.User],
-  ) {
+  async createOne(createUserDTO: CreateUserDTO, roles = [Role.User]) {
+    const { email, password, name } = createUserDTO;
+
     const potentialDuplicateUser = await this.findOne(email);
     if (potentialDuplicateUser) {
       throw new ConflictException();
@@ -36,5 +36,15 @@ export class UserService {
     user.roles = JSON.stringify(roles);
 
     return this.userRepository.save(user);
+  }
+
+  async updateOne(id: number, updateUserDTO: UpdateUserDTO) {
+    const result = await this.userRepository.update(id, updateUserDTO);
+    return checkTypeORMUpdateDeleteResult(result);
+  }
+
+  async deleteOne(id: number) {
+    const result = await this.userRepository.delete(id);
+    return checkTypeORMUpdateDeleteResult(result);
   }
 }
