@@ -3,9 +3,8 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity({})
@@ -16,8 +15,7 @@ export class Category {
   @Column()
   name: string;
 
-  @OneToOne(() => Category)
-  @JoinColumn()
+  @ManyToOne(() => Category)
   parentCategory: Category;
 
   @OneToMany(() => Category, (categroy) => categroy.parentCategory)
