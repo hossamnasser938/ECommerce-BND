@@ -1,5 +1,12 @@
+import { CartItem } from 'src/cart/cart-item.entity';
 import { Category } from 'src/category/category.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({})
 export class Product {
@@ -17,4 +24,7 @@ export class Product {
 
   @ManyToOne(() => Category, (category) => category.products, { eager: true })
   category: Category;
+
+  @OneToMany(() => CartItem, (cartItem) => cartItem.product)
+  cartItems: CartItem[];
 }

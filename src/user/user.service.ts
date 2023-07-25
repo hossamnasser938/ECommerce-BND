@@ -17,14 +17,18 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  findOne(email: string) {
+  findOneByEmail(email: string) {
     return this.userRepository.findOneBy({ email });
+  }
+
+  findOneById(id: number) {
+    return this.userRepository.findOneBy({ id });
   }
 
   async createOne(createUserDTO: CreateUserDTO, roles: Role[]) {
     const { email, password, name } = createUserDTO;
 
-    const potentialDuplicateUser = await this.findOne(email);
+    const potentialDuplicateUser = await this.findOneByEmail(email);
     if (potentialDuplicateUser) {
       throw new ConflictException();
     }
@@ -46,5 +50,13 @@ export class UserService {
   async deleteOne(id: number) {
     const result = await this.userRepository.delete(id);
     return checkTypeORMUpdateDeleteResult(result);
+  }
+
+  async findCartItems(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { cartItems: true },
+    });
+    return user.cartItems;
   }
 }

@@ -46,6 +46,6 @@ export class AuthController {
   @Get('me')
   findAuthUser(@Request() request) {
     const { email } = request.user as User;
-    return this.userService.findOne(email);
+    return this.userService.findOneByEmail(email);
   }
 }

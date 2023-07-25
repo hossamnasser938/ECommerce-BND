@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './category/category.entity';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
-import { Product } from './product/product.entity';
 import { UserModule } from './user/user.module';
-import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AUTH_CONSTANTS } from './auth/auth.constants';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -19,7 +17,7 @@ import { AUTH_CONSTANTS } from './auth/auth.constants';
       username: 'root',
       password: 'rootpass',
       database: 'ecommerce',
-      entities: [Category, Product, User],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     JwtModule.register({
@@ -30,6 +28,7 @@ import { AUTH_CONSTANTS } from './auth/auth.constants';
     ProductModule,
     UserModule,
     AuthModule,
+    CartModule,
   ],
   controllers: [],
   providers: [],
