@@ -1,10 +1,11 @@
-import { MinLength, IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
+import { IsPassword } from 'src/auth/utils/validation-utils';
 
 export class CreateUserDTO {
   @IsEmail()
   email: string;
 
-  @MinLength(5)
+  @IsPassword()
   password: string;
 
   @IsString()

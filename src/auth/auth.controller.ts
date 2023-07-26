@@ -17,6 +17,8 @@ import { Role } from './auth.enums';
 import { Roles } from './auth.decorators';
 import { RolesGuard } from './roles.guard';
 import { Reflector } from '@nestjs/core';
+import { ChangePasswordDTO } from './models/change-password.dto';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +49,19 @@ export class AuthController {
   findAuthUser(@Request() request) {
     const { email } = request.user as User;
     return this.userService.findOneByEmail(email);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @Body() changePasswordDTO: ChangePasswordDTO,
+    @Request() request,
+  ) {
+    const user = request.user as User;
+    const successfullyChangedPassword = await this.authService.changePassword(
+      changePasswordDTO,
+      user,
+    );
+    return updateDeleteResponse(successfullyChangedPassword);
   }
 }
