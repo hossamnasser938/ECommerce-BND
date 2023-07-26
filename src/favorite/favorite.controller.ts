@@ -12,6 +12,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { User } from 'src/user/user.entity';
 import { FavoriteDTO } from './models/favorite.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { Roles } from 'src/auth/auth.decorators';
+import { Role } from 'src/auth/auth.enums';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Reflector } from '@nestjs/core';
 
 @UseGuards(AuthGuard)
 @Controller('favorites')
@@ -19,6 +23,13 @@ export class FavoriteController {
   constructor(
     @Inject(FavoriteService) private favoriteService: FavoriteService,
   ) {}
+
+  @Roles(Role.Admin)
+  @UseGuards(new RolesGuard(new Reflector()))
+  @Get('all')
+  findAll() {
+    return this.favoriteService.findAll();
+  }
 
   @Get()
   findUserAll(@Request() request) {

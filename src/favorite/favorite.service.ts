@@ -20,6 +20,10 @@ export class FavoriteService {
     @Inject(ProductService) private productService: ProductService,
   ) {}
 
+  findAll() {
+    return this.favoriteItemRepository.find();
+  }
+
   findUserFavorites(user: User) {
     return this.favoriteItemRepository.findBy({ user });
   }

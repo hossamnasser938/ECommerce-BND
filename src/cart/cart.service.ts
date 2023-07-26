@@ -25,6 +25,10 @@ export class CartService {
     @Inject(UserService) private userService: UserService,
   ) {}
 
+  findAll() {
+    return this.cartItemRepository.find();
+  }
+
   findOneById(id: number) {
     return this.cartItemRepository.findOneBy({ id });
   }

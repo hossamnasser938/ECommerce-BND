@@ -32,6 +32,13 @@ export class CartController {
     @Inject(UserService) private userService: UserService,
   ) {}
 
+  @Roles(Role.Admin)
+  @UseGuards(new RolesGuard(new Reflector()))
+  @Get('all')
+  findAll() {
+    return this.cartService.findAll();
+  }
+
   @Get()
   findUserAll(@Request() request) {
     const user = request.user as User;
