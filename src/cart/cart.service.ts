@@ -29,8 +29,8 @@ export class CartService {
     return this.cartItemRepository.findOneBy({ id });
   }
 
-  findOneByProduct(product: Product) {
-    return this.cartItemRepository.findOneBy({ product });
+  findOneByProduct(product: Product, user: User) {
+    return this.cartItemRepository.findOneBy({ product, user });
   }
 
   async createOne(createCartItemDTO: CreateCartItemDTO, user: User) {
@@ -40,7 +40,10 @@ export class CartService {
     if (!product)
       throw new NotFoundException(`Product with id = ${productId} not found`);
 
-    const potentialDuplicateCartItem = await this.findOneByProduct(product);
+    const potentialDuplicateCartItem = await this.findOneByProduct(
+      product,
+      user,
+    );
     if (potentialDuplicateCartItem)
       throw new ConflictException(
         'Cart item already exists. You can update its amount',
@@ -72,8 +75,12 @@ export class CartService {
     return checkTypeORMUpdateDeleteResult(result);
   }
 
-  async updateAmount(id: number, operation: 'increment' | 'decrement') {
-    const cartItem = await this.findOneById(id);
+  async updateAmount(
+    id: number,
+    user: User,
+    operation: 'increment' | 'decrement',
+  ) {
+    const cartItem = await this.cartItemRepository.findOneBy({ id, user });
 
     if (!cartItem) throw new NotFoundException();
 
@@ -91,8 +98,8 @@ export class CartService {
     return checkTypeORMUpdateDeleteResult(result);
   }
 
-  async deleteOne(id: number) {
-    const result = await this.cartItemRepository.delete(id);
+  async deleteOne(id: number, user: User) {
+    const result = await this.cartItemRepository.delete({ id, user });
     return checkTypeORMUpdateDeleteResult(result);
   }
 

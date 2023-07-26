@@ -59,26 +59,37 @@ export class CartController {
   }
 
   @Put(':id/increment')
-  async incrementAmount(@Param('id', ParseIntPipe) id: number) {
+  async incrementAmount(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request,
+  ) {
+    const user = request.user as User;
     const successfullyUpdated = await this.cartService.updateAmount(
       id,
+      user,
       'increment',
     );
     return updateDeleteResponse(successfullyUpdated);
   }
 
   @Put(':id/decrement')
-  async decrementAmount(@Param('id', ParseIntPipe) id: number) {
+  async decrementAmount(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request,
+  ) {
+    const user = request.user as User;
     const successfullyUpdated = await this.cartService.updateAmount(
       id,
+      user,
       'decrement',
     );
     return updateDeleteResponse(successfullyUpdated);
   }
 
   @Delete(':id')
-  async deleteOne(@Param('id', ParseIntPipe) id: number) {
-    const successfulllyDeleted = await this.cartService.deleteOne(id);
+  async deleteOne(@Param('id', ParseIntPipe) id: number, @Request() request) {
+    const user = request.user as User;
+    const successfulllyDeleted = await this.cartService.deleteOne(id, user);
     return updateDeleteResponse(successfulllyDeleted);
   }
 
