@@ -1,5 +1,6 @@
 import { CartItem } from 'src/cart/cart-item.entity';
 import { Category } from 'src/category/category.entity';
+import { FavoriteItem } from 'src/favorite/favorite-item.entity';
 import {
   Column,
   Entity,
@@ -27,4 +28,7 @@ export class Product {
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product)
   cartItems: CartItem[];
+
+  @OneToMany(() => FavoriteItem, (favoriteItem) => favoriteItem.product)
+  favoriteItems: FavoriteItem[];
 }

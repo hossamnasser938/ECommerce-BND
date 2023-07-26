@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AUTH_CONSTANTS } from './auth/auth.constants';
 import { CartModule } from './cart/cart.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CartModule } from './cart/cart.module';
     UserModule,
     AuthModule,
     CartModule,
+    FavoriteModule,
   ],
   controllers: [],
   providers: [],

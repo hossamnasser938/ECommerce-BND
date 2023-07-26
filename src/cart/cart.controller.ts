@@ -33,7 +33,7 @@ export class CartController {
   ) {}
 
   @Get()
-  findAll(@Request() request) {
+  findUserAll(@Request() request) {
     const user = request.user as User;
     return this.userService.findCartItems(user.id);
   }
