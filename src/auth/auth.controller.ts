@@ -19,6 +19,8 @@ import { RolesGuard } from './roles.guard';
 import { Reflector } from '@nestjs/core';
 import { ChangePasswordDTO } from './models/change-password.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { VerifySignUpDTO } from './models/verify-signup-dto';
+import { ResendCodeDTO } from './models/resend-code.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -42,6 +44,17 @@ export class AuthController {
   @Post('signup-admin')
   signUpAdmin(@Body() createUserDTO: CreateUserDTO) {
     return this.authService.signUp(createUserDTO, [Role.Admin]);
+  }
+
+  @Post('verify-signup')
+  verifySignup(@Body() verifySignUpDTO: VerifySignUpDTO) {
+    return this.authService.verifySignUp(verifySignUpDTO);
+  }
+
+  @Post('resend-code')
+  async resendCode(@Body() resendCodeDTO: ResendCodeDTO) {
+    const verificationCode = await this.authService.resendCode(resendCodeDTO);
+    return updateDeleteResponse(!!verificationCode);
   }
 
   @UseGuards(AuthGuard)

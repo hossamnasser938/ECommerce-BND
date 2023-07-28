@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AUTH_CONSTANTS } from './auth/auth.constants';
 import { CartModule } from './cart/cart.module';
 import { FavoriteModule } from './favorite/favorite.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FavoriteModule } from './favorite/favorite.module';
       global: true,
       secret: AUTH_CONSTANTS.JWT_SECRET,
     }),
+    ConfigModule.forRoot({ isGlobal: true }),
     CategoryModule,
     ProductModule,
     UserModule,
