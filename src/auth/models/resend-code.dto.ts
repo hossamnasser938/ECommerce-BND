@@ -1,6 +1,6 @@
-import { IsNumber } from 'class-validator';
+import { IsEmail } from 'class-validator';
 
 export class ResendCodeDTO {
-  @IsNumber()
-  userId: number;
+  @IsEmail()
+  email: string;
 }
