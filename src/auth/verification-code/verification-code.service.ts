@@ -20,7 +20,7 @@ export class VerificationCodeService {
     @Inject(NodeMailerService) private nodeMailerService: NodeMailerService,
   ) {}
 
-  async createAndSendOne(user: User) {
+  createOne(user: User) {
     const verificationCode = new VerificationCode();
     verificationCode.user = user;
     verificationCode.code = generateVerificationCode();
@@ -29,17 +29,23 @@ export class VerificationCodeService {
     );
     verificationCode.used = false;
 
-    const verificationCodeSaved = await this.verificationCodeRepository.save(
-      verificationCode,
-    );
+    return this.verificationCodeRepository.save(verificationCode);
+  }
 
-    await this.nodeMailerService.sendEmail(
-      user.email,
+  sendOne(verificationCode: VerificationCode) {
+    return this.nodeMailerService.sendEmail(
+      verificationCode.user.email,
       VERIFICATION_EMAIL_SUBJECT,
       VERIFICATION_EMAIL_TEXT(verificationCode.code),
     );
+  }
 
-    return verificationCodeSaved;
+  async createAndSendOne(user: User) {
+    const verificationCode = await this.createOne(user);
+
+    await this.sendOne(verificationCode);
+
+    return verificationCode;
   }
 
   async verify(user: User, code: string) {
