@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CartItem } from './cart-item.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { ProductService } from 'src/product/product.service';
 import { CreateCartItemDTO } from './models/create-cart-item.dto';
 import { User } from 'src/user/user.entity';
@@ -95,9 +95,15 @@ export class CartService {
         'Amount requested is not available in stock',
       );
 
-    const result = await this.cartItemRepository.update(id, {
-      amount: newAmount,
-    });
+    let result: UpdateResult | DeleteResult;
+
+    if (newAmount === 0) {
+      result = await this.cartItemRepository.delete(id);
+    } else {
+      result = await this.cartItemRepository.update(id, {
+        amount: newAmount,
+      });
+    }
 
     return checkTypeORMUpdateDeleteResult(result);
   }
