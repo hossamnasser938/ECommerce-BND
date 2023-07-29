@@ -22,6 +22,7 @@ import { Role } from 'src/auth/auth.enums';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
 import { UpdateCartItemDTO } from './models/update-cart-item.dto';
+import { UpdateCartItemAmountOperation } from './models/cart.enums';
 
 @UseGuards(AuthGuard)
 @Controller('cart')
@@ -76,7 +77,7 @@ export class CartController {
     const successfullyUpdated = await this.cartService.updateAmount(
       id,
       user,
-      'increment',
+      UpdateCartItemAmountOperation.INCREMENT,
     );
     return updateDeleteResponse(successfullyUpdated);
   }
@@ -90,7 +91,7 @@ export class CartController {
     const successfullyUpdated = await this.cartService.updateAmount(
       id,
       user,
-      'decrement',
+      UpdateCartItemAmountOperation.DECREMENT,
     );
     return updateDeleteResponse(successfullyUpdated);
   }
