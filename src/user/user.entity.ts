@@ -4,7 +4,14 @@ import { CartItem } from 'src/cart/cart-item.entity';
 import { FavoriteItem } from 'src/favorite/favorite-item.entity';
 import { Order } from 'src/order/order.entity';
 import { ShippingAddress } from 'src/shipping-address/shipping-address.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({})
 export class User {
@@ -44,4 +51,10 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.shippingAddress)
   orders: Order[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

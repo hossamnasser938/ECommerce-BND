@@ -6,6 +6,8 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({})
@@ -36,4 +38,10 @@ export class ShippingAddress {
 
   @OneToMany(() => Order, (order) => order.shippingAddress)
   orders: Order[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

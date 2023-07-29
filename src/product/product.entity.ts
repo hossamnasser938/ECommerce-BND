@@ -7,6 +7,8 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({})
@@ -31,4 +33,10 @@ export class Product {
 
   @OneToMany(() => FavoriteItem, (favoriteItem) => favoriteItem.product)
   favoriteItems: FavoriteItem[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
