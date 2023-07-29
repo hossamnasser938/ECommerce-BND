@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShippingAddress } from './shipping-address.entity';
 import { Repository } from 'typeorm';
@@ -14,16 +14,20 @@ export class ShippingAddressService {
     private shippingAddressRepository: Repository<ShippingAddress>,
   ) {}
 
-  getAll() {
+  findAll() {
     return this.shippingAddressRepository.find();
   }
 
-  getUserAll(user: User) {
+  findUserAll(user: User) {
     return this.shippingAddressRepository.findBy({ user });
   }
 
-  getOneById(id: number) {
-    return this.shippingAddressRepository.findOneBy({ id });
+  async findOneById(id: number) {
+    const shippingAddress = await this.shippingAddressRepository.findOneBy({
+      id,
+    });
+    if (!shippingAddress) throw new NotFoundException();
+    return shippingAddress;
   }
 
   createOne(createShippingAddressDTO: CreateShippingAddressDTO, user: User) {
@@ -63,5 +67,17 @@ export class ShippingAddressService {
   async deleteOne(id: number, user: User) {
     const result = await this.shippingAddressRepository.delete({ id, user });
     return checkTypeORMUpdateDeleteResult(result);
+  }
+
+  async setOneAsDefault(id: number, user: User) {
+    await this.resetDefault(user);
+    return this.updateOne(id, { isDefault: true }, user);
+  }
+
+  resetDefault(user: User) {
+    return this.shippingAddressRepository.update(
+      { user, isDefault: true },
+      { isDefault: false },
+    );
   }
 }
