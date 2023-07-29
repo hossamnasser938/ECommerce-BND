@@ -15,6 +15,7 @@ import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 import { UserService } from 'src/user/user.service';
 import { UpdateCartItemDTO } from './models/update-cart-item.dto';
 import { Order } from 'src/order/order.entity';
+import { UpdateCartItemAmountOperation } from './models/cart.enums';
 
 @Injectable()
 export class CartService {
@@ -87,13 +88,15 @@ export class CartService {
   async updateAmount(
     id: number,
     user: User,
-    operation: 'increment' | 'decrement',
+    operation: UpdateCartItemAmountOperation,
   ) {
     const cartItem = await this.cartItemRepository.findOneBy({ id, user });
 
     if (!cartItem) throw new NotFoundException();
 
-    const newAmount = cartItem.amount + (operation === 'increment' ? 1 : -1);
+    const newAmount =
+      cartItem.amount +
+      (operation === UpdateCartItemAmountOperation.INCREMENT ? 1 : -1);
 
     if (newAmount > cartItem.product.amount)
       throw new ForbiddenException(
