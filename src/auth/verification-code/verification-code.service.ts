@@ -50,7 +50,7 @@ export class VerificationCodeService {
 
   async verify(user: User, code: string) {
     const verificationCode = await this.verificationCodeRepository.findOneBy({
-      user,
+      user: { id: user.id },
       code,
     });
 
