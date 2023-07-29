@@ -38,6 +38,11 @@ export class OrderController {
     return this.orderService.findUserAll(user);
   }
 
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.orderService.findOneById(id);
+  }
+
   @Post()
   createOne(@Body() createOrderDTO: CreateOrderDTO, @Request() request) {
     const user = request.user as User;

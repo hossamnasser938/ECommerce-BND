@@ -25,10 +25,16 @@ export class OrderService {
     return this.orderRepository.findBy({ user });
   }
 
+  async findOneById(id: number) {
+    const order = await this.orderRepository.findOneBy({ id });
+    if (!order) throw new NotFoundException();
+    return order;
+  }
+
   async createOne(createOrderDTO: CreateOrderDTO, user: User) {
     const { shippingAddressId } = createOrderDTO;
 
-    const shippingAddress = await this.shippingAddressService.getOneById(
+    const shippingAddress = await this.shippingAddressService.findOneById(
       shippingAddressId,
     );
     if (!shippingAddress)
