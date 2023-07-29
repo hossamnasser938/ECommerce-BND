@@ -33,14 +33,19 @@ export class ShippingAddressController {
   @Roles(Role.Admin)
   @UseGuards(new RolesGuard(new Reflector()))
   @Get('all')
-  getAllShippingAddresses() {
-    return this.shippingAddressService.getAll();
+  findAllShippingAddresses() {
+    return this.shippingAddressService.findAll();
   }
 
   @Get()
-  getUserShippingAddresses(@Request() request) {
+  findUserShippingAddresses(@Request() request) {
     const user = request.user as User;
-    return this.shippingAddressService.getUserAll(user);
+    return this.shippingAddressService.findUserAll(user);
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.shippingAddressService.findOneById(id);
   }
 
   @Post()
@@ -68,6 +73,15 @@ export class ShippingAddressController {
       user,
     );
     return updateDeleteResponse(updatedSuccessfully);
+  }
+
+  @Put(':id/set-default')
+  async setAsDefault(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request,
+  ) {
+    const user = request.user as User;
+    return this.shippingAddressService.setOneAsDefault(id, user);
   }
 
   @Delete(':id')
