@@ -53,14 +53,6 @@ export class UserService {
     return checkTypeORMUpdateDeleteResult(result);
   }
 
-  async findCartItems(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: { cartItems: true },
-    });
-    return user.cartItems;
-  }
-
   verifyUser(userId: number) {
     return this.updateOne(userId, { verified: true });
   }
