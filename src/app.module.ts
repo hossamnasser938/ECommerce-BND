@@ -5,10 +5,9 @@ import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { AUTH_CONSTANTS } from './auth/auth.constants';
 import { CartModule } from './cart/cart.module';
 import { FavoriteModule } from './favorite/favorite.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ShippingAddressModule } from './shipping-address/shipping-address.module';
 import { OrderModule } from './order/order.module';
 
@@ -24,11 +23,15 @@ import { OrderModule } from './order/order.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    JwtModule.register({
-      global: true,
-      secret: AUTH_CONSTANTS.JWT_SECRET,
-    }),
     ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+    }),
     CategoryModule,
     ProductModule,
     UserModule,
