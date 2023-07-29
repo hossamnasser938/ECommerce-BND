@@ -1,7 +1,14 @@
 import { Order } from 'src/order/order.entity';
 import { Product } from 'src/product/product.entity';
 import { User } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({})
 export class CartItem {
@@ -19,4 +26,10 @@ export class CartItem {
 
   @Column()
   amount: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

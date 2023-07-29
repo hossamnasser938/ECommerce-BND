@@ -25,7 +25,7 @@ export class FavoriteService {
   }
 
   findUserFavorites(user: User) {
-    return this.favoriteItemRepository.findBy({ user });
+    return this.favoriteItemRepository.findBy({ user: { id: user.id } });
   }
 
   async favorite(favoriteDTO: FavoriteDTO, user: User) {
@@ -35,7 +35,10 @@ export class FavoriteService {
       throw new NotFoundException(`No product with id = ${productId}`);
 
     const potentialDuplicateFavoriteItem =
-      await this.favoriteItemRepository.findOneBy({ product, user });
+      await this.favoriteItemRepository.findOneBy({
+        product: { id: product.id },
+        user: { id: user.id },
+      });
     if (potentialDuplicateFavoriteItem)
       throw new ConflictException('Product already favorited by user');
 

@@ -22,7 +22,7 @@ export class OrderService {
   }
 
   findUserAll(user: User) {
-    return this.orderRepository.findBy({ user });
+    return this.orderRepository.findBy({ user: { id: user.id } });
   }
 
   async findOneById(id: number) {

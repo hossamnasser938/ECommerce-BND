@@ -30,7 +30,7 @@ export class ProductService {
     if (!category) {
       return [];
     }
-    return this.productRespository.findBy({ category });
+    return this.productRespository.findBy({ category: { id: category.id } });
   }
 
   async createOne(createProductDTO: CreateProductDTO) {

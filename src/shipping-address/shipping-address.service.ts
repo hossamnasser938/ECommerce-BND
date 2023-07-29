@@ -19,7 +19,7 @@ export class ShippingAddressService {
   }
 
   findUserAll(user: User) {
-    return this.shippingAddressRepository.findBy({ user });
+    return this.shippingAddressRepository.findBy({ user: { id: user.id } });
   }
 
   async findOneById(id: number) {

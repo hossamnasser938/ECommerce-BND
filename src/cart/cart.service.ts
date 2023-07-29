@@ -35,11 +35,14 @@ export class CartService {
   }
 
   findUserAll(user: User) {
-    return this.cartItemRepository.findBy({ user });
+    return this.cartItemRepository.findBy({ user: { id: user.id } });
   }
 
   findUserInCartItems(user: User) {
-    return this.cartItemRepository.findBy({ user, order: IsNull() });
+    return this.cartItemRepository.findBy({
+      user: { id: user.id },
+      order: IsNull(),
+    });
   }
 
   async createOne(createCartItemDTO: CreateCartItemDTO, user: User) {
@@ -50,8 +53,8 @@ export class CartService {
       throw new NotFoundException(`Product with id = ${productId} not found`);
 
     const potentialDuplicateCartItem = await this.cartItemRepository.findOneBy({
-      product,
-      user,
+      product: { id: product.id },
+      user: { id: user.id },
       order: IsNull(),
     });
     if (potentialDuplicateCartItem)
@@ -90,7 +93,10 @@ export class CartService {
     user: User,
     operation: UpdateCartItemAmountOperation,
   ) {
-    const cartItem = await this.cartItemRepository.findOneBy({ id, user });
+    const cartItem = await this.cartItemRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
 
     if (!cartItem) throw new NotFoundException();
 
