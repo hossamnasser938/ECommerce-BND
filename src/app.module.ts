@@ -9,6 +9,8 @@ import { AUTH_CONSTANTS } from './auth/auth.constants';
 import { CartModule } from './cart/cart.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { ConfigModule } from '@nestjs/config';
+import { ShippingAddressModule } from './shipping-address/shipping-address.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     CartModule,
     FavoriteModule,
+    ShippingAddressModule,
+    OrderModule,
   ],
   controllers: [],
   providers: [],
