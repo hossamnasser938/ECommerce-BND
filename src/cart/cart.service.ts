@@ -7,14 +7,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CartItem } from './cart-item.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, IsNull, Repository, UpdateResult } from 'typeorm';
 import { ProductService } from 'src/product/product.service';
 import { CreateCartItemDTO } from './models/create-cart-item.dto';
 import { User } from 'src/user/user.entity';
-import { Product } from 'src/product/product.entity';
 import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 import { UserService } from 'src/user/user.service';
 import { UpdateCartItemDTO } from './models/update-cart-item.dto';
+import { Order } from 'src/order/order.entity';
 
 @Injectable()
 export class CartService {
@@ -33,8 +33,12 @@ export class CartService {
     return this.cartItemRepository.findOneBy({ id });
   }
 
-  findOneByProduct(product: Product, user: User) {
-    return this.cartItemRepository.findOneBy({ product, user });
+  findUserAll(user: User) {
+    return this.cartItemRepository.findBy({ user });
+  }
+
+  findUserInCartItems(user: User) {
+    return this.cartItemRepository.findBy({ user, order: IsNull() });
   }
 
   async createOne(createCartItemDTO: CreateCartItemDTO, user: User) {
@@ -44,10 +48,11 @@ export class CartService {
     if (!product)
       throw new NotFoundException(`Product with id = ${productId} not found`);
 
-    const potentialDuplicateCartItem = await this.findOneByProduct(
+    const potentialDuplicateCartItem = await this.cartItemRepository.findOneBy({
       product,
       user,
-    );
+      order: IsNull(),
+    });
     if (potentialDuplicateCartItem)
       throw new ConflictException(
         'Cart item already exists. You can update its amount',
@@ -113,12 +118,26 @@ export class CartService {
     return checkTypeORMUpdateDeleteResult(result);
   }
 
-  async deleteAllUserCartItems(user: User) {
-    const cartItems = await this.userService.findCartItems(user.id);
+  async deleteAllUserInCartItems(user: User) {
+    const cartItems = await this.findUserInCartItems(user);
     if (cartItems.length === 0)
       throw new NotFoundException('User has empty cart');
 
-    const result = await this.cartItemRepository.delete({ user });
+    const result = await this.cartItemRepository.delete({
+      user,
+      order: IsNull(),
+    });
     return checkTypeORMUpdateDeleteResult(result, true);
+  }
+
+  async updateUserInCartItemsWithOrder(order: Order, user: User) {
+    const result = await this.cartItemRepository.update(
+      { user, order: IsNull() },
+      { order },
+    );
+    // return checkTypeORMUpdateDeleteResult(result, true);
+    // TODO: Ask Affan why orders are updated successfully here while result.affected = 0
+    // I expect result.affected to match the number of cart items updated
+    return !!result;
   }
 }

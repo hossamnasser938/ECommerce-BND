@@ -13,7 +13,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { UserService } from 'src/user/user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { User } from 'src/user/user.entity';
 import { CreateCartItemDTO } from './models/create-cart-item.dto';
@@ -27,10 +26,7 @@ import { UpdateCartItemDTO } from './models/update-cart-item.dto';
 @UseGuards(AuthGuard)
 @Controller('cart')
 export class CartController {
-  constructor(
-    @Inject(CartService) private cartService: CartService,
-    @Inject(UserService) private userService: UserService,
-  ) {}
+  constructor(@Inject(CartService) private cartService: CartService) {}
 
   @Roles(Role.Admin)
   @UseGuards(new RolesGuard(new Reflector()))
@@ -42,7 +38,13 @@ export class CartController {
   @Get()
   findUserAll(@Request() request) {
     const user = request.user as User;
-    return this.userService.findCartItems(user.id);
+    return this.cartService.findUserAll(user);
+  }
+
+  @Get('in-cart')
+  findUserInCartItems(@Request() request) {
+    const user = request.user as User;
+    return this.cartService.findUserInCartItems(user);
   }
 
   @Post()
@@ -103,7 +105,7 @@ export class CartController {
   @Post('empty')
   async emptyCart(@Req() request) {
     const user = request.user as User;
-    const successfullyDeleted = await this.cartService.deleteAllUserCartItems(
+    const successfullyDeleted = await this.cartService.deleteAllUserInCartItems(
       user,
     );
     return updateDeleteResponse(successfullyDeleted);
