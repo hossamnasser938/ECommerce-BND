@@ -6,7 +6,9 @@ import { User } from 'src/user/user.entity';
 import { CreateOrderDTO } from './models/create-order.dto';
 import { ShippingAddressService } from 'src/shipping-address/shipping-address.service';
 import { CartService } from 'src/cart/cart.service';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { ShippingAddress } from 'src/shipping-address/shipping-address.entity';
 
 @Injectable()
 export class OrderService {
@@ -27,7 +29,10 @@ export class OrderService {
 
   async findOneById(id: number) {
     const order = await this.orderRepository.findOneBy({ id });
-    if (!order) throw new NotFoundException();
+    if (!order)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(Order, 'id', id),
+      );
     return order;
   }
 
@@ -39,11 +44,16 @@ export class OrderService {
     );
     if (!shippingAddress)
       throw new NotFoundException(
-        `No shipping address with id = ${shippingAddressId}`,
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(
+          ShippingAddress,
+          'id',
+          shippingAddressId,
+        ),
       );
 
     const cartItems = await this.cartService.findUserInCartItems(user);
-    if (!cartItems.length) throw new NotFoundException('User has empty cart');
+    if (!cartItems.length)
+      throw new NotFoundException(ERROR_MESSAGES.EMPTY_CART);
 
     const order = new Order();
     order.user = user;
@@ -59,6 +69,6 @@ export class OrderService {
 
   async deleteOne(id: number) {
     const result = await this.orderRepository.delete(id);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 }

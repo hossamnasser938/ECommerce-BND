@@ -21,6 +21,7 @@ import { VerifyDTO } from './models/verify-signup-dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { ResendCodeDTO } from './models/resend-code.dto';
 import { ResetPasswordDTO } from './models/reset-password.dto';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 const SALT = 10;
 
@@ -39,16 +40,16 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
     const samePassword = await compare(password, user.password);
     if (!samePassword) {
-      throw new UnauthorizedException();
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
     if (!user.verified)
-      throw new ForbiddenException('Please verify youe account first');
+      throw new ForbiddenException(ERROR_MESSAGES.VERIFY_ACCOUNT);
 
     const payload: IAuthTokenPayload = { sub: user.id, email: user.email };
 
@@ -66,9 +67,13 @@ export class AuthService {
   async verifySignUp(verifyDTO: VerifyDTO) {
     const { email, code } = verifyDTO;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
+    if (!user)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+      );
 
-    if (user.verified) throw new ConflictException('User already verified');
+    if (user.verified)
+      throw new ConflictException(ERROR_MESSAGES.ACCOUNT_ALREADY_VERIFIED);
 
     const isVerified = await this.verificationCodeService.verify(user, code);
     if (!isVerified) throw new InternalServerErrorException();
@@ -80,7 +85,10 @@ export class AuthService {
   async resendCode(resendCode: ResendCodeDTO) {
     const { email } = resendCode;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
+    if (!user)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+      );
 
     return this.verificationCodeService.createAndSendOne(user);
   }
@@ -90,10 +98,10 @@ export class AuthService {
 
     const samePassword = await compare(oldPassword, user.password);
     if (!samePassword)
-      throw new UnauthorizedException('Incorrect old password');
+      throw new UnauthorizedException(ERROR_MESSAGES.INCORRECT_OLD_PASSWORD);
 
     if (oldPassword === newPassword)
-      throw new ForbiddenException('New password is the same old password');
+      throw new ForbiddenException(ERROR_MESSAGES.SAME_PASSWORD);
 
     const hashedNewPassword = await hash(newPassword, SALT);
 
@@ -105,7 +113,10 @@ export class AuthService {
   async verifyForgetPassword(verifyDTO: VerifyDTO) {
     const { email, code } = verifyDTO;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
+    if (!user)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+      );
 
     const isVerified = await this.verificationCodeService.verify(user, code);
     if (!isVerified) throw new InternalServerErrorException();
@@ -117,7 +128,10 @@ export class AuthService {
     const { token, email, newPassword } = resetPasswordDTO;
 
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
+    if (!user)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+      );
 
     const isVerified = await this.verificationCodeService.verify(user, token);
     if (!isVerified) throw new InternalServerErrorException();

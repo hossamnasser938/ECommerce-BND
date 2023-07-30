@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 import { CategoryService } from 'src/category/category.service';
 import { CreateProductDTO } from './models/create-product.dto';
 import { UpdateProductDTO } from './models/update-product.dto';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class ProductService {
@@ -17,7 +18,10 @@ export class ProductService {
   async findOneById(id: number): Promise<Product> {
     const product = await this.productRespository.findOneBy({ id });
 
-    if (!product) throw new NotFoundException();
+    if (!product)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(Product, 'id', id),
+      );
     return product;
   }
 
@@ -49,11 +53,11 @@ export class ProductService {
 
   async updateOneById(id: number, updateProductDTO: UpdateProductDTO) {
     const result = await this.productRespository.update(id, updateProductDTO);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async deleteOneById(id: number) {
     const result = await this.productRespository.delete(id);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 }
