@@ -11,11 +11,13 @@ import { DeleteResult, IsNull, Repository, UpdateResult } from 'typeorm';
 import { ProductService } from 'src/product/product.service';
 import { CreateCartItemDTO } from './models/create-cart-item.dto';
 import { User } from 'src/user/user.entity';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 import { UserService } from 'src/user/user.service';
 import { UpdateCartItemDTO } from './models/update-cart-item.dto';
 import { Order } from 'src/order/order.entity';
 import { UpdateCartItemAmountOperation } from './models/cart.enums';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { Product } from 'src/product/product.entity';
 
 @Injectable()
 export class CartService {
@@ -50,7 +52,9 @@ export class CartService {
 
     const product = await this.productService.findOneById(productId);
     if (!product)
-      throw new NotFoundException(`Product with id = ${productId} not found`);
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(Product, 'id', productId),
+      );
 
     const potentialDuplicateCartItem = await this.cartItemRepository.findOneBy({
       product: { id: product.id },
@@ -58,14 +62,10 @@ export class CartService {
       order: IsNull(),
     });
     if (potentialDuplicateCartItem)
-      throw new ConflictException(
-        'Cart item already exists. You can update its amount',
-      );
+      throw new ConflictException(ERROR_MESSAGES.CART_ITEM_EXIST);
 
     if (amount > product.amount)
-      throw new ForbiddenException(
-        'Amount requested is not available in stock',
-      );
+      throw new ForbiddenException(ERROR_MESSAGES.AMOUNT_NOT_AVAILABLE);
 
     const cartItem = new CartItem();
     cartItem.product = product;
@@ -79,13 +79,11 @@ export class CartService {
     if (updateCartItemDTO.amount) {
       const cartItem = await this.findOneById(id);
       if (updateCartItemDTO.amount > cartItem.product.amount)
-        throw new ForbiddenException(
-          'Amount requested is not available in stock',
-        );
+        throw new ForbiddenException(ERROR_MESSAGES.AMOUNT_NOT_AVAILABLE);
     }
 
     const result = await this.cartItemRepository.update(id, updateCartItemDTO);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async updateAmount(
@@ -98,16 +96,17 @@ export class CartService {
       user: { id: user.id },
     });
 
-    if (!cartItem) throw new NotFoundException();
+    if (!cartItem)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(CartItem, 'id', id),
+      );
 
     const newAmount =
       cartItem.amount +
       (operation === UpdateCartItemAmountOperation.INCREMENT ? 1 : -1);
 
     if (newAmount > cartItem.product.amount)
-      throw new ForbiddenException(
-        'Amount requested is not available in stock',
-      );
+      throw new ForbiddenException(ERROR_MESSAGES.AMOUNT_NOT_AVAILABLE);
 
     let result: UpdateResult | DeleteResult;
 
@@ -119,24 +118,24 @@ export class CartService {
       });
     }
 
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async deleteOne(id: number, user: User) {
     const result = await this.cartItemRepository.delete({ id, user });
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async deleteAllUserInCartItems(user: User) {
     const cartItems = await this.findUserInCartItems(user);
     if (cartItems.length === 0)
-      throw new NotFoundException('User has empty cart');
+      throw new NotFoundException(ERROR_MESSAGES.EMPTY_CART);
 
     const result = await this.cartItemRepository.delete({
       user,
       order: IsNull(),
     });
-    return checkTypeORMUpdateDeleteResult(result, true);
+    return handleTypeORMUpdateDeleteResult({ result, multipleEntities: true });
   }
 
   async updateUserInCartItemsWithOrder(order: Order, user: User) {
@@ -144,7 +143,7 @@ export class CartService {
       { user, order: IsNull() },
       { order },
     );
-    // return checkTypeORMUpdateDeleteResult(result, true);
+    // return handleTypeORMUpdateDeleteResult({ result, multipleEntities: true });
     // TODO: Ask Affan why orders are updated successfully here while result.affected = 0
     // I expect result.affected to match the number of cart items updated
     return !!result;

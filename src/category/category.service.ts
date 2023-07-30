@@ -4,7 +4,8 @@ import { Category } from './category.entity';
 import { Repository } from 'typeorm';
 import { CreateCategoryDTO } from './models/create-category.dto';
 import { UpdateCategoryDTO } from './models/update-category.dto';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class CategoryService {
@@ -25,7 +26,10 @@ export class CategoryService {
       relations: { parentCategory: true, childCategories: true },
     });
 
-    if (!category) throw new NotFoundException();
+    if (!category)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(Category, 'id', id),
+      );
     return category;
   }
 
@@ -46,11 +50,11 @@ export class CategoryService {
     updateCategoryDTO: UpdateCategoryDTO,
   ): Promise<boolean> {
     const result = await this.categroyRepositoy.update(id, updateCategoryDTO);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async deleteOneById(id: number) {
     const result = await this.categroyRepositoy.delete(id);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 }

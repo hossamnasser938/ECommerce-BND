@@ -10,7 +10,9 @@ import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { FavoriteDTO } from './models/favorite.dto';
 import { ProductService } from 'src/product/product.service';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { Product } from 'src/product/product.entity';
 
 @Injectable()
 export class FavoriteService {
@@ -32,7 +34,9 @@ export class FavoriteService {
     const { productId } = favoriteDTO;
     const product = await this.productService.findOneById(productId);
     if (!product)
-      throw new NotFoundException(`No product with id = ${productId}`);
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(Product, 'id', productId),
+      );
 
     const potentialDuplicateFavoriteItem =
       await this.favoriteItemRepository.findOneBy({
@@ -40,7 +44,7 @@ export class FavoriteService {
         user: { id: user.id },
       });
     if (potentialDuplicateFavoriteItem)
-      throw new ConflictException('Product already favorited by user');
+      throw new ConflictException(ERROR_MESSAGES.PRODUCT_ALREADY_FAVORITED);
 
     const favoriteItem = new FavoriteItem();
     favoriteItem.product = product;
@@ -53,9 +57,11 @@ export class FavoriteService {
     const { productId } = favoriteDTO;
     const product = await this.productService.findOneById(productId);
     if (!product)
-      throw new NotFoundException(`No product with id = ${productId}`);
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(Product, 'id', productId),
+      );
 
     const result = await this.favoriteItemRepository.delete({ product, user });
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 }

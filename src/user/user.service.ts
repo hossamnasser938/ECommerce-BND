@@ -5,7 +5,8 @@ import { User } from './user.entity';
 import { Role } from 'src/auth/auth.enums';
 import { CreateUserDTO } from './models/create-user.dto';
 import { UpdateUserDTO } from './models/update-user.dto';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class UserService {
@@ -30,7 +31,7 @@ export class UserService {
 
     const potentialDuplicateUser = await this.findOneByEmail(email);
     if (potentialDuplicateUser) {
-      throw new ConflictException();
+      throw new ConflictException(ERROR_MESSAGES.DUPLICATED_USER_EMAIL);
     }
 
     const user = new User();
@@ -45,12 +46,12 @@ export class UserService {
 
   async updateOne(id: number, updateUserDTO: UpdateUserDTO) {
     const result = await this.userRepository.update(id, updateUserDTO);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async deleteOne(id: number) {
     const result = await this.userRepository.delete(id);
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   verifyUser(userId: number) {
