@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class NodeMailerService {
@@ -24,6 +25,6 @@ export class NodeMailerService {
       text,
     });
 
-    if (!info.messageId) throw new Error('Email not sent');
+    if (!info.messageId) throw new Error(ERROR_MESSAGES.EMAIL_NOT_SENT);
   }
 }

@@ -11,6 +11,7 @@ import {
   VERIFICATION_EMAIL_TEXT,
 } from '../utils/config-constants';
 import { NodeMailerService } from 'src/node-mailer/node-mailer.service';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class VerificationCodeService {
@@ -55,10 +56,10 @@ export class VerificationCodeService {
     });
 
     if (!verificationCode || verificationCode.used)
-      throw new ForbiddenException('Invalid verification code');
+      throw new ForbiddenException(ERROR_MESSAGES.INVALID_VERIFICATION_CODE);
 
     if (verificationCode.validUntil < new Date())
-      throw new ForbiddenException('Verification code is no longer valid');
+      throw new ForbiddenException(ERROR_MESSAGES.EXPIRED_VERIFICATION_CODE);
 
     await this.verificationCodeRepository.update(verificationCode.id, {
       used: true,

@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
 import { UpdateShippingAddressDTO } from './models/update-shipping-address.dto';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class ShippingAddressService {
@@ -26,7 +27,10 @@ export class ShippingAddressService {
     const shippingAddress = await this.shippingAddressRepository.findOneBy({
       id,
     });
-    if (!shippingAddress) throw new NotFoundException();
+    if (!shippingAddress)
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND(ShippingAddress, 'id', id),
+      );
     return shippingAddress;
   }
 
@@ -61,12 +65,12 @@ export class ShippingAddressService {
       { id, user },
       updateShippingAddressDTO,
     );
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async deleteOne(id: number, user: User) {
     const result = await this.shippingAddressRepository.delete({ id, user });
-    return checkTypeORMUpdateDeleteResult(result);
+    return handleTypeORMUpdateDeleteResult({ result });
   }
 
   async setOneAsDefault(id: number, user: User) {
