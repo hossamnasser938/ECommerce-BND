@@ -1,11 +1,23 @@
 import { IOrder } from 'src/core/entities/order.entity.abstract';
 import { BaseEntity } from '../base-entity.abstract';
-import { JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ShippingAddressEntity } from './shipping-address.entity';
 import { CartItemEntity } from './cart-item.entity';
 import { UserEntity } from './user.entity';
 
+@Entity({ name: 'order' })
 export class OrderEntity extends BaseEntity implements IOrder {
+  constructor(
+    user: UserEntity,
+    shippingAddress: ShippingAddressEntity,
+    cartItems: CartItemEntity[],
+  ) {
+    super();
+    this.user = user;
+    this.shippingAddress = shippingAddress;
+    this.cartItems = cartItems;
+  }
+
   @ManyToOne(
     () => ShippingAddressEntity,
     (shippingAddress) => shippingAddress.orders,

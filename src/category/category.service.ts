@@ -1,60 +1,49 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from './category.entity';
-import { Repository } from 'typeorm';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDTO } from './models/create-category.dto';
 import { UpdateCategoryDTO } from './models/update-category.dto';
-import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { ICategoryRepository } from './category.repository.abstract';
+import { ICategory } from 'src/core/entities/category.entity.abstract';
+import { Identifier } from 'src/core/abstract-data-layer/types';
 
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectRepository(Category)
-    private categroyRepositoy: Repository<Category>,
+    @Inject('ICategoryRepository')
+    private categroyRepositoy: ICategoryRepository<ICategory>,
   ) {}
 
-  async findAll(): Promise<Category[]> {
-    return await this.categroyRepositoy.find({
-      relations: { parentCategory: true },
-    });
+  async findAll() {
+    return this.categroyRepositoy.getAll();
   }
 
-  async findOneById(id: number): Promise<Category | null> {
-    const category = await this.categroyRepositoy.findOne({
-      where: { id },
-      relations: { parentCategory: true, childCategories: true },
-    });
+  async findOneById(id: Identifier) {
+    const category = await this.categroyRepositoy.getOneById(id);
 
     if (!category)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(Category, 'id', id),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('Category', 'id', id),
       );
     return category;
   }
 
-  async createOne(createCategoryDTO: CreateCategoryDTO): Promise<Category> {
-    const { name, parentCategoryId } = createCategoryDTO;
-
-    const parentCategory = await this.findOneById(parentCategoryId);
-    const category = new Category();
-    category.name = name;
-    if (parentCategory) {
-      category.parentCategory = parentCategory;
-    }
-    return this.categroyRepositoy.save(category);
+  async createOne(createCategoryDTO: CreateCategoryDTO) {
+    return this.categroyRepositoy.createOne(createCategoryDTO);
   }
 
   async updateOneById(
-    id: number,
+    id: Identifier,
     updateCategoryDTO: UpdateCategoryDTO,
   ): Promise<boolean> {
-    const result = await this.categroyRepositoy.update(id, updateCategoryDTO);
-    return handleTypeORMUpdateDeleteResult({ result });
+    const updated = await this.categroyRepositoy.updateOneById(
+      id,
+      updateCategoryDTO,
+    );
+    return updated;
   }
 
-  async deleteOneById(id: number) {
-    const result = await this.categroyRepositoy.delete(id);
-    return handleTypeORMUpdateDeleteResult({ result });
+  async deleteOneById(id: Identifier) {
+    const deleted = await this.categroyRepositoy.deleteOneById(id);
+    return deleted;
   }
 }

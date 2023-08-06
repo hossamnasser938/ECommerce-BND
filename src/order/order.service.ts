@@ -1,74 +1,55 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Order } from './order.entity';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
 import { CreateOrderDTO } from './models/create-order.dto';
-import { ShippingAddressService } from 'src/shipping-address/shipping-address.service';
-import { CartService } from 'src/cart/cart.service';
-import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { ShippingAddress } from 'src/shipping-address/shipping-address.entity';
+import { IOrderRepository } from './order.repository.abstract';
+import { IOrder } from 'src/core/entities/order.entity.abstract';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { CartService } from 'src/cart/cart.service';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectRepository(Order) private orderRepository: Repository<Order>,
-    @Inject(ShippingAddressService)
-    private shippingAddressService: ShippingAddressService,
-    @Inject(CartService) private cartService: CartService,
+    @Inject('IOrderRepository')
+    private orderRepository: IOrderRepository<IOrder>,
+    @Inject(CartService)
+    private cartService: CartService,
   ) {}
 
   findAll() {
-    return this.orderRepository.find();
+    return this.orderRepository.getAll();
   }
 
-  findUserAll(user: User) {
-    return this.orderRepository.findBy({ user: { id: user.id } });
+  findUserAll(userId: Identifier) {
+    return this.orderRepository.getAllByCondition({ user: { id: userId } });
   }
 
-  async findOneById(id: number) {
-    const order = await this.orderRepository.findOneBy({ id });
+  async findOneById(id: Identifier) {
+    const order = await this.orderRepository.getOneById(id);
     if (!order)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(Order, 'id', id),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('Order', 'id', id),
       );
     return order;
   }
 
-  async createOne(createOrderDTO: CreateOrderDTO, user: User) {
-    const { shippingAddressId } = createOrderDTO;
-
-    const shippingAddress = await this.shippingAddressService.findOneById(
-      shippingAddressId,
-    );
-    if (!shippingAddress)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(
-          ShippingAddress,
-          'id',
-          shippingAddressId,
-        ),
-      );
-
-    const cartItems = await this.cartService.findUserInCartItems(user);
+  async createOne(createOrderDTO: CreateOrderDTO, user: IUser) {
+    const cartItems = await this.cartService.findUserInCartItems(user.id);
     if (!cartItems.length)
       throw new NotFoundException(ERROR_MESSAGES.EMPTY_CART);
 
-    const order = new Order();
-    order.user = user;
-    order.shippingAddress = shippingAddress;
-    order.cartItems = cartItems;
+    const orderSaved = await this.orderRepository.createOne(
+      createOrderDTO,
+      user,
+    );
 
-    const orderSaved = await this.orderRepository.save(order);
-
-    await this.cartService.updateUserInCartItemsWithOrder(orderSaved, user);
+    await this.cartService.updateUserInCartItemsWithOrder(orderSaved, user.id);
 
     return orderSaved;
   }
 
-  async deleteOne(id: number) {
-    const result = await this.orderRepository.delete(id);
-    return handleTypeORMUpdateDeleteResult({ result });
+  async deleteOne(id: Identifier) {
+    const deleted = await this.orderRepository.deleteOneById(id);
+    return deleted;
   }
 }

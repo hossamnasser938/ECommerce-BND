@@ -1,0 +1,82 @@
+import { CartItemEntity } from 'src/core/data-layer/mysql-typeorm/entities/cart-item.entity';
+import { ICartRepository } from './cart.repository.abstract';
+import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
+import { CreateCartItemDTO } from './models/create-cart-item.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { OrderRepository } from 'src/order/order.repository';
+import { UserRepository } from 'src/user/user.repository';
+import { ProductRepository } from 'src/product/product.repository';
+import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
+import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
+
+@Injectable()
+export class CartRepository
+  extends MySQLTypeORMDataLayerRepository<CartItemEntity>
+  implements ICartRepository<CartItemEntity>
+{
+  constructor(
+    @InjectRepository(CartItemEntity)
+    private cartItemEntityRepository: Repository<CartItemEntity>,
+    @Inject('IProductRepository')
+    private productRepository: ProductRepository,
+    @Inject('IUserRepository')
+    private userRepository: UserRepository,
+  ) {
+    super(cartItemEntityRepository);
+  }
+
+  getUserInCartItems(userId: number): Promise<CartItemEntity[]> {
+    return this.cartItemEntityRepository.findBy({
+      user: { id: userId },
+      order: IsNull(),
+    });
+  }
+
+  getUserInCartItemByProduct(userId: number, productId: number) {
+    return this.cartItemEntityRepository.findOneBy({
+      product: { id: productId },
+      user: { id: userId },
+      order: IsNull(),
+    });
+  }
+
+  async createOne(
+    createCartItemDTO: CreateCartItemDTO,
+    user: UserEntity,
+  ): Promise<CartItemEntity> {
+    const { productId, amount } = createCartItemDTO;
+
+    const product = await this.productRepository.getOneById(productId);
+
+    const cartItem = new CartItemEntity(product, user, amount);
+
+    return this.cartItemEntityRepository.save(cartItem);
+  }
+
+  async deleteAllUserInCartItems(userId: number): Promise<boolean> {
+    const cartItems = await this.getUserInCartItems(userId);
+    if (cartItems.length === 0)
+      throw new NotFoundException(ERROR_MESSAGES.EMPTY_CART);
+
+    const deleted = await this.deleteOneByCondition({
+      user: { id: userId },
+      order: IsNull(),
+    });
+
+    return deleted;
+  }
+
+  async updateUserInCartItemsWithOrder(order: OrderEntity, userId: number) {
+    const result = await this.updateOneByCondition(
+      { user: { id: userId }, order: IsNull() },
+      { order },
+    );
+    // return handleTypeORMUpdateDeleteResult({ result, multipleEntities: true });
+    // TODO: Ask Affan why orders are updated successfully here while result.affected = 0
+    // I expect result.affected to match the number of cart items updated
+    return !!result;
+  }
+}

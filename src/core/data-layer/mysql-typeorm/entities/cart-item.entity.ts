@@ -5,8 +5,15 @@ import { ProductEntity } from './product.entity';
 import { UserEntity } from './user.entity';
 import { OrderEntity } from './order.entity';
 
-@Entity()
+@Entity({ name: 'cart_item' })
 export class CartItemEntity extends BaseEntity implements ICartItem {
+  constructor(product: ProductEntity, user: UserEntity, amount: number) {
+    super();
+    this.product = product;
+    this.user = user;
+    this.amount = amount;
+  }
+
   @ManyToOne(() => ProductEntity, (product) => product.cartItems, {
     eager: true,
   })

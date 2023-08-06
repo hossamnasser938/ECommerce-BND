@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { User } from 'src/user/user.entity';
 import { FavoriteDTO } from './models/favorite.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
 
@@ -25,7 +25,7 @@ export class FavoriteController {
   ) {}
 
   @Roles(Role.Admin)
-  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
   findAll() {
     return this.favoriteService.findAll();
@@ -33,22 +33,22 @@ export class FavoriteController {
 
   @Get()
   findUserAll(@Request() request) {
-    const user = request.user as User;
-    return this.favoriteService.findUserFavorites(user);
+    const user = request.user as IUser;
+    return this.favoriteService.findUserFavorites(user.id);
   }
 
   @Post('favorite')
   favorite(@Body() favoriteDTO: FavoriteDTO, @Request() request) {
-    const user = request.user as User;
-    return this.favoriteService.favorite(favoriteDTO, user);
+    const user = request.user as IUser;
+    return this.favoriteService.favorite(favoriteDTO, user.id);
   }
 
   @Post('unfavorite')
   async unfavorite(@Body() favoriteDTO: FavoriteDTO, @Request() request) {
-    const user = request.user as User;
+    const user = request.user as IUser;
     const successfullyUnfavorited = await this.favoriteService.unfavorite(
       favoriteDTO,
-      user,
+      user.id,
     );
 
     return updateDeleteResponse(successfullyUnfavorited);

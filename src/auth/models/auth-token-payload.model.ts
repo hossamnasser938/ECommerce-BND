@@ -1,4 +1,6 @@
+import { Identifier } from 'src/core/abstract-data-layer/types';
+
 export interface IAuthTokenPayload {
-  sub: number;
+  sub: Identifier;
   email: string;
 }

@@ -6,5 +6,5 @@ export class CreateCategoryDTO {
 
   @IsOptional()
   @IsNumber()
-  parentCategoryId: number;
+  parentCategoryId?: number;
 }
