@@ -9,8 +9,6 @@ export abstract class GenericRepository<T> {
 
   abstract getOneByCondition(query: Query): Promise<T>;
 
-  abstract createOne(partialEntity: Record<string, any>): Promise<T>;
-
   abstract updateOneById(
     id: Identifier,
     partialEntity: Partial<T>,

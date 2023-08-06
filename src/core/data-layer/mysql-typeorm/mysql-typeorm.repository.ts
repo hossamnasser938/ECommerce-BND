@@ -29,8 +29,6 @@ export abstract class MySQLTypeORMDataLayerRepository<T extends BaseEntity>
     return this.repository.findOneBy(query);
   }
 
-  abstract createOne(createEntityDTO: Record<string, any>): Promise<T>;
-
   async updateOneById(
     id: Identifier,
     partialEntity: Partial<T>,

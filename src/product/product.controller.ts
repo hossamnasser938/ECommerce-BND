@@ -13,13 +13,13 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
 import { CreateProductDTO } from './models/create-product.dto';
 import { UpdateProductDTO } from './models/update-product.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Reflector } from '@nestjs/core';
 
 @Controller('products')
 export class ProductController {

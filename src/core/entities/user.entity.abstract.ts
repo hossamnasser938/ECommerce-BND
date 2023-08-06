@@ -1,9 +1,9 @@
-import { Role } from 'src/auth/auth.enums';
+import { BaseEntity } from './base-entity.abstract';
 
-export interface IUser {
+export interface IUser extends BaseEntity {
   email: string;
   password: string;
   name: string;
-  roles: Role[];
+  roles: string;
   verified: boolean;
 }

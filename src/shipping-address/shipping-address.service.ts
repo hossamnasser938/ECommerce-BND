@@ -1,86 +1,73 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ShippingAddress } from './shipping-address.entity';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
 import { UpdateShippingAddressDTO } from './models/update-shipping-address.dto';
-import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { IShippingAddressRepositoy } from './shipping-address.repository.abstract';
+import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abstract';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 
 @Injectable()
 export class ShippingAddressService {
   constructor(
-    @InjectRepository(ShippingAddress)
-    private shippingAddressRepository: Repository<ShippingAddress>,
+    @Inject('IShippingAddressRepository')
+    private shippingAddressRepository: IShippingAddressRepositoy<IShippingAddress>,
   ) {}
 
   findAll() {
-    return this.shippingAddressRepository.find();
+    return this.shippingAddressRepository.getAll();
   }
 
-  findUserAll(user: User) {
-    return this.shippingAddressRepository.findBy({ user: { id: user.id } });
-  }
-
-  async findOneById(id: number) {
-    const shippingAddress = await this.shippingAddressRepository.findOneBy({
-      id,
+  findUserAll(userId: Identifier) {
+    return this.shippingAddressRepository.getOneByCondition({
+      user: { id: userId },
     });
+  }
+
+  async findOneById(id: Identifier) {
+    const shippingAddress = await this.shippingAddressRepository.getOneById(id);
     if (!shippingAddress)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(ShippingAddress, 'id', id),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('ShippingAddress', 'id', id),
       );
     return shippingAddress;
   }
 
-  createOne(createShippingAddressDTO: CreateShippingAddressDTO, user: User) {
-    const {
-      city,
-      area,
-      street,
-      building,
-      apartment,
-      isDefault = false,
-    } = createShippingAddressDTO;
-
-    const shippingAddress = new ShippingAddress();
-    shippingAddress.city = city;
-    shippingAddress.area = area;
-    shippingAddress.street = street;
-    shippingAddress.building = building;
-    shippingAddress.apartment = apartment;
-    shippingAddress.isDefault = isDefault;
-    shippingAddress.user = user;
-
-    return this.shippingAddressRepository.save(shippingAddress);
+  createOne(createShippingAddressDTO: CreateShippingAddressDTO, user: IUser) {
+    return this.shippingAddressRepository.createOne(
+      createShippingAddressDTO,
+      user,
+    );
   }
 
   async updateOne(
-    id: number,
+    id: Identifier,
     updateShippingAddressDTO: UpdateShippingAddressDTO,
-    user: User,
+    userId: Identifier,
   ) {
-    const result = await this.shippingAddressRepository.update(
-      { id, user },
+    const updated = await this.shippingAddressRepository.updateOneByCondition(
+      { id, user: { id: userId } },
       updateShippingAddressDTO,
     );
-    return handleTypeORMUpdateDeleteResult({ result });
+    return updated;
   }
 
-  async deleteOne(id: number, user: User) {
-    const result = await this.shippingAddressRepository.delete({ id, user });
-    return handleTypeORMUpdateDeleteResult({ result });
+  async deleteOne(id: Identifier, userId: Identifier) {
+    const deleted = await this.shippingAddressRepository.deleteOneByCondition({
+      id,
+      user: { id: userId },
+    });
+    return deleted;
   }
 
-  async setOneAsDefault(id: number, user: User) {
-    await this.resetDefault(user);
-    return this.updateOne(id, { isDefault: true }, user);
+  async setOneAsDefault(id: Identifier, userId: Identifier) {
+    await this.resetDefault(userId);
+    return this.updateOne(id, { isDefault: true }, userId);
   }
 
-  resetDefault(user: User) {
-    return this.shippingAddressRepository.update(
-      { user, isDefault: true },
+  resetDefault(userId: Identifier) {
+    return this.shippingAddressRepository.updateOneByCondition(
+      { user: { id: userId }, isDefault: true },
       { isDefault: false },
     );
   }

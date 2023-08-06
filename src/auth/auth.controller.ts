@@ -11,17 +11,17 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserService } from 'src/user/user.service';
 import { SignInDTO } from './models/signin.dto';
-import { User } from 'src/user/user.entity';
 import { CreateUserDTO } from 'src/user/models/create-user.dto';
 import { Role } from './auth.enums';
 import { Roles } from './auth.decorators';
-import { RolesGuard } from './roles.guard';
-import { Reflector } from '@nestjs/core';
 import { ChangePasswordDTO } from './models/change-password.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { VerifyDTO } from './models/verify-signup-dto';
 import { ResendCodeDTO } from './models/resend-code.dto';
 import { ResetPasswordDTO } from './models/reset-password.dto';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { RolesGuard } from './roles.guard';
+import { Reflector } from '@nestjs/core';
 
 @Controller('auth')
 export class AuthController {
@@ -61,8 +61,8 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('me')
   findAuthUser(@Request() request) {
-    const { email } = request.user as User;
-    return this.userService.findOneByEmail(email);
+    const user = request.user as IUser;
+    return user;
   }
 
   @UseGuards(AuthGuard)
@@ -71,7 +71,7 @@ export class AuthController {
     @Body() changePasswordDTO: ChangePasswordDTO,
     @Request() request,
   ) {
-    const user = request.user as User;
+    const user = request.user as IUser;
     const successfullyChangedPassword = await this.authService.changePassword(
       changePasswordDTO,
       user,

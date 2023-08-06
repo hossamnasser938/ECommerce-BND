@@ -15,13 +15,13 @@ import { SignInDTO } from './models/signin.dto';
 import { CreateUserDTO } from 'src/user/models/create-user.dto';
 import { Role } from './auth.enums';
 import { ChangePasswordDTO } from './models/change-password.dto';
-import { User } from 'src/user/user.entity';
 import { VerificationCodeService } from './verification-code/verification-code.service';
 import { VerifyDTO } from './models/verify-signup-dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { ResendCodeDTO } from './models/resend-code.dto';
 import { ResetPasswordDTO } from './models/reset-password.dto';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 
 const SALT = 10;
 
@@ -69,13 +69,13 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
     if (!user)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
       );
 
     if (user.verified)
       throw new ConflictException(ERROR_MESSAGES.ACCOUNT_ALREADY_VERIFIED);
 
-    const isVerified = await this.verificationCodeService.verify(user, code);
+    const isVerified = await this.verificationCodeService.verify(user.id, code);
     if (!isVerified) throw new InternalServerErrorException();
 
     const successfullyVerified = await this.userService.verifyUser(user.id);
@@ -87,13 +87,13 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
     if (!user)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
       );
 
     return this.verificationCodeService.createAndSendOne(user);
   }
 
-  async changePassword(changePasswordDTO: ChangePasswordDTO, user: User) {
+  async changePassword(changePasswordDTO: ChangePasswordDTO, user: IUser) {
     const { oldPassword, newPassword } = changePasswordDTO;
 
     const samePassword = await compare(oldPassword, user.password);
@@ -115,10 +115,10 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
     if (!user)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
       );
 
-    const isVerified = await this.verificationCodeService.verify(user, code);
+    const isVerified = await this.verificationCodeService.verify(user.id, code);
     if (!isVerified) throw new InternalServerErrorException();
 
     return (await this.verificationCodeService.createOne(user)).code;
@@ -130,10 +130,13 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
     if (!user)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(User, 'email', email),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
       );
 
-    const isVerified = await this.verificationCodeService.verify(user, token);
+    const isVerified = await this.verificationCodeService.verify(
+      user.id,
+      token,
+    );
     if (!isVerified) throw new InternalServerErrorException();
 
     const hashedNewPassword = await hash(newPassword, SALT);

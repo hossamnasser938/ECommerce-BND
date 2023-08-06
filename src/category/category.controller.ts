@@ -11,15 +11,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { Category } from './category.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
 import { CreateCategoryDTO } from './models/create-category.dto';
 import { UpdateCategoryDTO } from './models/update-category.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Reflector } from '@nestjs/core';
 
 @Controller('categories')
 export class CategoryController {
@@ -29,12 +28,12 @@ export class CategoryController {
   ) {}
 
   @Get()
-  findAll(): Promise<Category[]> {
+  findAll() {
     return this.categoryService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Category | null> {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.findOneById(id);
   }
 
