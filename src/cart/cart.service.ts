@@ -5,100 +5,90 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CartItem } from './cart-item.entity';
-import { DeleteResult, IsNull, Repository, UpdateResult } from 'typeorm';
-import { ProductService } from 'src/product/product.service';
 import { CreateCartItemDTO } from './models/create-cart-item.dto';
-import { User } from 'src/user/user.entity';
-import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
-import { UserService } from 'src/user/user.service';
 import { UpdateCartItemDTO } from './models/update-cart-item.dto';
-import { Order } from 'src/order/order.entity';
 import { UpdateCartItemAmountOperation } from './models/cart.enums';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { Product } from 'src/product/product.entity';
+import { ICartRepository } from './cart.repository.abstract';
+import { ICartItem } from 'src/core/entities/cart-item.entity.abstract';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { ProductService } from 'src/product/product.service';
+import { IOrder } from 'src/core/entities/order.entity.abstract';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 
 @Injectable()
 export class CartService {
   constructor(
-    @InjectRepository(CartItem)
-    private cartItemRepository: Repository<CartItem>,
-    @Inject(ProductService) private productService: ProductService,
-    @Inject(UserService) private userService: UserService,
+    @Inject('ICartRepository')
+    private cartRepository: ICartRepository<ICartItem>,
+    @Inject(ProductService)
+    private productService: ProductService,
   ) {}
 
   findAll() {
-    return this.cartItemRepository.find();
+    return this.cartRepository.getAll();
   }
 
-  findOneById(id: number) {
-    return this.cartItemRepository.findOneBy({ id });
+  findOneById(id: Identifier) {
+    return this.cartRepository.getOneById(id);
   }
 
-  findUserAll(user: User) {
-    return this.cartItemRepository.findBy({ user: { id: user.id } });
+  findUserAll(userId: Identifier) {
+    return this.cartRepository.getAllByCondition({ user: { id: userId } });
   }
 
-  findUserInCartItems(user: User) {
-    return this.cartItemRepository.findBy({
-      user: { id: user.id },
-      order: IsNull(),
-    });
+  findUserInCartItems(userId: Identifier) {
+    return this.cartRepository.getUserInCartItems(userId);
   }
 
-  async createOne(createCartItemDTO: CreateCartItemDTO, user: User) {
+  async createOne(createCartItemDTO: CreateCartItemDTO, user: IUser) {
     const { productId, amount } = createCartItemDTO;
 
     const product = await this.productService.findOneById(productId);
     if (!product)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(Product, 'id', productId),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('Product', 'id', productId),
       );
 
-    const potentialDuplicateCartItem = await this.cartItemRepository.findOneBy({
-      product: { id: product.id },
-      user: { id: user.id },
-      order: IsNull(),
-    });
+    const potentialDuplicateCartItem =
+      await this.cartRepository.getUserInCartItemByProduct(user.id, productId);
+
     if (potentialDuplicateCartItem)
       throw new ConflictException(ERROR_MESSAGES.CART_ITEM_EXIST);
 
     if (amount > product.amount)
       throw new ForbiddenException(ERROR_MESSAGES.AMOUNT_NOT_AVAILABLE);
 
-    const cartItem = new CartItem();
-    cartItem.product = product;
-    cartItem.user = user;
-    cartItem.amount = amount;
-
-    return this.cartItemRepository.save(cartItem);
+    return this.cartRepository.createOne(createCartItemDTO, user);
   }
 
-  async updateOne(id: number, updateCartItemDTO: UpdateCartItemDTO) {
+  async updateOne(id: Identifier, updateCartItemDTO: UpdateCartItemDTO) {
     if (updateCartItemDTO.amount) {
       const cartItem = await this.findOneById(id);
       if (updateCartItemDTO.amount > cartItem.product.amount)
         throw new ForbiddenException(ERROR_MESSAGES.AMOUNT_NOT_AVAILABLE);
     }
 
-    const result = await this.cartItemRepository.update(id, updateCartItemDTO);
-    return handleTypeORMUpdateDeleteResult({ result });
+    const updated = await this.cartRepository.updateOneById(
+      id,
+      updateCartItemDTO,
+    );
+    return updated;
   }
 
   async updateAmount(
-    id: number,
-    user: User,
+    id: Identifier,
+    userId: Identifier,
     operation: UpdateCartItemAmountOperation,
   ) {
-    const cartItem = await this.cartItemRepository.findOneBy({
+    const cartItem = await this.cartRepository.getOneByCondition({
       id,
-      user: { id: user.id },
+      user: { id: userId },
     });
 
     if (!cartItem)
       throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND(CartItem, 'id', id),
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('CartItem', 'id', id),
       );
 
     const newAmount =
@@ -108,44 +98,32 @@ export class CartService {
     if (newAmount > cartItem.product.amount)
       throw new ForbiddenException(ERROR_MESSAGES.AMOUNT_NOT_AVAILABLE);
 
-    let result: UpdateResult | DeleteResult;
+    let altered: boolean;
 
     if (newAmount === 0) {
-      result = await this.cartItemRepository.delete(id);
+      altered = await this.cartRepository.deleteOneById(id);
     } else {
-      result = await this.cartItemRepository.update(id, {
+      altered = await this.cartRepository.updateOneById(id, {
         amount: newAmount,
       });
     }
 
-    return handleTypeORMUpdateDeleteResult({ result });
+    return altered;
   }
 
-  async deleteOne(id: number, user: User) {
-    const result = await this.cartItemRepository.delete({ id, user });
-    return handleTypeORMUpdateDeleteResult({ result });
-  }
-
-  async deleteAllUserInCartItems(user: User) {
-    const cartItems = await this.findUserInCartItems(user);
-    if (cartItems.length === 0)
-      throw new NotFoundException(ERROR_MESSAGES.EMPTY_CART);
-
-    const result = await this.cartItemRepository.delete({
-      user,
-      order: IsNull(),
+  async deleteOne(id: Identifier, userId: Identifier) {
+    const deleted = await this.cartRepository.deleteOneByCondition({
+      id,
+      user: { id: userId },
     });
-    return handleTypeORMUpdateDeleteResult({ result, multipleEntities: true });
+    return deleted;
   }
 
-  async updateUserInCartItemsWithOrder(order: Order, user: User) {
-    const result = await this.cartItemRepository.update(
-      { user, order: IsNull() },
-      { order },
-    );
-    // return handleTypeORMUpdateDeleteResult({ result, multipleEntities: true });
-    // TODO: Ask Affan why orders are updated successfully here while result.affected = 0
-    // I expect result.affected to match the number of cart items updated
-    return !!result;
+  async deleteAllUserInCartItems(userId: Identifier) {
+    return this.cartRepository.deleteAllUserInCartItems(userId);
+  }
+
+  updateUserInCartItemsWithOrder(order: IOrder, userId: Identifier) {
+    return this.cartRepository.updateUserInCartItemsWithOrder(order, userId);
   }
 }

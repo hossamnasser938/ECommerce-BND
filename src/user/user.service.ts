@@ -1,60 +1,44 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { Inject, Injectable } from '@nestjs/common';
 import { Role } from 'src/auth/auth.enums';
 import { CreateUserDTO } from './models/create-user.dto';
 import { UpdateUserDTO } from './models/update-user.dto';
-import { handleTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { IUserRepository } from './user.repository.abstract';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { Identifier } from 'src/core/abstract-data-layer/types';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @Inject('IUserRepository') private userRepository: IUserRepository<IUser>,
   ) {}
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.getAll();
   }
 
   findOneByEmail(email: string) {
-    return this.userRepository.findOneBy({ email });
+    return this.userRepository.getOneByCondition({ email });
   }
 
-  findOneById(id: number) {
-    return this.userRepository.findOneBy({ id });
+  findOneById(id: Identifier) {
+    return this.userRepository.getOneById(id);
   }
 
   async createOne(createUserDTO: CreateUserDTO, roles: Role[]) {
-    const { email, password, name } = createUserDTO;
-
-    const potentialDuplicateUser = await this.findOneByEmail(email);
-    if (potentialDuplicateUser) {
-      throw new ConflictException(ERROR_MESSAGES.DUPLICATED_USER_EMAIL);
-    }
-
-    const user = new User();
-    user.email = email;
-    user.password = password;
-    user.name = name;
-    user.roles = JSON.stringify(roles);
-    user.verified = false;
-
-    return this.userRepository.save(user);
+    return this.userRepository.createOne(createUserDTO, roles);
   }
 
-  async updateOne(id: number, updateUserDTO: UpdateUserDTO) {
-    const result = await this.userRepository.update(id, updateUserDTO);
-    return handleTypeORMUpdateDeleteResult({ result });
+  async updateOne(id: Identifier, updateUserDTO: UpdateUserDTO) {
+    const updated = await this.userRepository.updateOneById(id, updateUserDTO);
+    return updated;
   }
 
-  async deleteOne(id: number) {
-    const result = await this.userRepository.delete(id);
-    return handleTypeORMUpdateDeleteResult({ result });
+  async deleteOne(id: Identifier) {
+    const deleted = await this.userRepository.deleteOneById(id);
+    return deleted;
   }
 
-  verifyUser(userId: number) {
+  verifyUser(userId: Identifier) {
     return this.updateOne(userId, { verified: true });
   }
 }

@@ -1,8 +1,9 @@
-import { Icategory } from './category.entity.abstract';
+import { BaseEntity } from './base-entity.abstract';
+import { ICategory } from './category.entity.abstract';
 
-export interface IProduct {
+export interface IProduct extends BaseEntity {
   name: string;
   description: string;
   amount: number;
-  category: Icategory;
+  category: ICategory;
 }

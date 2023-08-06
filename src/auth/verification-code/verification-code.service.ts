@@ -1,8 +1,4 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { VerificationCode } from './verification-code.entity';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
 import * as moment from 'moment';
 import { generateVerificationCode } from '../utils/verification-code-generator';
 import {
@@ -12,28 +8,29 @@ import {
 } from '../utils/config-constants';
 import { NodeMailerService } from 'src/node-mailer/node-mailer.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { IVerificationCodeRepository } from './verification-code.repository.abstract';
+import { IVerificationCode } from 'src/core/entities/verification-code.entity.abstract';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 
 @Injectable()
 export class VerificationCodeService {
   constructor(
-    @InjectRepository(VerificationCode)
-    private verificationCodeRepository: Repository<VerificationCode>,
+    @Inject('IVerificationCodeRepository')
+    private verificationCodeRepository: IVerificationCodeRepository<IVerificationCode>,
     @Inject(NodeMailerService) private nodeMailerService: NodeMailerService,
   ) {}
 
-  createOne(user: User) {
-    const verificationCode = new VerificationCode();
-    verificationCode.user = user;
-    verificationCode.code = generateVerificationCode();
-    verificationCode.validUntil = new Date(
+  createOne(user: IUser) {
+    const code = generateVerificationCode();
+    const validUntil = new Date(
       moment().add(VERIFICATION_CODE_MINUTES_VALIDITY, 'minutes').toString(),
     );
-    verificationCode.used = false;
 
-    return this.verificationCodeRepository.save(verificationCode);
+    return this.verificationCodeRepository.createOne(user, code, validUntil);
   }
 
-  sendOne(verificationCode: VerificationCode) {
+  sendOne(verificationCode: IVerificationCode) {
     return this.nodeMailerService.sendEmail(
       verificationCode.user.email,
       VERIFICATION_EMAIL_SUBJECT,
@@ -41,7 +38,7 @@ export class VerificationCodeService {
     );
   }
 
-  async createAndSendOne(user: User) {
+  async createAndSendOne(user: IUser) {
     const verificationCode = await this.createOne(user);
 
     await this.sendOne(verificationCode);
@@ -49,11 +46,12 @@ export class VerificationCodeService {
     return verificationCode;
   }
 
-  async verify(user: User, code: string) {
-    const verificationCode = await this.verificationCodeRepository.findOneBy({
-      user: { id: user.id },
-      code,
-    });
+  async verify(userId: Identifier, code: string) {
+    const verificationCode =
+      await this.verificationCodeRepository.getOneByCondition({
+        user: { id: userId },
+        code,
+      });
 
     if (!verificationCode || verificationCode.used)
       throw new ForbiddenException(ERROR_MESSAGES.INVALID_VERIFICATION_CODE);
@@ -61,7 +59,7 @@ export class VerificationCodeService {
     if (verificationCode.validUntil < new Date())
       throw new ForbiddenException(ERROR_MESSAGES.EXPIRED_VERIFICATION_CODE);
 
-    await this.verificationCodeRepository.update(verificationCode.id, {
+    await this.verificationCodeRepository.updateOneById(verificationCode.id, {
       used: true,
     });
 

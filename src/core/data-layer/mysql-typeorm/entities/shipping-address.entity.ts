@@ -1,13 +1,33 @@
 import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abstract';
 import { BaseEntity } from '../base-entity.abstract';
-import { Column, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { OrderEntity } from './order.entity';
 
+@Entity({ name: 'shipping_address' })
 export class ShippingAddressEntity
   extends BaseEntity
   implements IShippingAddress
 {
+  constructor(
+    city: string,
+    area: string,
+    street: string,
+    building: number,
+    apartment: number,
+    user: UserEntity,
+    isDefault = false,
+  ) {
+    super();
+    this.city = city;
+    this.area = area;
+    this.street = street;
+    this.building = building;
+    this.apartment = apartment;
+    this.user = user;
+    this.isDefault = isDefault;
+  }
+
   @Column()
   city: string;
 

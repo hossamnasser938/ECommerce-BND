@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './category.entity';
 import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
+import { CategoryEntity } from 'src/core/data-layer/mysql-typeorm/entities/category.entity';
+import { CategoryRepository } from './category.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Category])],
-  providers: [CategoryService],
-  exports: [CategoryService],
+  imports: [TypeOrmModule.forFeature([CategoryEntity])],
+  providers: [
+    CategoryService,
+    { provide: 'ICategoryRepository', useClass: CategoryRepository },
+  ],
   controllers: [CategoryController],
+  exports: [CategoryService, 'ICategoryRepository'],
 })
 export class CategoryModule {}
