@@ -24,7 +24,7 @@ import { Reflector } from '@nestjs/core';
 export class CategoryController {
   constructor(
     @Inject(CategoryService)
-    private categoryService: CategoryService,
+    private readonly categoryService: CategoryService,
   ) {}
 
   @Get()

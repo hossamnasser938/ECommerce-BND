@@ -7,7 +7,7 @@ import { BaseEntity } from './base-entity.abstract';
 export abstract class MySQLTypeORMDataLayerRepository<T extends BaseEntity>
   implements GenericRepository<T>
 {
-  private repository: Repository<T>;
+  private readonly repository: Repository<T>;
 
   constructor(repository: Repository<T>) {
     this.repository = repository;

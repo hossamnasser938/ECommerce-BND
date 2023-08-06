@@ -21,7 +21,7 @@ import { Reflector } from '@nestjs/core';
 @Controller('favorites')
 export class FavoriteController {
   constructor(
-    @Inject(FavoriteService) private favoriteService: FavoriteService,
+    @Inject(FavoriteService) private readonly favoriteService: FavoriteService,
   ) {}
 
   @Roles(Role.Admin)

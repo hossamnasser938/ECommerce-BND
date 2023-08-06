@@ -11,7 +11,7 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 export class ShippingAddressService {
   constructor(
     @Inject('IShippingAddressRepository')
-    private shippingAddressRepository: IShippingAddressRepositoy<IShippingAddress>,
+    private readonly shippingAddressRepository: IShippingAddressRepositoy<IShippingAddress>,
   ) {}
 
   findAll() {

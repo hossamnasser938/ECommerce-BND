@@ -6,8 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { OrderRepository } from 'src/order/order.repository';
-import { UserRepository } from 'src/user/user.repository';
 import { ProductRepository } from 'src/product/product.repository';
 import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
@@ -19,11 +17,9 @@ export class CartRepository
 {
   constructor(
     @InjectRepository(CartItemEntity)
-    private cartItemEntityRepository: Repository<CartItemEntity>,
+    private readonly cartItemEntityRepository: Repository<CartItemEntity>,
     @Inject('IProductRepository')
-    private productRepository: ProductRepository,
-    @Inject('IUserRepository')
-    private userRepository: UserRepository,
+    private readonly productRepository: ProductRepository,
   ) {
     super(cartItemEntityRepository);
   }

@@ -15,8 +15,8 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 export class FavoriteService {
   constructor(
     @Inject('IFavoriteRepository')
-    private favoriteRepository: IFavoriteRepository<IFavoriteItem>,
-    @Inject(ProductService) private productService: ProductService,
+    private readonly favoriteRepository: IFavoriteRepository<IFavoriteItem>,
+    @Inject(ProductService) private readonly productService: ProductService,
   ) {}
 
   findAll() {

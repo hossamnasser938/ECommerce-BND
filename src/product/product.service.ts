@@ -10,7 +10,7 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 export class ProductService {
   constructor(
     @Inject('IProductRepository')
-    private productRepository: IProductRepository<IProduct>,
+    private readonly productRepository: IProductRepository<IProduct>,
   ) {}
 
   async findOneById(id: Identifier) {

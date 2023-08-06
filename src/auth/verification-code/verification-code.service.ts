@@ -17,8 +17,9 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 export class VerificationCodeService {
   constructor(
     @Inject('IVerificationCodeRepository')
-    private verificationCodeRepository: IVerificationCodeRepository<IVerificationCode>,
-    @Inject(NodeMailerService) private nodeMailerService: NodeMailerService,
+    private readonly verificationCodeRepository: IVerificationCodeRepository<IVerificationCode>,
+    @Inject(NodeMailerService)
+    private readonly nodeMailerService: NodeMailerService,
   ) {}
 
   createOne(user: IUser) {
