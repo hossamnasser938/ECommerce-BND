@@ -9,7 +9,8 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('IUserRepository') private userRepository: IUserRepository<IUser>,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository<IUser>,
   ) {}
 
   findAll() {

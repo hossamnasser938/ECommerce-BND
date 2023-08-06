@@ -28,10 +28,10 @@ const SALT = 10;
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(UserService) private userService: UserService,
-    @Inject(JwtService) private jwtService: JwtService,
+    @Inject(UserService) private readonly userService: UserService,
+    @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(VerificationCodeService)
-    private verificationCodeService: VerificationCodeService,
+    private readonly verificationCodeService: VerificationCodeService,
   ) {}
 
   async signIn(signInDTO: SignInDTO) {

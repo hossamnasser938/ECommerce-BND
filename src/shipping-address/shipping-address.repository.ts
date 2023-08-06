@@ -4,8 +4,7 @@ import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
-import { Inject, Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/user/user.repository';
+import { Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 
 @Injectable()
@@ -15,8 +14,7 @@ export class ShippingAddressRepository
 {
   constructor(
     @InjectRepository(ShippingAddressEntity)
-    private shippingAddressEntityRepo: Repository<ShippingAddressEntity>,
-    @Inject('IUserRepository') private userRepository: UserRepository,
+    private readonly shippingAddressEntityRepo: Repository<ShippingAddressEntity>,
   ) {
     super(shippingAddressEntityRepo);
   }

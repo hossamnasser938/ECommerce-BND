@@ -14,9 +14,9 @@ export class ProductRepository
 {
   constructor(
     @InjectRepository(ProductEntity)
-    private productEntityRepository: Repository<ProductEntity>,
+    private readonly productEntityRepository: Repository<ProductEntity>,
     @Inject('ICategoryRepository')
-    private categoryRepository: CategoryRepository,
+    private readonly categoryRepository: CategoryRepository,
   ) {
     super(productEntityRepository);
   }

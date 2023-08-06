@@ -10,7 +10,7 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 export class CategoryService {
   constructor(
     @Inject('ICategoryRepository')
-    private categroyRepositoy: ICategoryRepository<ICategory>,
+    private readonly categroyRepositoy: ICategoryRepository<ICategory>,
   ) {}
 
   async findAll() {

@@ -23,7 +23,9 @@ import { Reflector } from '@nestjs/core';
 
 @Controller('products')
 export class ProductController {
-  constructor(@Inject(ProductService) private productService: ProductService) {}
+  constructor(
+    @Inject(ProductService) private readonly productService: ProductService,
+  ) {}
 
   @Get()
   findAll() {

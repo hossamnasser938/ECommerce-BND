@@ -11,9 +11,9 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 export class OrderService {
   constructor(
     @Inject('IOrderRepository')
-    private orderRepository: IOrderRepository<IOrder>,
+    private readonly orderRepository: IOrderRepository<IOrder>,
     @Inject(CartService)
-    private cartService: CartService,
+    private readonly cartService: CartService,
   ) {}
 
   findAll() {

@@ -13,7 +13,7 @@ export class CategoryRepository
 {
   constructor(
     @InjectRepository(CategoryEntity)
-    private categoryEntityRepository: Repository<CategoryEntity>,
+    private readonly categoryEntityRepository: Repository<CategoryEntity>,
   ) {
     super(categoryEntityRepository);
   }
