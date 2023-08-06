@@ -27,7 +27,7 @@ import { Reflector } from '@nestjs/core';
 export class ShippingAddressController {
   constructor(
     @Inject(ShippingAddressService)
-    private shippingAddressService: ShippingAddressService,
+    private readonly shippingAddressService: ShippingAddressService,
   ) {}
 
   @Roles(Role.Admin)

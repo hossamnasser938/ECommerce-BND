@@ -23,7 +23,9 @@ import { Reflector } from '@nestjs/core';
 @UseGuards(AuthGuard)
 @Controller('orders')
 export class OrderController {
-  constructor(@Inject(OrderService) private orderService: OrderService) {}
+  constructor(
+    @Inject(OrderService) private readonly orderService: OrderService,
+  ) {}
 
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))

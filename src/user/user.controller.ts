@@ -22,7 +22,7 @@ import { Reflector } from '@nestjs/core';
 @Roles(Role.Admin)
 @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
 export class UserController {
-  constructor(@Inject(UserService) private userService: UserService) {}
+  constructor(@Inject(UserService) private readonly userService: UserService) {}
 
   @Get()
   findAll() {

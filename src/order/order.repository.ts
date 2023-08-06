@@ -8,7 +8,6 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ShippingAddressRepository } from 'src/shipping-address/shipping-address.repository';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { CartRepository } from 'src/cart/cart.repository';
-import { UserRepository } from 'src/user/user.repository';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 
 @Injectable()
@@ -18,13 +17,11 @@ export class OrderRepository
 {
   constructor(
     @InjectRepository(OrderEntity)
-    private OrderEntityRepository: Repository<OrderEntity>,
+    private readonly OrderEntityRepository: Repository<OrderEntity>,
     @Inject('IShippingAddressRepository')
-    private shippingAddressRepository: ShippingAddressRepository,
+    private readonly shippingAddressRepository: ShippingAddressRepository,
     @Inject('ICartRepository')
-    private cartRepository: CartRepository,
-    @Inject('IUserRepository')
-    private userRepository: UserRepository,
+    private readonly cartRepository: CartRepository,
   ) {
     super(OrderEntityRepository);
   }

@@ -20,9 +20,9 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 export class CartService {
   constructor(
     @Inject('ICartRepository')
-    private cartRepository: ICartRepository<ICartItem>,
+    private readonly cartRepository: ICartRepository<ICartItem>,
     @Inject(ProductService)
-    private productService: ProductService,
+    private readonly productService: ProductService,
   ) {}
 
   findAll() {

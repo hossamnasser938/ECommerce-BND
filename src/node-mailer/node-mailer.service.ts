@@ -5,9 +5,11 @@ import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class NodeMailerService {
-  private transporter: nodemailer.Transporter;
+  private readonly transporter: nodemailer.Transporter;
 
-  constructor(@Inject(ConfigService) private configService: ConfigService) {
+  constructor(
+    @Inject(ConfigService) private readonly configService: ConfigService,
+  ) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {

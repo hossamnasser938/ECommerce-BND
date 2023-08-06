@@ -25,10 +25,7 @@ import { Reflector } from '@nestjs/core';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    @Inject(AuthService) private authService: AuthService,
-    @Inject(UserService) private userService: UserService,
-  ) {}
+  constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
   @Post('signin')
   signIn(@Body() signInDTO: SignInDTO) {

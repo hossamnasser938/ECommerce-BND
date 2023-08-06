@@ -15,9 +15,10 @@ export class Favoriterepository
 {
   constructor(
     @InjectRepository(FavoriteItemEntity)
-    private favoriteItemEntityRepository: Repository<FavoriteItemEntity>,
-    @Inject('IProductRepository') private productRepository: ProductRepository,
-    @Inject('IUserRepository') private userRepository: UserRepository,
+    private readonly favoriteItemEntityRepository: Repository<FavoriteItemEntity>,
+    @Inject('IProductRepository')
+    private readonly productRepository: ProductRepository,
+    @Inject('IUserRepository') private readonly userRepository: UserRepository,
   ) {
     super(favoriteItemEntityRepository);
   }
