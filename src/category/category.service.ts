@@ -5,6 +5,7 @@ import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { ICategoryRepository } from './category.repository.abstract';
 import { ICategory } from 'src/core/entities/category.entity.abstract';
 import { Identifier } from 'src/core/abstract-data-layer/types';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class CategoryService {
@@ -13,8 +14,8 @@ export class CategoryService {
     private readonly categroyRepositoy: ICategoryRepository<ICategory>,
   ) {}
 
-  async findAll() {
-    return this.categroyRepositoy.getAll();
+  async findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.categroyRepositoy.getAll(paginationParametersDTO);
   }
 
   async findOneById(id: Identifier) {

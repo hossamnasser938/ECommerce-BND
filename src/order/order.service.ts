@@ -6,6 +6,7 @@ import { IOrder } from 'src/core/entities/order.entity.abstract';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { CartService } from 'src/cart/cart.service';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class OrderService {
@@ -16,12 +17,17 @@ export class OrderService {
     private readonly cartService: CartService,
   ) {}
 
-  findAll() {
-    return this.orderRepository.getAll();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.orderRepository.getAll(paginationParametersDTO);
   }
 
-  findUserAll(userId: Identifier) {
-    return this.orderRepository.getAllByCondition({ user: { id: userId } });
+  findUserAll(
+    userId: Identifier,
+    paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.orderRepository.getAllByCondition(paginationParametersDTO, {
+      user: { id: userId },
+    });
   }
 
   async findOneById(id: Identifier) {

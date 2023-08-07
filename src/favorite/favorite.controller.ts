@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { Role } from 'src/auth/auth.enums';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @UseGuards(AuthGuard)
 @Controller('favorites')
@@ -27,14 +29,20 @@ export class FavoriteController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
-  findAll() {
-    return this.favoriteService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.favoriteService.findAll(paginationParametersDTO);
   }
 
   @Get()
-  findUserAll(@Request() request) {
+  findUserAll(
+    @Request() request,
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+  ) {
     const user = request.user as IUser;
-    return this.favoriteService.findUserFavorites(user.id);
+    return this.favoriteService.findUserFavorites(
+      user.id,
+      paginationParametersDTO,
+    );
   }
 
   @Post('favorite')

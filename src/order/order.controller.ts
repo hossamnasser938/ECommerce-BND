@@ -9,6 +9,7 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Roles } from 'src/auth/auth.decorators';
@@ -19,6 +20,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @UseGuards(AuthGuard)
 @Controller('orders')
@@ -30,14 +32,17 @@ export class OrderController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
-  findAll() {
-    return this.orderService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.orderService.findAll(paginationParametersDTO);
   }
 
   @Get()
-  findUserOrders(@Request() request) {
+  findUserOrders(
+    @Request() request,
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+  ) {
     const user = request.user as IUser;
-    return this.orderService.findUserAll(user.id);
+    return this.orderService.findUserAll(user.id, paginationParametersDTO);
   }
 
   @Get(':id')

@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -17,6 +18,7 @@ import { UpdateUserDTO } from './models/update-user.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Controller('users')
 @Roles(Role.Admin)
@@ -25,8 +27,8 @@ export class UserController {
   constructor(@Inject(UserService) private readonly userService: UserService) {}
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.userService.findAll(paginationParametersDTO);
   }
 
   @Put(':id')
