@@ -5,8 +5,8 @@ import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abst
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
-import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
-import { UpdateShippingAddressDTO } from './models/update-shipping-address.dto';
+import { CreateShippingAddressDTO } from './dtos/create-shipping-address.dto';
+import { UpdateShippingAddressDTO } from './dtos/update-shipping-address.dto';
 import { IShippingAddressRepositoy } from './shipping-address.repository.abstract';
 
 @Injectable()

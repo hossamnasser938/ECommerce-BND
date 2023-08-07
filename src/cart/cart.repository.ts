@@ -9,7 +9,7 @@ import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { IsNull, Repository } from 'typeorm';
 
 import { ICartRepository } from './cart.repository.abstract';
-import { CreateCartItemDTO } from './models/create-cart-item.dto';
+import { CreateCartItemDTO } from './dtos/create-cart-item.dto';
 
 @Injectable()
 export class CartRepository

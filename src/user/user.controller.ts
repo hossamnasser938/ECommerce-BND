@@ -18,7 +18,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
-import { UpdateUserDTO } from './models/update-user.dto';
+import { UpdateUserDTO } from './dtos/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('users')

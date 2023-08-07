@@ -14,9 +14,9 @@ import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { ICartRepository } from './cart.repository.abstract';
-import { UpdateCartItemAmountOperation } from './models/cart.enums';
-import { CreateCartItemDTO } from './models/create-cart-item.dto';
-import { UpdateCartItemDTO } from './models/update-cart-item.dto';
+import { UpdateCartItemAmountOperation } from './types/cart.enums';
+import { CreateCartItemDTO } from './dtos/create-cart-item.dto';
+import { UpdateCartItemDTO } from './dtos/update-cart-item.dto';
 
 @Injectable()
 export class CartService {

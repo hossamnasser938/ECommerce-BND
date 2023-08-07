@@ -20,8 +20,8 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CategoryService } from './category.service';
-import { CreateCategoryDTO } from './models/create-category.dto';
-import { UpdateCategoryDTO } from './models/update-category.dto';
+import { CreateCategoryDTO } from './dtos/create-category.dto';
+import { UpdateCategoryDTO } from './dtos/update-category.dto';
 
 @Controller('categories')
 export class CategoryController {

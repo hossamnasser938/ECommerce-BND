@@ -18,7 +18,7 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { FavoriteService } from './favorite.service';
-import { FavoriteDTO } from './models/favorite.dto';
+import { FavoriteDTO } from './dtos/favorite.dto';
 
 @UseGuards(AuthGuard)
 @Controller('favorites')

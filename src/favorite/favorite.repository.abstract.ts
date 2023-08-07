@@ -2,7 +2,7 @@ import { GenericRepository } from 'src/core/abstract-data-layer/generic-reposito
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
 
-import { FavoriteDTO } from './models/favorite.dto';
+import { FavoriteDTO } from './dtos/favorite.dto';
 
 export interface IFavoriteRepository<T extends IFavoriteItem>
   extends GenericRepository<T> {
