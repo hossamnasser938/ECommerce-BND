@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Role } from 'src/auth/auth.enums';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+
 import { CreateUserDTO } from './models/create-user.dto';
 import { UpdateUserDTO } from './models/update-user.dto';
 import { IUserRepository } from './user.repository.abstract';
-import { IUser } from 'src/core/entities/user.entity.abstract';
-import { Identifier } from 'src/core/abstract-data-layer/types';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class UserService {

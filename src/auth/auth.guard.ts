@@ -6,8 +6,9 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { IAuthTokenPayload } from './models/auth-token-payload.model';
 import { UserService } from 'src/user/user.service';
+
+import { IAuthTokenPayload } from './models/auth-token-payload.model';
 
 export class AuthGuard implements CanActivate {
   constructor(

@@ -1,5 +1,5 @@
 import { PaginationParamsDTO } from './dtos';
-import { Query, Identifier, PaginationResponse, PaginateConfig } from './types';
+import { Identifier, PaginateConfig, PaginationResponse, Query } from './types';
 
 export abstract class GenericRepository<T> {
   abstract paginate(

@@ -1,11 +1,12 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { ICategory } from 'src/core/entities/category.entity.abstract';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+
+import { ICategoryRepository } from './category.repository.abstract';
 import { CreateCategoryDTO } from './models/create-category.dto';
 import { UpdateCategoryDTO } from './models/update-category.dto';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { ICategoryRepository } from './category.repository.abstract';
-import { ICategory } from 'src/core/entities/category.entity.abstract';
-import { Identifier } from 'src/core/abstract-data-layer/types';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class CategoryService {

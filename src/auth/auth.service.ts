@@ -8,20 +8,21 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
-import { hash, compare } from 'bcrypt';
-import { IAuthTokenPayload } from './models/auth-token-payload.model';
-import { SignInDTO } from './models/signin.dto';
+import { compare, hash } from 'bcrypt';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 import { CreateUserDTO } from 'src/user/models/create-user.dto';
-import { Role } from './auth.enums';
-import { ChangePasswordDTO } from './models/change-password.dto';
-import { VerificationCodeService } from './verification-code/verification-code.service';
-import { VerifyDTO } from './models/verify-signup-dto';
+import { UserService } from 'src/user/user.service';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { Role } from './auth.enums';
+import { IAuthTokenPayload } from './models/auth-token-payload.model';
+import { ChangePasswordDTO } from './models/change-password.dto';
 import { ResendCodeDTO } from './models/resend-code.dto';
 import { ResetPasswordDTO } from './models/reset-password.dto';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { IUser } from 'src/core/entities/user.entity.abstract';
+import { SignInDTO } from './models/signin.dto';
+import { VerifyDTO } from './models/verify-signup-dto';
+import { VerificationCodeService } from './verification-code/verification-code.service';
 
 const SALT = 10;
 

@@ -1,6 +1,7 @@
 import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
 import { Entity, ManyToOne } from 'typeorm';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { ProductEntity } from './product.entity';
 import { UserEntity } from './user.entity';
 

@@ -1,6 +1,7 @@
 import { IVerificationCode } from 'src/core/entities/verification-code.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
 import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'verification_code' })

@@ -8,16 +8,17 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { FavoriteService } from './favorite.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { FavoriteDTO } from './models/favorite.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
-import { IUser } from 'src/core/entities/user.entity.abstract';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { FavoriteService } from './favorite.service';
+import { FavoriteDTO } from './models/favorite.dto';
 
 @UseGuards(AuthGuard)
 @Controller('favorites')

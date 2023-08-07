@@ -1,4 +1,5 @@
 import { generate } from 'otp-generator';
+
 import { VERIFICATION_CODE_LENGTH } from './config-constants';
 
 export const generateVerificationCode = () => {

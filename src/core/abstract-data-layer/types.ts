@@ -1,4 +1,5 @@
 import { FindManyOptions } from 'typeorm';
+
 import { PaginationParamsDTO } from './dtos';
 
 export type Query = Record<string, any>;

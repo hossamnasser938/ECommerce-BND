@@ -1,3 +1,4 @@
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { GenericRepository } from 'src/core/abstract-data-layer/generic-repository.abstract';
 import {
   Identifier,
@@ -7,8 +8,8 @@ import {
 } from 'src/core/abstract-data-layer/types';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+
 import { BaseEntity } from './base-entity.abstract';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { DEFAULT_PAGE_SIZE, DEFAULT_STARTING_PAGE } from './config-constants';
 
 export abstract class MySQLTypeORMDataLayerRepository<T extends BaseEntity>

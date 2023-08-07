@@ -12,17 +12,18 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ShippingAddressService } from './shipping-address.service';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
 import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
 import { UpdateShippingAddressDTO } from './models/update-shipping-address.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
-import { IUser } from 'src/core/entities/user.entity.abstract';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { ShippingAddressService } from './shipping-address.service';
 
 @UseGuards(AuthGuard)
 @Controller('shipping-addresses')

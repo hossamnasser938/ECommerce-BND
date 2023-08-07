@@ -1,27 +1,27 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Post,
-  Get,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { UserService } from 'src/user/user.service';
-import { SignInDTO } from './models/signin.dto';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 import { CreateUserDTO } from 'src/user/models/create-user.dto';
-import { Role } from './auth.enums';
-import { Roles } from './auth.decorators';
-import { ChangePasswordDTO } from './models/change-password.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
-import { VerifyDTO } from './models/verify-signup-dto';
+
+import { Roles } from './auth.decorators';
+import { Role } from './auth.enums';
+import { AuthService } from './auth.service';
+import { ChangePasswordDTO } from './models/change-password.dto';
 import { ResendCodeDTO } from './models/resend-code.dto';
 import { ResetPasswordDTO } from './models/reset-password.dto';
-import { IUser } from 'src/core/entities/user.entity.abstract';
+import { SignInDTO } from './models/signin.dto';
+import { VerifyDTO } from './models/verify-signup-dto';
 import { RolesGuard } from './roles.guard';
-import { Reflector } from '@nestjs/core';
 
 @Controller('auth')
 export class AuthController {

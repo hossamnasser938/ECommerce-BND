@@ -1,8 +1,9 @@
 import { IProduct } from 'src/core/entities/product.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { CategoryEntity } from './category.entity';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
+import { CategoryEntity } from './category.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
 
 @Entity({ name: 'product' })
