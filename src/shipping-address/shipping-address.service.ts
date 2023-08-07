@@ -6,6 +6,7 @@ import { IShippingAddressRepositoy } from './shipping-address.repository.abstrac
 import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abstract';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class ShippingAddressService {
@@ -14,13 +15,17 @@ export class ShippingAddressService {
     private readonly shippingAddressRepository: IShippingAddressRepositoy<IShippingAddress>,
   ) {}
 
-  findAll() {
-    return this.shippingAddressRepository.getAll();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.shippingAddressRepository.getAll(paginationParametersDTO);
   }
 
-  findUserAll(userId: Identifier) {
+  findUserAll(
+    userId: Identifier,
+    paginationParametersDTO: PaginationParamsDTO,
+  ) {
     return this.shippingAddressRepository.getOneByCondition({
       user: { id: userId },
+      paginationParametersDTO,
     });
   }
 

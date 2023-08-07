@@ -5,6 +5,7 @@ import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { IProductRepository } from './product.repository.abstract';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
 import { Identifier } from 'src/core/abstract-data-layer/types';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class ProductService {
@@ -23,12 +24,18 @@ export class ProductService {
     return product;
   }
 
-  findAll() {
-    return this.productRepository.getAll();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.productRepository.getAll(paginationParametersDTO);
   }
 
-  findCategoryProducts(categoryId: Identifier) {
-    return this.productRepository.getCategoryProducts(categoryId);
+  findCategoryProducts(
+    categoryId: Identifier,
+    paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.productRepository.getCategoryProducts(
+      categoryId,
+      paginationParametersDTO,
+    );
   }
 
   async createOne(createProductDTO: CreateProductDTO) {

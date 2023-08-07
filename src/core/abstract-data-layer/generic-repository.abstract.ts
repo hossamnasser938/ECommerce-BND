@@ -1,9 +1,19 @@
-import { Query, Identifier } from './types';
+import { PaginationParamsDTO } from './dtos';
+import { Query, Identifier, PaginationResponse, PaginateConfig } from './types';
 
 export abstract class GenericRepository<T> {
-  abstract getAll(): Promise<T[]>;
+  abstract paginate(
+    paginateConfig: PaginateConfig<T>,
+  ): Promise<PaginationResponse<T>>;
 
-  abstract getAllByCondition(query: Query): Promise<T[]>;
+  abstract getAll(
+    paginationParameters: PaginationParamsDTO,
+  ): Promise<PaginationResponse<T>>;
+
+  abstract getAllByCondition(
+    paginationParameters: PaginationParamsDTO,
+    query: Query,
+  ): Promise<PaginationResponse<T>>;
 
   abstract getOneById(id: Identifier): Promise<T>;
 

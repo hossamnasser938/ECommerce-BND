@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   Request,
   UseGuards,
@@ -23,6 +24,7 @@ import { UpdateCartItemAmountOperation } from './models/cart.enums';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @UseGuards(AuthGuard)
 @Controller('cart')
@@ -32,14 +34,17 @@ export class CartController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
-  findAll() {
-    return this.cartService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.cartService.findAll(paginationParametersDTO);
   }
 
   @Get()
-  findUserAll(@Request() request) {
+  findUserAll(
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+    @Request() request,
+  ) {
     const user = request.user as IUser;
-    return this.cartService.findUserAll(user.id);
+    return this.cartService.findUserAll(user.id, paginationParametersDTO);
   }
 
   @Get('in-cart')

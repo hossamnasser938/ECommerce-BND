@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
@@ -19,6 +20,7 @@ import { UpdateCategoryDTO } from './models/update-category.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Controller('categories')
 export class CategoryController {
@@ -28,8 +30,8 @@ export class CategoryController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.categoryService.findAll(paginationParametersDTO);
   }
 
   @Get(':id')
