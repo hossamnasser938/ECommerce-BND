@@ -1,14 +1,15 @@
-import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
-import { IProductRepository } from './product.repository.abstract';
-import { ProductEntity } from 'src/core/data-layer/mysql-typeorm/entities/product.entity';
-import { CreateProductDTO } from './models/create-product.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryRepository } from 'src/category/category.repository';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { PaginationResponse } from 'src/core/abstract-data-layer/types';
+import { ProductEntity } from 'src/core/data-layer/mysql-typeorm/entities/product.entity';
+import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { Repository } from 'typeorm';
+
+import { CreateProductDTO } from './models/create-product.dto';
+import { IProductRepository } from './product.repository.abstract';
 
 @Injectable()
 export class ProductRepository

@@ -4,13 +4,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FavoriteDTO } from './models/favorite.dto';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
 import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
+
 import { IFavoriteRepository } from './favorite.repository.abstract';
-import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
-import { Identifier } from 'src/core/abstract-data-layer/types';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { FavoriteDTO } from './models/favorite.dto';
 
 @Injectable()
 export class FavoriteService {

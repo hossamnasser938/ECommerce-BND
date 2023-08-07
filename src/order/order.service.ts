@@ -1,12 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateOrderDTO } from './models/create-order.dto';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { IOrderRepository } from './order.repository.abstract';
-import { IOrder } from 'src/core/entities/order.entity.abstract';
-import { Identifier } from 'src/core/abstract-data-layer/types';
 import { CartService } from 'src/cart/cart.service';
-import { IUser } from 'src/core/entities/user.entity.abstract';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IOrder } from 'src/core/entities/order.entity.abstract';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+
+import { CreateOrderDTO } from './models/create-order.dto';
+import { IOrderRepository } from './order.repository.abstract';
 
 @Injectable()
 export class OrderService {

@@ -1,17 +1,18 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
-import { generateVerificationCode } from '../utils/verification-code-generator';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { IVerificationCode } from 'src/core/entities/verification-code.entity.abstract';
+import { NodeMailerService } from 'src/node-mailer/node-mailer.service';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+
 import {
   VERIFICATION_CODE_MINUTES_VALIDITY,
   VERIFICATION_EMAIL_SUBJECT,
   VERIFICATION_EMAIL_TEXT,
 } from '../utils/config-constants';
-import { NodeMailerService } from 'src/node-mailer/node-mailer.service';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
+import { generateVerificationCode } from '../utils/verification-code-generator';
 import { IVerificationCodeRepository } from './verification-code.repository.abstract';
-import { IVerificationCode } from 'src/core/entities/verification-code.entity.abstract';
-import { Identifier } from 'src/core/abstract-data-layer/types';
-import { IUser } from 'src/core/entities/user.entity.abstract';
 
 @Injectable()
 export class VerificationCodeService {

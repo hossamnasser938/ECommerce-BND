@@ -1,12 +1,13 @@
-import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
-import { IFavoriteRepository } from './favorite.repository.abstract';
-import { FavoriteItemEntity } from 'src/core/data-layer/mysql-typeorm/entities/favorite-item.entity';
-import { FavoriteDTO } from './models/favorite.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FavoriteItemEntity } from 'src/core/data-layer/mysql-typeorm/entities/favorite-item.entity';
+import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { ProductRepository } from 'src/product/product.repository';
 import { UserRepository } from 'src/user/user.repository';
+import { Repository } from 'typeorm';
+
+import { IFavoriteRepository } from './favorite.repository.abstract';
+import { FavoriteDTO } from './models/favorite.dto';
 
 @Injectable()
 export class Favoriterepository

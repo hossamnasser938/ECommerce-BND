@@ -11,16 +11,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CategoryService } from './category.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { CategoryService } from './category.service';
 import { CreateCategoryDTO } from './models/create-category.dto';
 import { UpdateCategoryDTO } from './models/update-category.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Controller('categories')
 export class CategoryController {

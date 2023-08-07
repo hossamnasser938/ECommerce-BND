@@ -11,16 +11,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
 import { CreateProductDTO } from './models/create-product.dto';
 import { UpdateProductDTO } from './models/update-product.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { ProductService } from './product.service';
 
 @Controller('products')
 export class ProductController {

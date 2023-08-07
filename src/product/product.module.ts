@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryModule } from 'src/category/category.module';
-import { ProductController } from './product.controller';
-import { ProductService } from './product.service';
 import { ProductEntity } from 'src/core/data-layer/mysql-typeorm/entities/product.entity';
+
+import { ProductController } from './product.controller';
 import { ProductRepository } from './product.repository';
+import { ProductService } from './product.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ProductEntity]), CategoryModule],

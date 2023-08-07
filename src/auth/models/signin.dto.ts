@@ -1,4 +1,5 @@
 import { IsEmail } from 'class-validator';
+
 import { IsPassword } from '../utils/validation-utils';
 
 export class SignInDTO {

@@ -1,8 +1,9 @@
 import { IOrder } from 'src/core/entities/order.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
 import { Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { ShippingAddressEntity } from './shipping-address.entity';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
+import { ShippingAddressEntity } from './shipping-address.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'order' })

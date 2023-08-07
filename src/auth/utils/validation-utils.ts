@@ -1,4 +1,5 @@
 import { Length, MinLength } from 'class-validator';
+
 import {
   PASSWORD_MIN_LENGTH,
   VERIFICATION_CODE_LENGTH,
