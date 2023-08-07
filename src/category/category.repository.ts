@@ -5,6 +5,7 @@ import { CreateCategoryDTO } from './models/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class CategoryRepository
@@ -32,9 +33,12 @@ export class CategoryRepository
     return this.categoryEntityRepository.save(category);
   }
 
-  getAll(): Promise<CategoryEntity[]> {
-    return this.categoryEntityRepository.find({
-      relations: { parentCategory: true },
+  async getAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.paginate({
+      paginationParameters: paginationParametersDTO,
+      findManyOptions: {
+        relations: { parentCategory: true },
+      },
     });
   }
 

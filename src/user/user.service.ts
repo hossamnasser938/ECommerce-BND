@@ -5,6 +5,7 @@ import { UpdateUserDTO } from './models/update-user.dto';
 import { IUserRepository } from './user.repository.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { Identifier } from 'src/core/abstract-data-layer/types';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class UserService {
@@ -13,8 +14,8 @@ export class UserService {
     private readonly userRepository: IUserRepository<IUser>,
   ) {}
 
-  findAll() {
-    return this.userRepository.getAll();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.userRepository.getAll(paginationParametersDTO);
   }
 
   findOneByEmail(email: string) {

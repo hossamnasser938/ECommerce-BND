@@ -10,6 +10,7 @@ import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { IFavoriteRepository } from './favorite.repository.abstract';
 import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
 import { Identifier } from 'src/core/abstract-data-layer/types';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class FavoriteService {
@@ -19,12 +20,17 @@ export class FavoriteService {
     @Inject(ProductService) private readonly productService: ProductService,
   ) {}
 
-  findAll() {
-    return this.favoriteRepository.getAll();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.favoriteRepository.getAll(paginationParametersDTO);
   }
 
-  findUserFavorites(userId: Identifier) {
-    return this.favoriteRepository.getAllByCondition({ user: { id: userId } });
+  findUserFavorites(
+    userId: Identifier,
+    paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.favoriteRepository.getAllByCondition(paginationParametersDTO, {
+      user: { id: userId },
+    });
   }
 
   async favorite(favoriteDTO: FavoriteDTO, userId: Identifier) {

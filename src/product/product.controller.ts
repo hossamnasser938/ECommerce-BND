@@ -20,6 +20,7 @@ import { UpdateProductDTO } from './models/update-product.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Controller('products')
 export class ProductController {
@@ -28,13 +29,19 @@ export class ProductController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.productService.findAll(paginationParametersDTO);
   }
 
   @Get('category')
-  findAllForCategory(@Query('categoryId', ParseIntPipe) categoryId?: number) {
-    return this.productService.findCategoryProducts(categoryId);
+  findAllForCategory(
+    @Query('categoryId', ParseIntPipe) categoryId: number,
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.productService.findCategoryProducts(
+      categoryId,
+      paginationParametersDTO,
+    );
   }
 
   @Get(':id')

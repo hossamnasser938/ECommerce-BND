@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -21,6 +22,7 @@ import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @UseGuards(AuthGuard)
 @Controller('shipping-addresses')
@@ -33,14 +35,22 @@ export class ShippingAddressController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
-  findAllShippingAddresses() {
-    return this.shippingAddressService.findAll();
+  findAllShippingAddresses(
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.shippingAddressService.findAll(paginationParametersDTO);
   }
 
   @Get()
-  findUserShippingAddresses(@Request() request) {
+  findUserShippingAddresses(
+    @Request() request,
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+  ) {
     const user = request.user as IUser;
-    return this.shippingAddressService.findUserAll(user.id);
+    return this.shippingAddressService.findUserAll(
+      user.id,
+      paginationParametersDTO,
+    );
   }
 
   @Get(':id')

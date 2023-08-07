@@ -4,8 +4,11 @@ import { ProductEntity } from 'src/core/data-layer/mysql-typeorm/entities/produc
 import { CreateProductDTO } from './models/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CategoryRepository } from 'src/category/category.repository';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { PaginationResponse } from 'src/core/abstract-data-layer/types';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 @Injectable()
 export class ProductRepository
@@ -20,13 +23,21 @@ export class ProductRepository
   ) {
     super(productEntityRepository);
   }
-  async getCategoryProducts(categoryId: number): Promise<ProductEntity[]> {
+  async getCategoryProducts(
+    categoryId: number,
+    paginationParametersDTO: PaginationParamsDTO,
+  ): Promise<PaginationResponse<ProductEntity>> {
     const category = await this.categoryRepository.getOneById(categoryId);
     if (!category) {
-      return [];
+      throw new NotFoundException(
+        ERROR_MESSAGES.ENTITY_NOT_FOUND('Category', 'id', categoryId),
+      );
     }
-    return this.productEntityRepository.findBy({
-      category: { id: category.id },
+    return this.paginate({
+      paginationParameters: paginationParametersDTO,
+      query: {
+        category: { id: category.id },
+      },
     });
   }
 

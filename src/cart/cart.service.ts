@@ -15,6 +15,7 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 import { ProductService } from 'src/product/product.service';
 import { IOrder } from 'src/core/entities/order.entity.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class CartService {
@@ -25,16 +26,21 @@ export class CartService {
     private readonly productService: ProductService,
   ) {}
 
-  findAll() {
-    return this.cartRepository.getAll();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.cartRepository.getAll(paginationParametersDTO);
+  }
+
+  findUserAll(
+    userId: Identifier,
+    paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.cartRepository.getAllByCondition(paginationParametersDTO, {
+      user: { id: userId },
+    });
   }
 
   findOneById(id: Identifier) {
     return this.cartRepository.getOneById(id);
-  }
-
-  findUserAll(userId: Identifier) {
-    return this.cartRepository.getAllByCondition({ user: { id: userId } });
   }
 
   findUserInCartItems(userId: Identifier) {
