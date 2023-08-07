@@ -10,15 +10,16 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
-import { UpdateUserDTO } from './models/update-user.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { UpdateUserDTO } from './models/update-user.dto';
+import { UserService } from './user.service';
 
 @Controller('users')
 @Roles(Role.Admin)

@@ -1,6 +1,7 @@
 import { ICategory } from 'src/core/entities/category.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { ProductEntity } from './product.entity';
 
 @Entity({ name: 'category' })

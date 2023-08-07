@@ -1,8 +1,9 @@
-import { DeleteResult, UpdateResult } from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { DeleteResult, UpdateResult } from 'typeorm';
+
 import { ERROR_MESSAGES } from './error-messages';
 
 export const successfulUpdateDeleteResponse = (message = '') => {

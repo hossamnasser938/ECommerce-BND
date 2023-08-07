@@ -1,9 +1,10 @@
 import { GenericRepository } from 'src/core/abstract-data-layer/generic-repository.abstract';
-import { ICartItem } from 'src/core/entities/cart-item.entity.abstract';
-import { CreateCartItemDTO } from './models/create-cart-item.dto';
 import { Identifier } from 'src/core/abstract-data-layer/types';
+import { ICartItem } from 'src/core/entities/cart-item.entity.abstract';
 import { IOrder } from 'src/core/entities/order.entity.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+
+import { CreateCartItemDTO } from './models/create-cart-item.dto';
 
 export interface ICartRepository<T extends ICartItem>
   extends GenericRepository<T> {

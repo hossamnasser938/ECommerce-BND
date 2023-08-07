@@ -1,13 +1,14 @@
-import { IUser } from 'src/core/entities/user.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
-import { Column, Entity, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Role } from 'src/auth/auth.enums';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { Column, Entity, OneToMany } from 'typeorm';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
-import { VerificationCodeEntity } from './verification-code.entity';
-import { ShippingAddressEntity } from './shipping-address.entity';
 import { OrderEntity } from './order.entity';
+import { ShippingAddressEntity } from './shipping-address.entity';
+import { VerificationCodeEntity } from './verification-code.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity implements IUser {

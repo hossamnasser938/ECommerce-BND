@@ -1,8 +1,9 @@
 import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abstract';
-import { BaseEntity } from '../base-entity.abstract';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { UserEntity } from './user.entity';
+
+import { BaseEntity } from '../base-entity.abstract';
 import { OrderEntity } from './order.entity';
+import { UserEntity } from './user.entity';
 
 @Entity({ name: 'shipping_address' })
 export class ShippingAddressEntity

@@ -1,26 +1,27 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Inject,
-  UseGuards,
-  Request,
-  Post,
-  Body,
-  Delete,
   Param,
   ParseIntPipe,
+  Post,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { OrderService } from './order.service';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
-import { CreateOrderDTO } from './models/create-order.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { IUser } from 'src/core/entities/user.entity.abstract';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { CreateOrderDTO } from './models/create-order.dto';
+import { OrderService } from './order.service';
 
 @UseGuards(AuthGuard)
 @Controller('orders')

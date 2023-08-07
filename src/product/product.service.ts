@@ -1,11 +1,12 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IProduct } from 'src/core/entities/product.entity.abstract';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+
 import { CreateProductDTO } from './models/create-product.dto';
 import { UpdateProductDTO } from './models/update-product.dto';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { IProductRepository } from './product.repository.abstract';
-import { IProduct } from 'src/core/entities/product.entity.abstract';
-import { Identifier } from 'src/core/abstract-data-layer/types';
-import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 
 @Injectable()
 export class ProductService {

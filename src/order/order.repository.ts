@@ -1,14 +1,15 @@
-import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
-import { IOrderRepository } from './order.repository.abstract';
-import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
-import { CreateOrderDTO } from './models/create-order.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CartRepository } from 'src/cart/cart.repository';
+import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
+import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
+import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { ShippingAddressRepository } from 'src/shipping-address/shipping-address.repository';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
-import { CartRepository } from 'src/cart/cart.repository';
-import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
+import { Repository } from 'typeorm';
+
+import { CreateOrderDTO } from './models/create-order.dto';
+import { IOrderRepository } from './order.repository.abstract';
 
 @Injectable()
 export class OrderRepository

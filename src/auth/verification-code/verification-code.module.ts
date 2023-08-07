@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { VerificationCodeService } from './verification-code.service';
-import { NodeMailerModule } from 'src/node-mailer/node-mailer.module';
 import { VerificationCodeEntity } from 'src/core/data-layer/mysql-typeorm/entities/verification-code.entity';
+import { NodeMailerModule } from 'src/node-mailer/node-mailer.module';
+
 import { VerificationCodeRepository } from './verification-code.repository';
+import { VerificationCodeService } from './verification-code.service';
 
 @Module({
   imports: [
