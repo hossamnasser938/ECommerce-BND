@@ -10,18 +10,18 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { IUser } from 'src/core/entities/user.entity.abstract';
-import { CreateUserDTO } from 'src/user/models/create-user.dto';
+import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { Role } from './auth.enums';
-import { IAuthTokenPayload } from './models/auth-token-payload.model';
-import { ChangePasswordDTO } from './models/change-password.dto';
-import { ResendCodeDTO } from './models/resend-code.dto';
-import { ResetPasswordDTO } from './models/reset-password.dto';
-import { SignInDTO } from './models/signin.dto';
-import { VerifyDTO } from './models/verify-signup-dto';
+import { ChangePasswordDTO } from './dtos/change-password.dto';
+import { ResendCodeDTO } from './dtos/resend-code.dto';
+import { ResetPasswordDTO } from './dtos/reset-password.dto';
+import { SignInDTO } from './dtos/signin.dto';
+import { VerifyDTO } from './dtos/verify-signup-dto';
+import { IAuthTokenPayload } from './types/auth-token-payload.model';
 import { VerificationCodeService } from './verification-code/verification-code.service';
 
 const SALT = 10;

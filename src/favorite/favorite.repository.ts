@@ -7,7 +7,7 @@ import { UserRepository } from 'src/user/user.repository';
 import { Repository } from 'typeorm';
 
 import { IFavoriteRepository } from './favorite.repository.abstract';
-import { FavoriteDTO } from './models/favorite.dto';
+import { FavoriteDTO } from './dtos/favorite.dto';
 
 @Injectable()
 export class Favoriterepository

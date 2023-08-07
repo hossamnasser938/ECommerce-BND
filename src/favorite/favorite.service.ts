@@ -11,7 +11,7 @@ import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { IFavoriteRepository } from './favorite.repository.abstract';
-import { FavoriteDTO } from './models/favorite.dto';
+import { FavoriteDTO } from './dtos/favorite.dto';
 
 @Injectable()
 export class FavoriteService {

@@ -5,7 +5,7 @@ import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.enti
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { Repository } from 'typeorm';
 
-import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
+import { CreateShippingAddressDTO } from './dtos/create-shipping-address.dto';
 import { IShippingAddressRepositoy } from './shipping-address.repository.abstract';
 
 @Injectable()

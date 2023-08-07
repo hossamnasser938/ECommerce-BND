@@ -19,8 +19,8 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
-import { CreateProductDTO } from './models/create-product.dto';
-import { UpdateProductDTO } from './models/update-product.dto';
+import { CreateProductDTO } from './dtos/create-product.dto';
+import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductService } from './product.service';
 
 @Controller('products')

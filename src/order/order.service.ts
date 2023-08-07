@@ -6,7 +6,7 @@ import { IOrder } from 'src/core/entities/order.entity.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
-import { CreateOrderDTO } from './models/create-order.dto';
+import { CreateOrderDTO } from './dtos/create-order.dto';
 import { IOrderRepository } from './order.repository.abstract';
 
 @Injectable()

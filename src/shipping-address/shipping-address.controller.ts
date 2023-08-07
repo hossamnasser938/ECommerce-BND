@@ -21,8 +21,8 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
-import { CreateShippingAddressDTO } from './models/create-shipping-address.dto';
-import { UpdateShippingAddressDTO } from './models/update-shipping-address.dto';
+import { CreateShippingAddressDTO } from './dtos/create-shipping-address.dto';
+import { UpdateShippingAddressDTO } from './dtos/update-shipping-address.dto';
 import { ShippingAddressService } from './shipping-address.service';
 
 @UseGuards(AuthGuard)

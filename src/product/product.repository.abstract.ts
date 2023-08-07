@@ -6,7 +6,7 @@ import {
 } from 'src/core/abstract-data-layer/types';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
 
-import { CreateProductDTO } from './models/create-product.dto';
+import { CreateProductDTO } from './dtos/create-product.dto';
 
 export interface IProductRepository<T extends IProduct>
   extends GenericRepository<T> {

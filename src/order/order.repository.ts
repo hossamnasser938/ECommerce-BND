@@ -8,7 +8,7 @@ import { ShippingAddressRepository } from 'src/shipping-address/shipping-address
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { Repository } from 'typeorm';
 
-import { CreateOrderDTO } from './models/create-order.dto';
+import { CreateOrderDTO } from './dtos/create-order.dto';
 import { IOrderRepository } from './order.repository.abstract';
 
 @Injectable()

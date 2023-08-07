@@ -10,17 +10,17 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { IUser } from 'src/core/entities/user.entity.abstract';
-import { CreateUserDTO } from 'src/user/models/create-user.dto';
+import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { Roles } from './auth.decorators';
 import { Role } from './auth.enums';
 import { AuthService } from './auth.service';
-import { ChangePasswordDTO } from './models/change-password.dto';
-import { ResendCodeDTO } from './models/resend-code.dto';
-import { ResetPasswordDTO } from './models/reset-password.dto';
-import { SignInDTO } from './models/signin.dto';
-import { VerifyDTO } from './models/verify-signup-dto';
+import { ChangePasswordDTO } from './dtos/change-password.dto';
+import { ResendCodeDTO } from './dtos/resend-code.dto';
+import { ResetPasswordDTO } from './dtos/reset-password.dto';
+import { SignInDTO } from './dtos/signin.dto';
+import { VerifyDTO } from './dtos/verify-signup-dto';
 import { RolesGuard } from './roles.guard';
 
 @Controller('auth')

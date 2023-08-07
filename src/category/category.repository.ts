@@ -6,7 +6,7 @@ import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeo
 import { Repository } from 'typeorm';
 
 import { ICategoryRepository } from './category.repository.abstract';
-import { CreateCategoryDTO } from './models/create-category.dto';
+import { CreateCategoryDTO } from './dtos/create-category.dto';
 
 @Injectable()
 export class CategoryRepository

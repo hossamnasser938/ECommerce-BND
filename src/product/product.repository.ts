@@ -8,7 +8,7 @@ import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeo
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { Repository } from 'typeorm';
 
-import { CreateProductDTO } from './models/create-product.dto';
+import { CreateProductDTO } from './dtos/create-product.dto';
 import { IProductRepository } from './product.repository.abstract';
 
 @Injectable()
