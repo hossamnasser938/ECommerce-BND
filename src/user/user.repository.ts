@@ -5,7 +5,7 @@ import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.enti
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { Repository } from 'typeorm';
 
-import { CreateUserDTO } from './models/create-user.dto';
+import { CreateUserDTO } from './dtos/create-user.dto';
 import { IUserRepository } from './user.repository.abstract';
 
 @Injectable()

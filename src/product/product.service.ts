@@ -4,8 +4,8 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
-import { CreateProductDTO } from './models/create-product.dto';
-import { UpdateProductDTO } from './models/update-product.dto';
+import { CreateProductDTO } from './dtos/create-product.dto';
+import { UpdateProductDTO } from './dtos/update-product.dto';
 import { IProductRepository } from './product.repository.abstract';
 
 @Injectable()

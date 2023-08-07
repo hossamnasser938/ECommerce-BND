@@ -20,7 +20,7 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
-import { CreateOrderDTO } from './models/create-order.dto';
+import { CreateOrderDTO } from './dtos/create-order.dto';
 import { OrderService } from './order.service';
 
 @UseGuards(AuthGuard)

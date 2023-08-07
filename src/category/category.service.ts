@@ -5,8 +5,8 @@ import { ICategory } from 'src/core/entities/category.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { ICategoryRepository } from './category.repository.abstract';
-import { CreateCategoryDTO } from './models/create-category.dto';
-import { UpdateCategoryDTO } from './models/update-category.dto';
+import { CreateCategoryDTO } from './dtos/create-category.dto';
+import { UpdateCategoryDTO } from './dtos/update-category.dto';
 
 @Injectable()
 export class CategoryService {
