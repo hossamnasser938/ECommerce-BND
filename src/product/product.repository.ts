@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryRepository } from 'src/category/category.repository';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { PaginationResponse } from 'src/core/abstract-data-layer/types';
+import {
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_STARTING_PAGE,
+} from 'src/core/data-layer/mysql-typeorm/config-constants';
 import { ProductEntity } from 'src/core/data-layer/mysql-typeorm/entities/product.entity';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
@@ -34,12 +38,38 @@ export class ProductRepository
         ERROR_MESSAGES.ENTITY_NOT_FOUND('Category', 'id', categoryId),
       );
     }
-    return this.paginate({
-      paginationParameters: paginationParametersDTO,
-      query: {
-        category: { id: category.id },
-      },
-    });
+
+    const { page = DEFAULT_STARTING_PAGE, pageSize = DEFAULT_PAGE_SIZE } =
+      paginationParametersDTO;
+
+    const rawCountQuery = `WITH RECURSIVE CategoryHierarchy AS (
+      SELECT id FROM category WHERE id = ${categoryId} 
+      UNION ALL SELECT c.id FROM category c 
+      INNER JOIN CategoryHierarchy ch ON c.parentCategoryId = ch.id
+    ) 
+      
+    SELECT COUNT(p.id) as count FROM product p JOIN category c ON p.categoryId = c.id 
+    WHERE c.id IN (SELECT id FROM CategoryHierarchy)`;
+
+    const rawResultQuery = `WITH RECURSIVE CategoryHierarchy AS (
+      SELECT id FROM category WHERE id = ${categoryId} 
+      UNION ALL SELECT c.id FROM category c 
+      INNER JOIN CategoryHierarchy ch ON c.parentCategoryId = ch.id
+    ) 
+      
+    SELECT p.* FROM product p JOIN category c ON p.categoryId = c.id 
+    WHERE c.id IN (SELECT id FROM CategoryHierarchy)
+    limit ${pageSize} offset ${pageSize * (page - 1)}`;
+
+    const result = await this.productEntityRepository.query(rawResultQuery);
+    const count = (await this.productEntityRepository.query(rawCountQuery))[0]
+      .count;
+
+    return this.formatPaginationResponse(
+      result,
+      count,
+      paginationParametersDTO,
+    );
   }
 
   async createOne(createProductDTO: CreateProductDTO): Promise<ProductEntity> {
