@@ -35,9 +35,9 @@ export class CategoryRepository
   }
 
   async getAll(paginationParametersDTO: PaginationParamsDTO) {
-    return this.paginate({
+    return this.getAllPaginated({
       paginationParameters: paginationParametersDTO,
-      findManyOptions: {
+      otherOptions: {
         relations: { parentCategory: true },
       },
     });
