@@ -2,7 +2,6 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { GenericRepository } from 'src/core/abstract-data-layer/generic-repository.abstract';
 import {
   Identifier,
-  PaginateConfig,
   PaginationResponse,
   Query,
 } from 'src/core/abstract-data-layer/types';
@@ -11,20 +10,22 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 
 import { BaseEntity } from './base-entity.abstract';
 import { DEFAULT_PAGE_SIZE, DEFAULT_STARTING_PAGE } from './config-constants';
+import { PaginateConfig } from './types';
 
-export abstract class MySQLTypeORMDataLayerRepository<T extends BaseEntity>
-  implements GenericRepository<T>
-{
+export abstract class MySQLTypeORMDataLayerRepository<
+  T extends BaseEntity,
+> extends GenericRepository<T> {
   private readonly repository: Repository<T>;
 
   constructor(repository: Repository<T>) {
+    super();
     this.repository = repository;
   }
 
-  async paginate({
+  async getAllPaginated({
     paginationParameters,
     query = {},
-    findManyOptions = {},
+    otherOptions = {},
   }: PaginateConfig<T>): Promise<PaginationResponse<T>> {
     const { page = DEFAULT_STARTING_PAGE, pageSize = DEFAULT_PAGE_SIZE } =
       paginationParameters;
@@ -33,39 +34,23 @@ export abstract class MySQLTypeORMDataLayerRepository<T extends BaseEntity>
       take: pageSize,
       skip: pageSize * (page - 1),
       where: query,
-      ...findManyOptions,
+      ...otherOptions,
     });
 
-    const totalRecords = count;
-    const currentPage = page;
-    const totalPages = Math.ceil(totalRecords / pageSize);
-    const nextPage = totalPages > page ? page + 1 : null;
-    const prevPage = currentPage === 1 ? null : currentPage - 1;
-
-    return {
-      data: result,
-      pagination: {
-        totalRecords,
-        currentPage,
-        totalPages,
-        pageSize,
-        nextPage,
-        prevPage,
-      },
-    };
+    return this.formatPaginationResponse(result, count, paginationParameters);
   }
 
   getAll(
     paginationParameters: PaginationParamsDTO,
   ): Promise<PaginationResponse<T>> {
-    return this.paginate({ paginationParameters });
+    return this.getAllPaginated({ paginationParameters });
   }
 
   getAllByCondition(
     paginationParameters: PaginationParamsDTO,
     query: Query,
   ): Promise<PaginationResponse<T>> {
-    return this.paginate({ paginationParameters, query });
+    return this.getAllPaginated({ paginationParameters, query });
   }
 
   getOneById(id: Identifier): Promise<T> {

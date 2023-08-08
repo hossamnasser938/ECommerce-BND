@@ -20,6 +20,7 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
+import { FindCategoryProducts } from './dtos/find-category-products.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -35,10 +36,9 @@ export class ProductController {
   }
 
   @Get('category')
-  findAllForCategory(
-    @Query('categoryId', ParseIntPipe) categoryId: number,
-    @Query() paginationParametersDTO: PaginationParamsDTO,
-  ) {
+  findAllForCategory(@Query() findCategoryProducts: FindCategoryProducts) {
+    const { categoryId, ...paginationParametersDTO } = findCategoryProducts;
+
     return this.productService.findCategoryProducts(
       categoryId,
       paginationParametersDTO,

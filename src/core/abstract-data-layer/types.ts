@@ -1,5 +1,3 @@
-import { FindManyOptions } from 'typeorm';
-
 import { PaginationParamsDTO } from './dtos';
 
 export type Query = Record<string, any>;
@@ -17,8 +15,8 @@ export type PaginationResponse<T> = {
   };
 };
 
-export type PaginateConfig<T> = {
+export abstract class AbstractPaginateConfig {
   paginationParameters: PaginationParamsDTO;
   query?: Query;
-  findManyOptions?: FindManyOptions<T>;
-};
+  otherOptions?: Record<string, any>;
+}
