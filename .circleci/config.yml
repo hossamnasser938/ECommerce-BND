@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: 'Deploy Over SSH'
-          command: 'ssh $SSH_USER@$SSH_HOST -v ls'
+          command: ssh $SSH_USER@$SSH_HOST "source .profile; cd ECommerce-BND; git fetch; git reset --hard origin/main; yarn install; yarn build; pm2 restart dist/main.js"
 
 workflows:
   deploy-workflow:
