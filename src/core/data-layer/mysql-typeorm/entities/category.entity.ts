@@ -1,8 +1,16 @@
 import { ICategory } from 'src/core/entities/category.entity.abstract';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
 import { ProductEntity } from './product.entity';
+import { VisualResourceEntity } from './visual-resource.entity';
 
 @Entity({ name: 'category' })
 export class CategoryEntity extends BaseEntity implements ICategory {
@@ -10,10 +18,15 @@ export class CategoryEntity extends BaseEntity implements ICategory {
     super();
     this.name = name;
     this.parentCategory = parentCategory;
+    this.visualResource = new VisualResourceEntity();
   }
 
   @Column()
   name: string;
+
+  @OneToOne(() => VisualResourceEntity, { cascade: true, eager: true })
+  @JoinColumn()
+  visualResource: VisualResourceEntity;
 
   @ManyToOne(() => CategoryEntity)
   parentCategory: CategoryEntity;
