@@ -9,14 +9,18 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { FileService } from 'src/file/file.service';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CategoryService } from './category.service';
@@ -28,6 +32,7 @@ export class CategoryController {
   constructor(
     @Inject(CategoryService)
     private readonly categoryService: CategoryService,
+    @Inject(FileService) private readonly fileService: FileService,
   ) {}
 
   @Get()
@@ -68,5 +73,28 @@ export class CategoryController {
   async deleteOne(@Param('id', ParseIntPipe) id: number) {
     const deletedSuccessfully = await this.categoryService.deleteOneById(id);
     return updateDeleteResponse(deletedSuccessfully);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @UseInterceptors(FilesInterceptor('images'))
+  @Post(':id/add-images')
+  async addImages(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFiles() images: Express.Multer.File[],
+  ) {
+    const category = await this.categoryService.findOneById(id);
+    images.forEach(async (image) => {
+      await this.fileService.createOne(image.filename, category);
+    });
+    return true;
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @Delete('delete-image/:id')
+  async deleteImage(@Param('id', ParseIntPipe) id: number) {
+    const deleted = await this.fileService.deleteOne(id);
+    return deleted;
   }
 }

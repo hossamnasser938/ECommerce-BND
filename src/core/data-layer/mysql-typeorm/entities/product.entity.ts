@@ -1,10 +1,18 @@
 import { IProduct } from 'src/core/entities/product.entity.abstract';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
 import { CategoryEntity } from './category.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
+import { VisualResourceEntity } from './visual-resource.entity';
 
 @Entity({ name: 'product' })
 export class ProductEntity extends BaseEntity implements IProduct {
@@ -19,6 +27,7 @@ export class ProductEntity extends BaseEntity implements IProduct {
     this.description = description;
     this.amount = amount;
     this.category = category;
+    this.visualResource = new VisualResourceEntity();
   }
 
   @Column()
@@ -29,6 +38,10 @@ export class ProductEntity extends BaseEntity implements IProduct {
 
   @Column()
   amount: number;
+
+  @OneToOne(() => VisualResourceEntity, { cascade: true, eager: true })
+  @JoinColumn()
+  visualResource: VisualResourceEntity;
 
   @ManyToOne(() => CategoryEntity, (category) => category.products, {
     eager: true,
