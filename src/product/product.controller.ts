@@ -20,7 +20,6 @@ import { Role } from 'src/auth/auth.enums';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
-import { FileService } from 'src/file/file.service';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
@@ -32,7 +31,6 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(
     @Inject(ProductService) private readonly productService: ProductService,
-    @Inject(FileService) private readonly fileService: FileService,
   ) {}
 
   @Get()
@@ -88,22 +86,18 @@ export class ProductController {
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @UseInterceptors(FilesInterceptor('images'))
   @Post(':id/add-images')
-  async addImages(
+  addImages(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFiles() images: Express.Multer.File[],
   ) {
-    const product = await this.productService.findOneById(id);
-    images.forEach(async (image) => {
-      await this.fileService.createOne(image.filename, product);
-    });
-    return true;
+    const imagesNames = images.map((image) => image.filename);
+    return this.productService.addImages(id, imagesNames);
   }
 
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Delete('delete-image/:id')
-  async deleteImage(@Param('id', ParseIntPipe) id: number) {
-    const deleted = await this.fileService.deleteOne(id);
-    return deleted;
+  deleteImage(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.deleteImage(id);
   }
 }

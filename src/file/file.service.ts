@@ -22,6 +22,13 @@ export class FileService {
     return this.fileRepository.createOne(fileName, entity.visualResource);
   }
 
+  createMany<T extends { visualResource: IVisualResource }>(
+    fileNames: string[],
+    entity: T,
+  ) {
+    return fileNames.map((fileName) => this.createOne(fileName, entity));
+  }
+
   async deleteOne(id: Identifier) {
     const file = await this.fileRepository.getOneById(id);
     this.fSWrapperService.deleteFile(file.name);
