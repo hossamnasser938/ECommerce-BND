@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryRepository } from 'src/category/category.repository';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
@@ -9,7 +9,6 @@ import {
 } from 'src/core/data-layer/mysql-typeorm/config-constants';
 import { ProductEntity } from 'src/core/data-layer/mysql-typeorm/entities/product.entity';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { Repository } from 'typeorm';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
@@ -33,11 +32,6 @@ export class ProductRepository
     paginationParametersDTO: PaginationParamsDTO,
   ): Promise<PaginationResponse<ProductEntity>> {
     const category = await this.categoryRepository.getOneById(categoryId);
-    if (!category) {
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Category', 'id', categoryId),
-      );
-    }
 
     const { page = DEFAULT_STARTING_PAGE, pageSize = DEFAULT_PAGE_SIZE } =
       paginationParametersDTO;

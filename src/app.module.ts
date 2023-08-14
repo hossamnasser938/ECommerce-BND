@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -16,6 +17,7 @@ import { ShippingAddressEntity } from './core/data-layer/mysql-typeorm/entities/
 import { UserEntity } from './core/data-layer/mysql-typeorm/entities/user.entity';
 import { VerificationCodeEntity } from './core/data-layer/mysql-typeorm/entities/verification-code.entity';
 import { VisualResourceEntity } from './core/data-layer/mysql-typeorm/entities/visual-resource.entity';
+import { MySQLTypeORMExceptionFilter } from './core/data-layer/mysql-typeorm/mysql-typeorm.exeption-filter';
 import { FavoriteModule } from './favorite/favorite.module';
 import { FileModule } from './file/file.module';
 import { MulterWrapperModule } from './multer-wrapper/multer-wrapper.module';
@@ -71,6 +73,6 @@ import { UserModule } from './user/user.module';
     OrderModule,
     FileModule,
   ],
-  controllers: [],
+  providers: [{ provide: APP_FILTER, useClass: MySQLTypeORMExceptionFilter }],
 })
 export class AppModule {}

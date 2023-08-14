@@ -1,8 +1,7 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { ICategory } from 'src/core/entities/category.entity.abstract';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { ICategoryRepository } from './category.repository.abstract';
 import { CreateCategoryDTO } from './dtos/create-category.dto';
@@ -21,11 +20,6 @@ export class CategoryService {
 
   async findOneById(id: Identifier) {
     const category = await this.categroyRepositoy.getOneById(id);
-
-    if (!category)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Category', 'id', id),
-      );
     return category;
   }
 

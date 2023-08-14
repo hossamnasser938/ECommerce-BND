@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
@@ -14,9 +13,9 @@ import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { ICartRepository } from './cart.repository.abstract';
-import { UpdateCartItemAmountOperation } from './types/cart.enums';
 import { CreateCartItemDTO } from './dtos/create-cart-item.dto';
 import { UpdateCartItemDTO } from './dtos/update-cart-item.dto';
+import { UpdateCartItemAmountOperation } from './types/cart.enums';
 
 @Injectable()
 export class CartService {
@@ -52,10 +51,6 @@ export class CartService {
     const { productId, amount } = createCartItemDTO;
 
     const product = await this.productService.findOneById(productId);
-    if (!product)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Product', 'id', productId),
-      );
 
     const potentialDuplicateCartItem =
       await this.cartRepository.getUserInCartItemByProduct(user.id, productId);
@@ -92,11 +87,6 @@ export class CartService {
       id,
       user: { id: userId },
     });
-
-    if (!cartItem)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('CartItem', 'id', id),
-      );
 
     const newAmount =
       cartItem.amount +

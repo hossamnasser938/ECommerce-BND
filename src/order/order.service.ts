@@ -33,10 +33,6 @@ export class OrderService {
 
   async findOneById(id: Identifier) {
     const order = await this.orderRepository.getOneById(id);
-    if (!order)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Order', 'id', id),
-      );
     return order;
   }
 

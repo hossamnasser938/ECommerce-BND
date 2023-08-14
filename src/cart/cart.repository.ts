@@ -33,7 +33,7 @@ export class CartRepository
   }
 
   getUserInCartItemByProduct(userId: number, productId: number) {
-    return this.cartItemEntityRepository.findOneBy({
+    return this.cartItemEntityRepository.findOneByOrFail({
       product: { id: productId },
       user: { id: userId },
       order: IsNull(),

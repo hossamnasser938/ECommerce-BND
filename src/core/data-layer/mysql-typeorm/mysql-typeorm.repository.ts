@@ -54,11 +54,13 @@ export abstract class MySQLTypeORMDataLayerRepository<
   }
 
   getOneById(id: Identifier): Promise<T> {
-    return this.repository.findOne({ where: { id } as FindOptionsWhere<T> });
+    return this.repository.findOneOrFail({
+      where: { id } as FindOptionsWhere<T>,
+    });
   }
 
   getOneByCondition(query: Query): Promise<T> {
-    return this.repository.findOneBy(query);
+    return this.repository.findOneByOrFail(query);
   }
 
   async updateOneById(
