@@ -40,10 +40,6 @@ export class AuthService {
 
     const user = await this.userService.findOneByEmail(email);
 
-    if (!user) {
-      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
-    }
-
     const samePassword = await compare(password, user.password);
     if (!samePassword) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -68,10 +64,6 @@ export class AuthService {
   async verifySignUp(verifyDTO: VerifyDTO) {
     const { email, code } = verifyDTO;
     const user = await this.userService.findOneByEmail(email);
-    if (!user)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
-      );
 
     if (user.verified)
       throw new ConflictException(ERROR_MESSAGES.ACCOUNT_ALREADY_VERIFIED);
@@ -86,10 +78,6 @@ export class AuthService {
   async resendCode(resendCode: ResendCodeDTO) {
     const { email } = resendCode;
     const user = await this.userService.findOneByEmail(email);
-    if (!user)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
-      );
 
     return this.verificationCodeService.createAndSendOne(user);
   }
@@ -114,10 +102,6 @@ export class AuthService {
   async verifyForgetPassword(verifyDTO: VerifyDTO) {
     const { email, code } = verifyDTO;
     const user = await this.userService.findOneByEmail(email);
-    if (!user)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
-      );
 
     const isVerified = await this.verificationCodeService.verify(user.id, code);
     if (!isVerified) throw new InternalServerErrorException();
@@ -129,10 +113,6 @@ export class AuthService {
     const { token, email, newPassword } = resetPasswordDTO;
 
     const user = await this.userService.findOneByEmail(email);
-    if (!user)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('User', 'email', email),
-      );
 
     const isVerified = await this.verificationCodeService.verify(
       user.id,

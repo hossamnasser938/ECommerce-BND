@@ -1,9 +1,8 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { CreateShippingAddressDTO } from './dtos/create-shipping-address.dto';
 import { UpdateShippingAddressDTO } from './dtos/update-shipping-address.dto';
@@ -32,10 +31,6 @@ export class ShippingAddressService {
 
   async findOneById(id: Identifier) {
     const shippingAddress = await this.shippingAddressRepository.getOneById(id);
-    if (!shippingAddress)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('ShippingAddress', 'id', id),
-      );
     return shippingAddress;
   }
 

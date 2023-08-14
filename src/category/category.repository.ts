@@ -25,9 +25,11 @@ export class CategoryRepository
   ): Promise<CategoryEntity> {
     const { name, parentCategoryId } = createCategoryDTO;
 
-    const parentCategory = await this.categoryEntityRepository.findOneBy({
-      id: parentCategoryId,
-    });
+    const parentCategory = parentCategoryId
+      ? await this.categoryEntityRepository.findOneByOrFail({
+          id: parentCategoryId,
+        })
+      : null;
 
     const category = new CategoryEntity(name, parentCategory);
 
@@ -44,7 +46,7 @@ export class CategoryRepository
   }
 
   getOneById(id: number): Promise<CategoryEntity> {
-    return this.categoryEntityRepository.findOne({
+    return this.categoryEntityRepository.findOneOrFail({
       where: { id },
       relations: { parentCategory: true, childCategories: true },
     });

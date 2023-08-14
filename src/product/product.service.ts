@@ -1,8 +1,7 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
-import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
@@ -17,11 +16,6 @@ export class ProductService {
 
   async findOneById(id: Identifier) {
     const product = await this.productRepository.getOneById(id);
-
-    if (!product)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Product', 'id', id),
-      );
     return product;
   }
 
