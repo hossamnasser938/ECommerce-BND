@@ -83,18 +83,14 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @UploadedFiles() images: Express.Multer.File[],
   ) {
-    const category = await this.categoryService.findOneById(id);
-    images.forEach(async (image) => {
-      await this.fileService.createOne(image.filename, category);
-    });
-    return true;
+    const imagesNames = images.map((image) => image.filename);
+    return this.categoryService.addImages(id, imagesNames);
   }
 
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Delete('delete-image/:id')
   async deleteImage(@Param('id', ParseIntPipe) id: number) {
-    const deleted = await this.fileService.deleteOne(id);
-    return deleted;
+    return this.categoryService.deleteImage(id);
   }
 }

@@ -30,4 +30,10 @@ export class FSWrapperService {
     const filePath = this.getFilePath(fileName);
     unlinkSync(filePath);
   }
+
+  deleteFiles(fileNames: string[]) {
+    fileNames.forEach((fileName) => {
+      this.deleteFile(fileName);
+    });
+  }
 }

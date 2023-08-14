@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { ICategory } from 'src/core/entities/category.entity.abstract';
+import { FileService } from 'src/file/file.service';
+import { FSWrapperService } from 'src/fs-wrapper/fs-wrapper.service';
 
 import { ICategoryRepository } from './category.repository.abstract';
 import { CreateCategoryDTO } from './dtos/create-category.dto';
@@ -12,6 +14,9 @@ export class CategoryService {
   constructor(
     @Inject('ICategoryRepository')
     private readonly categroyRepositoy: ICategoryRepository<ICategory>,
+    @Inject(FileService) private readonly fileService: FileService,
+    @Inject(FSWrapperService)
+    private readonly fSWrapperService: FSWrapperService,
   ) {}
 
   async findAll(paginationParametersDTO: PaginationParamsDTO) {
@@ -40,6 +45,22 @@ export class CategoryService {
 
   async deleteOneById(id: Identifier) {
     const deleted = await this.categroyRepositoy.deleteOneById(id);
+    return deleted;
+  }
+
+  async addImages(categoryId: Identifier, imagesNames: string[]) {
+    try {
+      const category = await this.findOneById(categoryId);
+      await this.fileService.createMany(imagesNames, category);
+      return true;
+    } catch (err) {
+      this.fSWrapperService.deleteFiles(imagesNames);
+      throw err;
+    }
+  }
+
+  async deleteImage(imageId: Identifier) {
+    const deleted = await this.fileService.deleteOne(imageId);
     return deleted;
   }
 }
