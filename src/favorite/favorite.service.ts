@@ -1,17 +1,12 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
 import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
-import { IFavoriteRepository } from './favorite.repository.abstract';
 import { FavoriteDTO } from './dtos/favorite.dto';
+import { IFavoriteRepository } from './favorite.repository.abstract';
 
 @Injectable()
 export class FavoriteService {
@@ -37,10 +32,6 @@ export class FavoriteService {
   async favorite(favoriteDTO: FavoriteDTO, userId: Identifier) {
     const { productId } = favoriteDTO;
     const product = await this.productService.findOneById(productId);
-    if (!product)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Product', 'id', productId),
-      );
 
     const potentialDuplicateFavoriteItem =
       await this.favoriteRepository.getOneByCondition({
@@ -56,10 +47,6 @@ export class FavoriteService {
   async unfavorite(favoriteDTO: FavoriteDTO, userId: Identifier) {
     const { productId } = favoriteDTO;
     const product = await this.productService.findOneById(productId);
-    if (!product)
-      throw new NotFoundException(
-        ERROR_MESSAGES.ENTITY_NOT_FOUND('Product', 'id', productId),
-      );
 
     const deleted = await this.favoriteRepository.deleteOneByCondition({
       product: { id: productId },
