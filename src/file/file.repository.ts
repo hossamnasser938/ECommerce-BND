@@ -18,10 +18,10 @@ export class FileRepository
   }
 
   createOne(
-    fileName: string,
+    fileStorageIdentifier: string,
     visualResource: VisualResourceEntity,
   ): Promise<FileEntity> {
-    const file = new FileEntity(fileName, visualResource);
+    const file = new FileEntity(fileStorageIdentifier, visualResource);
     return this.fileEntityRepository.save(file);
   }
 }

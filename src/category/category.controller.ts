@@ -26,6 +26,7 @@ import {
   IMAGES_VALIDATORS,
   MAX_IMAGES_PER_ONE_UPLOAD,
 } from 'src/multer-wrapper/multer-wrapper.constants';
+import { ExtendedMulterFile } from 'src/multer-wrapper/multer-wrapper.types';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CategoryService } from './category.service';
@@ -91,10 +92,12 @@ export class CategoryController {
         validators: IMAGES_VALIDATORS,
       }),
     )
-    images: Express.Multer.File[],
+    images: ExtendedMulterFile[],
   ) {
-    const imagesNames = images.map((image) => image.filename);
-    return this.categoryService.addImages(id, imagesNames);
+    const imagesStorageIdentifiers = images.map(
+      (image) => image.storageIdentifier,
+    );
+    return this.categoryService.addImages(id, imagesStorageIdentifiers);
   }
 
   @Roles(Role.Admin)
