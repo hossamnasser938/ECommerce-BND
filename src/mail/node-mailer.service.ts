@@ -3,13 +3,17 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
+import { AbstractMailService } from './mail.service.abstract';
+
 @Injectable()
-export class NodeMailerService {
+export class NodeMailerService extends AbstractMailService {
   private readonly transporter: nodemailer.Transporter;
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
   ) {
+    super();
+
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -19,9 +23,8 @@ export class NodeMailerService {
     });
   }
 
-  async sendEmail(to: string, subject: string, text: string, from = '') {
+  async sendEmail(to: string, subject: string, text: string) {
     const info = await this.transporter.sendMail({
-      from,
       to,
       subject,
       text,
