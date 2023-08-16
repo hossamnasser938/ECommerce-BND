@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { IFile } from 'src/core/entities/file.entity.abstract';
 import { AfterLoad, Column, Entity, ManyToOne } from 'typeorm';
 
@@ -6,14 +7,15 @@ import { VisualResourceEntity } from './visual-resource.entity';
 
 @Entity({ name: 'file' })
 export class FileEntity extends BaseEntity implements IFile {
-  constructor(name: string, visualResource: VisualResourceEntity) {
+  constructor(storageIdentifier: string, visualResource: VisualResourceEntity) {
     super();
-    this.name = name;
+    this.storageIdentifier = storageIdentifier;
     this.visualResource = visualResource;
   }
 
   @Column()
-  name: string;
+  @Exclude()
+  storageIdentifier: string;
 
   url: string;
 

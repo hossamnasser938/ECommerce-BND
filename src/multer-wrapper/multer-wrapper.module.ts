@@ -1,26 +1,43 @@
 import { Global, Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { FSWrapperModule } from 'src/fs-wrapper/fs-wrapper.module';
-import { FSWrapperService } from 'src/fs-wrapper/fs-wrapper.service';
+import { Request } from 'express';
+import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
+import { FileStorageModule } from 'src/file-storage/file-storage-module';
+
+import { ExtendedMulterFile } from './multer-wrapper.types';
+
+function StorageEngineFactory(fileStorageService: AbstractFileStorageService) {
+  return {
+    _handleFile: async (
+      req: Request,
+      file: Express.Multer.File,
+      cb: (error: any, data?: any) => void,
+    ) => {
+      fileStorageService.saveFile(file, cb);
+    },
+    _removeFile: async (
+      req: Request,
+      file: ExtendedMulterFile,
+      cb: (error: any, data?: any) => void,
+    ) => {
+      try {
+        await fileStorageService.deleteFile(file.storageIdentifier);
+        cb(null);
+      } catch (err) {
+        cb(err);
+      }
+    },
+  };
+}
 
 @Global()
 @Module({
   imports: [
     MulterModule.registerAsync({
-      imports: [FSWrapperModule],
-      inject: [FSWrapperService],
-      useFactory: (fsWrapperService: FSWrapperService) => ({
-        storage: diskStorage({
-          destination(req, file, callback) {
-            const destination = fsWrapperService.prepareDestination();
-            callback(null, destination);
-          },
-          filename(req, file, callback) {
-            const fileName = fsWrapperService.constructFileName(file.mimetype);
-            callback(null, fileName);
-          },
-        }),
+      imports: [FileStorageModule],
+      inject: ['FileStorageService'],
+      useFactory: (fileStorageService: AbstractFileStorageService) => ({
+        storage: StorageEngineFactory(fileStorageService),
       }),
     }),
   ],

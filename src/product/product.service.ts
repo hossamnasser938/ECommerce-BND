@@ -3,7 +3,7 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
 import { FileService } from 'src/file/file.service';
-import { FSWrapperService } from 'src/fs-wrapper/fs-wrapper.service';
+import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
@@ -15,8 +15,8 @@ export class ProductService {
     @Inject('IProductRepository')
     private readonly productRepository: IProductRepository<IProduct>,
     @Inject(FileService) private readonly fileService: FileService,
-    @Inject(FSWrapperService)
-    private readonly fSWrapperService: FSWrapperService,
+    @Inject('FileStorageService')
+    private readonly fileStorageService: AbstractFileStorageService,
   ) {}
 
   async findOneById(id: Identifier) {
@@ -55,13 +55,15 @@ export class ProductService {
     return deleted;
   }
 
-  async addImages(productId: Identifier, imagesNames: string[]) {
+  async addImages(productId: Identifier, imagesStorageIdentifiers: string[]) {
     try {
       const product = await this.findOneById(productId);
-      await this.fileService.createMany(imagesNames, product);
+      await this.fileService.createMany(imagesStorageIdentifiers, product);
       return true;
     } catch (err) {
-      this.fSWrapperService.deleteFiles(imagesNames);
+      imagesStorageIdentifiers.forEach((imagesStorageIdentifier) => {
+        this.fileStorageService.deleteFile(imagesStorageIdentifier);
+      });
       throw err;
     }
   }

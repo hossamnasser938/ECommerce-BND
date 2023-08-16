@@ -3,7 +3,7 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { ICategory } from 'src/core/entities/category.entity.abstract';
 import { FileService } from 'src/file/file.service';
-import { FSWrapperService } from 'src/fs-wrapper/fs-wrapper.service';
+import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
 
 import { ICategoryRepository } from './category.repository.abstract';
 import { CreateCategoryDTO } from './dtos/create-category.dto';
@@ -15,8 +15,8 @@ export class CategoryService {
     @Inject('ICategoryRepository')
     private readonly categroyRepositoy: ICategoryRepository<ICategory>,
     @Inject(FileService) private readonly fileService: FileService,
-    @Inject(FSWrapperService)
-    private readonly fSWrapperService: FSWrapperService,
+    @Inject('FileStorageService')
+    private readonly fileStorageService: AbstractFileStorageService,
   ) {}
 
   async findAll(paginationParametersDTO: PaginationParamsDTO) {
@@ -48,13 +48,15 @@ export class CategoryService {
     return deleted;
   }
 
-  async addImages(categoryId: Identifier, imagesNames: string[]) {
+  async addImages(categoryId: Identifier, imagesStorageIdentifiers: string[]) {
     try {
       const category = await this.findOneById(categoryId);
-      await this.fileService.createMany(imagesNames, category);
+      await this.fileService.createMany(imagesStorageIdentifiers, category);
       return true;
     } catch (err) {
-      this.fSWrapperService.deleteFiles(imagesNames);
+      imagesStorageIdentifiers.forEach((imagesStorageIdentifier) => {
+        this.fileStorageService.deleteFile(imagesStorageIdentifier);
+      });
       throw err;
     }
   }
