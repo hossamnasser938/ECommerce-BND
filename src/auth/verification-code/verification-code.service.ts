@@ -3,7 +3,8 @@ import * as moment from 'moment';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { IVerificationCode } from 'src/core/entities/verification-code.entity.abstract';
-import { NodeMailerService } from 'src/node-mailer/node-mailer.service';
+import { MAIL_SERVICE_PROVIDER_TOKEN } from 'src/mail/mail.constants';
+import { AbstractMailService } from 'src/mail/mail.service.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import {
@@ -20,8 +21,8 @@ export class VerificationCodeService {
   constructor(
     @Inject(VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN)
     private readonly verificationCodeRepository: IVerificationCodeRepository<IVerificationCode>,
-    @Inject(NodeMailerService)
-    private readonly nodeMailerService: NodeMailerService,
+    @Inject(MAIL_SERVICE_PROVIDER_TOKEN)
+    private readonly mailService: AbstractMailService,
   ) {}
 
   createOne(user: IUser) {
@@ -34,7 +35,7 @@ export class VerificationCodeService {
   }
 
   sendOne(verificationCode: IVerificationCode) {
-    return this.nodeMailerService.sendEmail(
+    return this.mailService.sendEmail(
       verificationCode.user.email,
       VERIFICATION_EMAIL_SUBJECT,
       VERIFICATION_EMAIL_TEXT(verificationCode.code),
