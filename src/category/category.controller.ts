@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseFilePipe,
   ParseIntPipe,
   Post,
   Put,
@@ -21,6 +22,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { FileService } from 'src/file/file.service';
+import { IMAGES_VALIDATORS } from 'src/multer-wrapper/multer-wrapper.constants';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CategoryService } from './category.service';
@@ -81,7 +83,12 @@ export class CategoryController {
   @Post(':id/add-images')
   async addImages(
     @Param('id', ParseIntPipe) id: number,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: IMAGES_VALIDATORS,
+      }),
+    )
+    images: Express.Multer.File[],
   ) {
     const imagesNames = images.map((image) => image.filename);
     return this.categoryService.addImages(id, imagesNames);

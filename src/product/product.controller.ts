@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseFilePipe,
   ParseIntPipe,
   Post,
   Put,
@@ -20,6 +21,7 @@ import { Role } from 'src/auth/auth.enums';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { IMAGES_VALIDATORS } from 'src/multer-wrapper/multer-wrapper.constants';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
@@ -88,7 +90,12 @@ export class ProductController {
   @Post(':id/add-images')
   addImages(
     @Param('id', ParseIntPipe) id: number,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: IMAGES_VALIDATORS,
+      }),
+    )
+    images: Express.Multer.File[],
   ) {
     const imagesNames = images.map((image) => image.filename);
     return this.productService.addImages(id, imagesNames);
