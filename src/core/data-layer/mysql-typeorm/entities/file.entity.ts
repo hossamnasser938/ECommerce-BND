@@ -1,5 +1,5 @@
 import { IFile } from 'src/core/entities/file.entity.abstract';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { AfterLoad, Column, Entity, ManyToOne } from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
 import { VisualResourceEntity } from './visual-resource.entity';
@@ -15,9 +15,17 @@ export class FileEntity extends BaseEntity implements IFile {
   @Column()
   name: string;
 
+  url: string;
+
   @ManyToOne(
     () => VisualResourceEntity,
     (visualResource) => visualResource.images,
   )
   visualResource: VisualResourceEntity;
+
+  @AfterLoad()
+  setPath() {
+    // TODO: discuss with Affan
+    // implementation delegated to storage service
+  }
 }

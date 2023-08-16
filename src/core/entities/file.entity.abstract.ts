@@ -3,5 +3,6 @@ import { IVisualResource } from './visual-resource.entity.abstract';
 
 export interface IFile extends BaseEntity {
   name: string;
+  url: string;
   visualResource: IVisualResource;
 }
