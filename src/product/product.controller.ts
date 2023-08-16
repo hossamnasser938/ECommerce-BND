@@ -21,7 +21,10 @@ import { Role } from 'src/auth/auth.enums';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
-import { IMAGES_VALIDATORS } from 'src/multer-wrapper/multer-wrapper.constants';
+import {
+  IMAGES_VALIDATORS,
+  MAX_IMAGES_PER_ONE_UPLOAD,
+} from 'src/multer-wrapper/multer-wrapper.constants';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
@@ -86,7 +89,7 @@ export class ProductController {
 
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FilesInterceptor('images', MAX_IMAGES_PER_ONE_UPLOAD))
   @Post(':id/add-images')
   addImages(
     @Param('id', ParseIntPipe) id: number,
