@@ -1,9 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CART_REPOSITORY_PROVIDER_TOKEN } from 'src/cart/cart.constants';
 import { CartRepository } from 'src/cart/cart.repository';
 import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
+import { SHIPPING_ADDRESS_REPOSITORY_PROVIDER_TOKEN } from 'src/shipping-address/shipping-address.constants';
 import { ShippingAddressRepository } from 'src/shipping-address/shipping-address.repository';
 import { Repository } from 'typeorm';
 
@@ -18,9 +20,9 @@ export class OrderRepository
   constructor(
     @InjectRepository(OrderEntity)
     private readonly OrderEntityRepository: Repository<OrderEntity>,
-    @Inject('IShippingAddressRepository')
+    @Inject(SHIPPING_ADDRESS_REPOSITORY_PROVIDER_TOKEN)
     private readonly shippingAddressRepository: ShippingAddressRepository,
-    @Inject('ICartRepository')
+    @Inject(CART_REPOSITORY_PROVIDER_TOKEN)
     private readonly cartRepository: CartRepository,
   ) {
     super(OrderEntityRepository);

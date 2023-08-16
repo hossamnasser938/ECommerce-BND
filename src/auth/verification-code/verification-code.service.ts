@@ -12,12 +12,13 @@ import {
   VERIFICATION_EMAIL_TEXT,
 } from '../utils/config-constants';
 import { generateVerificationCode } from '../utils/verification-code-generator';
+import { VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN } from './verification-code.constants';
 import { IVerificationCodeRepository } from './verification-code.repository.abstract';
 
 @Injectable()
 export class VerificationCodeService {
   constructor(
-    @Inject('IVerificationCodeRepository')
+    @Inject(VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN)
     private readonly verificationCodeRepository: IVerificationCodeRepository<IVerificationCode>,
     @Inject(NodeMailerService)
     private readonly nodeMailerService: NodeMailerService,

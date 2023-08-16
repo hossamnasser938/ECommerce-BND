@@ -4,6 +4,7 @@ import { CartModule } from 'src/cart/cart.module';
 import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
 import { ShippingAddressModule } from 'src/shipping-address/shipping-address.module';
 
+import { ORDER_REPOSITORY_PROVIDER_TOKEN } from './order.constants';
 import { OrderController } from './order.controller';
 import { OrderRepository } from './order.repository';
 import { OrderService } from './order.service';
@@ -16,9 +17,9 @@ import { OrderService } from './order.service';
   ],
   providers: [
     OrderService,
-    { provide: 'IOrderRepository', useClass: OrderRepository },
+    { provide: ORDER_REPOSITORY_PROVIDER_TOKEN, useClass: OrderRepository },
   ],
   controllers: [OrderController],
-  exports: [OrderService, 'IOrderRepository'],
+  exports: [OrderService, ORDER_REPOSITORY_PROVIDER_TOKEN],
 })
 export class OrderModule {}
