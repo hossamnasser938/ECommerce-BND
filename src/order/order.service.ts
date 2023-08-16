@@ -7,12 +7,13 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { CreateOrderDTO } from './dtos/create-order.dto';
+import { ORDER_REPOSITORY_PROVIDER_TOKEN } from './order.constants';
 import { IOrderRepository } from './order.repository.abstract';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @Inject('IOrderRepository')
+    @Inject(ORDER_REPOSITORY_PROVIDER_TOKEN)
     private readonly orderRepository: IOrderRepository<IOrder>,
     @Inject(CartService)
     private readonly cartService: CartService,

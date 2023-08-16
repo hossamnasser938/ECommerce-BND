@@ -12,6 +12,7 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
+import { CART_REPOSITORY_PROVIDER_TOKEN } from './cart.constants';
 import { ICartRepository } from './cart.repository.abstract';
 import { CreateCartItemDTO } from './dtos/create-cart-item.dto';
 import { UpdateCartItemDTO } from './dtos/update-cart-item.dto';
@@ -20,7 +21,7 @@ import { UpdateCartItemAmountOperation } from './types/cart.enums';
 @Injectable()
 export class CartService {
   constructor(
-    @Inject('ICartRepository')
+    @Inject(CART_REPOSITORY_PROVIDER_TOKEN)
     private readonly cartRepository: ICartRepository<ICartItem>,
     @Inject(ProductService)
     private readonly productService: ProductService,

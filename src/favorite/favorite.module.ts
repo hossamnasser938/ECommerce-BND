@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FavoriteItemEntity } from 'src/core/data-layer/mysql-typeorm/entities/favorite-item.entity';
 import { ProductModule } from 'src/product/product.module';
 
+import { FAVORITE_REPOSITORY_PROVIDER_TOKEN } from './favorite.constants';
 import { FavoriteController } from './favorite.controller';
 import { Favoriterepository } from './favorite.repository';
 import { FavoriteService } from './favorite.service';
@@ -11,9 +12,12 @@ import { FavoriteService } from './favorite.service';
   imports: [TypeOrmModule.forFeature([FavoriteItemEntity]), ProductModule],
   providers: [
     FavoriteService,
-    { provide: 'IFavoriteRepository', useClass: Favoriterepository },
+    {
+      provide: FAVORITE_REPOSITORY_PROVIDER_TOKEN,
+      useClass: Favoriterepository,
+    },
   ],
   controllers: [FavoriteController],
-  exports: [FavoriteService, 'IFavoriteRepository'],
+  exports: [FavoriteService, FAVORITE_REPOSITORY_PROVIDER_TOKEN],
 })
 export class FavoriteModule {}

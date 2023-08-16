@@ -6,12 +6,13 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 
 import { CreateShippingAddressDTO } from './dtos/create-shipping-address.dto';
 import { UpdateShippingAddressDTO } from './dtos/update-shipping-address.dto';
+import { SHIPPING_ADDRESS_REPOSITORY_PROVIDER_TOKEN } from './shipping-address.constants';
 import { IShippingAddressRepositoy } from './shipping-address.repository.abstract';
 
 @Injectable()
 export class ShippingAddressService {
   constructor(
-    @Inject('IShippingAddressRepository')
+    @Inject(SHIPPING_ADDRESS_REPOSITORY_PROVIDER_TOKEN)
     private readonly shippingAddressRepository: IShippingAddressRepositoy<IShippingAddress>,
   ) {}
 

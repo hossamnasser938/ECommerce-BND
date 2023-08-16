@@ -4,18 +4,20 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
 import { FileService } from 'src/file/file.service';
 import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
+import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/fs-file-storeage.constants';
 
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
+import { PRODUCT_REPOSITORY_PROVIDER_TOKEN } from './product.constants';
 import { IProductRepository } from './product.repository.abstract';
 
 @Injectable()
 export class ProductService {
   constructor(
-    @Inject('IProductRepository')
+    @Inject(PRODUCT_REPOSITORY_PROVIDER_TOKEN)
     private readonly productRepository: IProductRepository<IProduct>,
     @Inject(FileService) private readonly fileService: FileService,
-    @Inject('FileStorageService')
+    @Inject(FILE_STOREAGE_SERVICE_PROVIDER_TOKEN)
     private readonly fileStorageService: AbstractFileStorageService,
   ) {}
 
