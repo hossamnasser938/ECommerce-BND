@@ -4,11 +4,26 @@ jobs:
   deploy:
     docker:
       - image: cimg/base:stable
+    parameters:
+      env_vars_keys:
+        description: keys of env variables to be populated into dot env file
+        default: 'NODEMAILER_USER NODEMAILER_PASSWORD JWT_SECRET DB_HOST DB_PORT DB_USERNAME DB_PASSWORD DB_NAME HTTP_PROTOCOL HOST PORT'
+        type: string
     steps:
       - run:
           name: Update known hosts
           command: mkdir ~/.ssh; touch ~/.ssh/known_hosts; ssh-keyscan $SSH_HOST > ~/.ssh/known_hosts
       - checkout
+      - run:
+          name: 'Prepare .env file from CircleCI project-level environment variables'
+          command: |
+            for env_var_key in <<parameters.env_vars_keys>>; do
+              echo "$env_var_key=${!env_var_key}" >> .env
+            done
+      - run:
+          name: 'copy .env file to server'
+          command: |
+            scp .env $SSH_USER@$SSH_HOST:~/ECommerce-BND/.env
       - run:
           name: 'Deploy Over SSH'
           command: ssh $SSH_USER@$SSH_HOST "source .profile; cd ECommerce-BND; bash scripts/deploy.sh"
