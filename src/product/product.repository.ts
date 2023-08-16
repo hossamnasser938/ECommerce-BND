@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CATEGORY_REPOSITORY_PROVIDER_TOKEN } from 'src/category/category.constants';
 import { CategoryRepository } from 'src/category/category.repository';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { PaginationResponse } from 'src/core/abstract-data-layer/types';
@@ -22,7 +23,7 @@ export class ProductRepository
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productEntityRepository: Repository<ProductEntity>,
-    @Inject('ICategoryRepository')
+    @Inject(CATEGORY_REPOSITORY_PROVIDER_TOKEN)
     private readonly categoryRepository: CategoryRepository,
   ) {
     super(productEntityRepository);

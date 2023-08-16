@@ -4,6 +4,7 @@ import { CartItemEntity } from 'src/core/data-layer/mysql-typeorm/entities/cart-
 import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
+import { PRODUCT_REPOSITORY_PROVIDER_TOKEN } from 'src/product/product.constants';
 import { ProductRepository } from 'src/product/product.repository';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { IsNull, Repository } from 'typeorm';
@@ -19,7 +20,7 @@ export class CartRepository
   constructor(
     @InjectRepository(CartItemEntity)
     private readonly cartItemEntityRepository: Repository<CartItemEntity>,
-    @Inject('IProductRepository')
+    @Inject(PRODUCT_REPOSITORY_PROVIDER_TOKEN)
     private readonly productRepository: ProductRepository,
   ) {
     super(cartItemEntityRepository);

@@ -6,12 +6,13 @@ import { ProductService } from 'src/product/product.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { FavoriteDTO } from './dtos/favorite.dto';
+import { FAVORITE_REPOSITORY_PROVIDER_TOKEN } from './favorite.constants';
 import { IFavoriteRepository } from './favorite.repository.abstract';
 
 @Injectable()
 export class FavoriteService {
   constructor(
-    @Inject('IFavoriteRepository')
+    @Inject(FAVORITE_REPOSITORY_PROVIDER_TOKEN)
     private readonly favoriteRepository: IFavoriteRepository<IFavoriteItem>,
     @Inject(ProductService) private readonly productService: ProductService,
   ) {}

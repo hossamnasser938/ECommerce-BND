@@ -6,12 +6,13 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { UpdateUserDTO } from './dtos/update-user.dto';
+import { USER_REPOSITORY_PROVIDER_TOKEN } from './user.constants';
 import { IUserRepository } from './user.repository.abstract';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('IUserRepository')
+    @Inject(USER_REPOSITORY_PROVIDER_TOKEN)
     private readonly userRepository: IUserRepository<IUser>,
   ) {}
 

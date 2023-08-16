@@ -2,12 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FavoriteItemEntity } from 'src/core/data-layer/mysql-typeorm/entities/favorite-item.entity';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
+import { PRODUCT_REPOSITORY_PROVIDER_TOKEN } from 'src/product/product.constants';
 import { ProductRepository } from 'src/product/product.repository';
+import { USER_REPOSITORY_PROVIDER_TOKEN } from 'src/user/user.constants';
 import { UserRepository } from 'src/user/user.repository';
 import { Repository } from 'typeorm';
 
-import { IFavoriteRepository } from './favorite.repository.abstract';
 import { FavoriteDTO } from './dtos/favorite.dto';
+import { IFavoriteRepository } from './favorite.repository.abstract';
 
 @Injectable()
 export class Favoriterepository
@@ -17,9 +19,10 @@ export class Favoriterepository
   constructor(
     @InjectRepository(FavoriteItemEntity)
     private readonly favoriteItemEntityRepository: Repository<FavoriteItemEntity>,
-    @Inject('IProductRepository')
+    @Inject(PRODUCT_REPOSITORY_PROVIDER_TOKEN)
     private readonly productRepository: ProductRepository,
-    @Inject('IUserRepository') private readonly userRepository: UserRepository,
+    @Inject(USER_REPOSITORY_PROVIDER_TOKEN)
+    private readonly userRepository: UserRepository,
   ) {
     super(favoriteItemEntityRepository);
   }

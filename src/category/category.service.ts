@@ -4,7 +4,9 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 import { ICategory } from 'src/core/entities/category.entity.abstract';
 import { FileService } from 'src/file/file.service';
 import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
+import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/fs-file-storeage.constants';
 
+import { CATEGORY_REPOSITORY_PROVIDER_TOKEN } from './category.constants';
 import { ICategoryRepository } from './category.repository.abstract';
 import { CreateCategoryDTO } from './dtos/create-category.dto';
 import { UpdateCategoryDTO } from './dtos/update-category.dto';
@@ -12,10 +14,10 @@ import { UpdateCategoryDTO } from './dtos/update-category.dto';
 @Injectable()
 export class CategoryService {
   constructor(
-    @Inject('ICategoryRepository')
+    @Inject(CATEGORY_REPOSITORY_PROVIDER_TOKEN)
     private readonly categroyRepositoy: ICategoryRepository<ICategory>,
     @Inject(FileService) private readonly fileService: FileService,
-    @Inject('FileStorageService')
+    @Inject(FILE_STOREAGE_SERVICE_PROVIDER_TOKEN)
     private readonly fileStorageService: AbstractFileStorageService,
   ) {}
 

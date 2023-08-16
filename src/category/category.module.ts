@@ -4,6 +4,7 @@ import { CategoryEntity } from 'src/core/data-layer/mysql-typeorm/entities/categ
 import { FileModule } from 'src/file/file.module';
 import { FileStorageModule } from 'src/file-storage/file-storage-module';
 
+import { CATEGORY_REPOSITORY_PROVIDER_TOKEN } from './category.constants';
 import { CategoryController } from './category.controller';
 import { CategoryRepository } from './category.repository';
 import { CategoryService } from './category.service';
@@ -16,9 +17,12 @@ import { CategoryService } from './category.service';
   ],
   providers: [
     CategoryService,
-    { provide: 'ICategoryRepository', useClass: CategoryRepository },
+    {
+      provide: CATEGORY_REPOSITORY_PROVIDER_TOKEN,
+      useClass: CategoryRepository,
+    },
   ],
   controllers: [CategoryController],
-  exports: [CategoryService, 'ICategoryRepository'],
+  exports: [CategoryService, CATEGORY_REPOSITORY_PROVIDER_TOKEN],
 })
 export class CategoryModule {}
