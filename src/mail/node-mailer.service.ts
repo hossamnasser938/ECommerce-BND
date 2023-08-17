@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { AbstractMailService } from './mail.service.abstract';
@@ -10,15 +11,16 @@ export class NodeMailerService extends AbstractMailService {
   private readonly transporter: nodemailer.Transporter;
 
   constructor(
-    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(ConfigService)
+    private readonly configWrapperService: ConfigWrapperService,
   ) {
     super();
 
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: configService.get<string>('NODEMAILER_USER'),
-        pass: configService.get<string>('NODEMAILER_PASSWORD'),
+        user: configWrapperService.NODEMAILER_USER,
+        pass: configWrapperService.NODEMAILER_PASSWORD,
       },
     });
   }
