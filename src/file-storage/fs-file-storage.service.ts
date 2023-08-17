@@ -2,6 +2,7 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createWriteStream, existsSync, mkdirSync, unlinkSync } from 'fs';
 import * as path from 'path';
+import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
 import { FileEntity } from 'src/core/data-layer/mysql-typeorm/entities/file.entity';
 import { uuid } from 'uuidv4';
 
@@ -11,7 +12,8 @@ import { UPLOADS_DESTINATION } from './fs-file-storeage.constants';
 
 export class FSFileStorageService extends AbstractFileStorageService {
   constructor(
-    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(ConfigService)
+    private readonly configWrapperService: ConfigWrapperService,
   ) {
     super();
     this.prepareDestination();
@@ -67,9 +69,9 @@ export class FSFileStorageService extends AbstractFileStorageService {
   }
 
   async getFileURL(fileName: string): Promise<string> {
-    const httpPtotocol = this.configService.get<string>('HTTP_PROTOCOL');
-    const host = this.configService.get<string>('HOST');
-    const port = this.configService.get<string>('PORT');
+    const httpPtotocol = this.configWrapperService.HTTP_PROTOCOL;
+    const host = this.configWrapperService.HOST;
+    const port = this.configWrapperService.PORT;
 
     return `${httpPtotocol}://${host}:${port}/${this.getFilePath(fileName)}`;
   }
