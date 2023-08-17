@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { CategoryModule } from './category/category.module';
+import { ConfigWrapperModule } from './config-wrapper/config-wrapper.module';
+import { ConfigWrapperService } from './config-wrapper/config-wrapper.service';
 import { CartItemEntity } from './core/data-layer/mysql-typeorm/entities/cart-item.entity';
 import { CategoryEntity } from './core/data-layer/mysql-typeorm/entities/category.entity';
 import { FavoriteItemEntity } from './core/data-layer/mysql-typeorm/entities/favorite-item.entity';
@@ -29,16 +30,17 @@ import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
+    ConfigWrapperModule,
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      imports: [ConfigWrapperModule],
+      inject: [ConfigWrapperService],
+      useFactory: (configWrapperService: ConfigWrapperService) => ({
         type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
+        host: configWrapperService.DB_HOST,
+        port: configWrapperService.DB_PORT,
+        username: configWrapperService.DB_USERNAME,
+        password: configWrapperService.DB_PASSWORD,
+        database: configWrapperService.DB_NAME,
         entities: [
           VisualResourceEntity,
           CategoryEntity,
@@ -54,13 +56,12 @@ import { UserModule } from './user/user.module';
         synchronize: true,
       }),
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
       global: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+      imports: [ConfigWrapperModule],
+      inject: [ConfigWrapperService],
+      useFactory: (configWrapperService: ConfigWrapperService) => ({
+        secret: configWrapperService.JWT_SECRET,
       }),
     }),
     MulterWrapperModule,
