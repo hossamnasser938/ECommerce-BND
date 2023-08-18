@@ -23,4 +23,8 @@ export class ConfigWrapperService {
   HTTP_PROTOCOL: string = this.configService.get<string>('HTTP_PROTOCOL');
   HOST: string = this.configService.get<string>('HOST');
   PORT: number = this.configService.get<number>('PORT');
+
+  GCS_MOUNTED_FOLDER_NAME: string = this.configService.get<string>(
+    'GCS_MOUNTED_FOLDER_NAME',
+  );
 }

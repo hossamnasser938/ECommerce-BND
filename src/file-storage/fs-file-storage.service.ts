@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { createWriteStream, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { homedir } from 'os';
 import * as path from 'path';
 import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
 import { FileEntity } from 'src/core/data-layer/mysql-typeorm/entities/file.entity';
@@ -7,7 +8,6 @@ import { uuid } from 'uuidv4';
 
 import { AbstractFileStorageService } from './file-storage.service.abstract';
 import { ICustomMulterFileProperties } from './file-storage.types';
-import { UPLOADS_DESTINATION } from './fs-file-storeage.constants';
 
 export class FSFileStorageService extends AbstractFileStorageService {
   constructor(
@@ -26,9 +26,14 @@ export class FSFileStorageService extends AbstractFileStorageService {
     };
   }
 
+  private UPLOADS_DESTINATION = path.join(
+    homedir(),
+    this.configWrapperService.GCS_MOUNTED_FOLDER_NAME,
+  );
+
   private prepareDestination(): void {
-    if (!existsSync(UPLOADS_DESTINATION)) {
-      mkdirSync(UPLOADS_DESTINATION);
+    if (!existsSync(this.UPLOADS_DESTINATION)) {
+      mkdirSync(this.UPLOADS_DESTINATION);
     }
   }
 
@@ -40,7 +45,7 @@ export class FSFileStorageService extends AbstractFileStorageService {
   }
 
   getFilePath(fileName: string): string {
-    return path.join(UPLOADS_DESTINATION, fileName);
+    return path.join(this.UPLOADS_DESTINATION, fileName);
   }
 
   async saveFile(
