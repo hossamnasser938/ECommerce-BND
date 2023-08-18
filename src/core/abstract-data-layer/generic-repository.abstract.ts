@@ -68,4 +68,6 @@ export abstract class GenericRepository<T> {
   abstract deleteOneById(id: Identifier): Promise<boolean>;
 
   abstract deleteOneByCondition(query: Query): Promise<boolean>;
+
+  abstract search(keyword: string): Promise<T[]>;
 }

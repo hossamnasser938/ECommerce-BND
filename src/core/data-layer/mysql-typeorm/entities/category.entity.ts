@@ -2,6 +2,7 @@ import { ICategory } from 'src/core/entities/category.entity.abstract';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -21,6 +22,7 @@ export class CategoryEntity extends BaseEntity implements ICategory {
     this.visualResource = new VisualResourceEntity();
   }
 
+  @Index({ fulltext: true })
   @Column()
   name: string;
 

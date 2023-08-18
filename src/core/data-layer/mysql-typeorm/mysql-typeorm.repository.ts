@@ -94,4 +94,31 @@ export class MySQLTypeORMDataLayerRepository<
     const deleteResult = await this.repository.delete(query);
     return !!deleteResult.affected;
   }
+
+  async search(keyword: string): Promise<T[]> {
+    const indices = this.repository.metadata.indices;
+    const fullTextIndices = indices.filter((index) => index.isFulltext);
+    const fullTextColumnNames: string[] = fullTextIndices.reduce((acc, val) => {
+      return acc.concat(val.givenColumnNames);
+    }, []);
+
+    if (fullTextColumnNames.length === 0) return [];
+
+    const [firstFullTextColumn, ...restFullTextColumns] = fullTextColumnNames;
+
+    let queryBuilder = this.repository
+      .createQueryBuilder()
+      .select()
+      .where(
+        `MATCH(${firstFullTextColumn}) AGAINST ('*${keyword}*' IN BOOLEAN MODE)`,
+      );
+
+    restFullTextColumns.forEach((fullTextColumn) => {
+      queryBuilder = queryBuilder.orWhere(
+        `MATCH(${fullTextColumn}) AGAINST ('*${keyword}*' IN BOOLEAN MODE)`,
+      );
+    });
+
+    return queryBuilder.getMany();
+  }
 }

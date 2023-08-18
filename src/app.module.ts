@@ -25,6 +25,7 @@ import { FileStreamingModule } from './file-streaming/file-streaming.module';
 import { MulterWrapperModule } from './multer-wrapper/multer-wrapper.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
+import { SearchModule } from './search/search.module';
 import { ShippingAddressModule } from './shipping-address/shipping-address.module';
 import { UserModule } from './user/user.module';
 
@@ -75,6 +76,7 @@ import { UserModule } from './user/user.module';
     OrderModule,
     FileModule,
     FileStreamingModule,
+    SearchModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: MySQLTypeORMExceptionFilter }],
 })

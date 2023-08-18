@@ -2,6 +2,7 @@ import { IProduct } from 'src/core/entities/product.entity.abstract';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -30,9 +31,11 @@ export class ProductEntity extends BaseEntity implements IProduct {
     this.visualResource = new VisualResourceEntity();
   }
 
+  @Index({ fulltext: true })
   @Column()
   name: string;
 
+  @Index({ fulltext: true })
   @Column()
   description: string;
 
