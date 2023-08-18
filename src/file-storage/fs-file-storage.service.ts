@@ -1,5 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { createWriteStream, existsSync, mkdirSync, unlinkSync } from 'fs';
 import * as path from 'path';
 import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
@@ -12,7 +11,7 @@ import { UPLOADS_DESTINATION } from './fs-file-storeage.constants';
 
 export class FSFileStorageService extends AbstractFileStorageService {
   constructor(
-    @Inject(ConfigService)
+    @Inject(ConfigWrapperService)
     private readonly configWrapperService: ConfigWrapperService,
   ) {
     super();
