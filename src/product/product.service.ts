@@ -74,4 +74,8 @@ export class ProductService {
     const deleted = await this.fileService.deleteOne(imageId);
     return deleted;
   }
+
+  search(keyword: string) {
+    return this.productRepository.search(keyword);
+  }
 }
