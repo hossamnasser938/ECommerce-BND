@@ -12,7 +12,7 @@ import { BaseEntity } from './base-entity.abstract';
 import { DEFAULT_PAGE_SIZE, DEFAULT_STARTING_PAGE } from './config-constants';
 import { PaginateConfig } from './types';
 
-export abstract class MySQLTypeORMDataLayerRepository<
+export class MySQLTypeORMDataLayerRepository<
   T extends BaseEntity,
 > extends GenericRepository<T> {
   private readonly repository: Repository<T>;
