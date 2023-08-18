@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
@@ -11,7 +10,7 @@ export class NodeMailerService extends AbstractMailService {
   private readonly transporter: nodemailer.Transporter;
 
   constructor(
-    @Inject(ConfigService)
+    @Inject(ConfigWrapperService)
     private readonly configWrapperService: ConfigWrapperService,
   ) {
     super();
