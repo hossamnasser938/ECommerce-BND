@@ -21,7 +21,6 @@ import { VisualResourceEntity } from './core/data-layer/mysql-typeorm/entities/v
 import { MySQLTypeORMExceptionFilter } from './core/data-layer/mysql-typeorm/mysql-typeorm.exeption-filter';
 import { FavoriteModule } from './favorite/favorite.module';
 import { FileModule } from './file/file.module';
-import { FileStreamingModule } from './file-streaming/file-streaming.module';
 import { MulterWrapperModule } from './multer-wrapper/multer-wrapper.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
@@ -75,7 +74,6 @@ import { UserModule } from './user/user.module';
     ShippingAddressModule,
     OrderModule,
     FileModule,
-    FileStreamingModule,
     SearchModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: MySQLTypeORMExceptionFilter }],
