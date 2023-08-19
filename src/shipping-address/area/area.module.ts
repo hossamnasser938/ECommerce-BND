@@ -13,6 +13,7 @@ import { AreaService } from './area.service';
     { provide: AREA_REPOSITORY_PROVIDER_TOKEN, useClass: AreaRepository },
     AreaService,
   ],
+  exports: [AREA_REPOSITORY_PROVIDER_TOKEN],
   controllers: [AreaController],
 })
 export class AreaModule {}

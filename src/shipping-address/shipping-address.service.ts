@@ -24,10 +24,12 @@ export class ShippingAddressService {
     userId: Identifier,
     paginationParametersDTO: PaginationParamsDTO,
   ) {
-    return this.shippingAddressRepository.getOneByCondition({
-      user: { id: userId },
+    return this.shippingAddressRepository.getAllByCondition(
       paginationParametersDTO,
-    });
+      {
+        user: { id: userId },
+      },
+    );
   }
 
   async findOneById(id: Identifier) {
