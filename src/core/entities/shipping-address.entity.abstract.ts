@@ -1,9 +1,9 @@
+import { IArea } from './area-entity.abstract';
 import { BaseEntity } from './base-entity.abstract';
 import { IUser } from './user.entity.abstract';
 
 export interface IShippingAddress extends BaseEntity {
-  city: string;
-  area: string;
+  area: IArea;
   street: string;
   building: number;
   apartment: number;

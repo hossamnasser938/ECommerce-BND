@@ -2,6 +2,7 @@ import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abst
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
+import { AreaEntity } from './area.entity';
 import { OrderEntity } from './order.entity';
 import { UserEntity } from './user.entity';
 
@@ -11,8 +12,7 @@ export class ShippingAddressEntity
   implements IShippingAddress
 {
   constructor(
-    city: string,
-    area: string,
+    area: AreaEntity,
     street: string,
     building: number,
     apartment: number,
@@ -20,7 +20,6 @@ export class ShippingAddressEntity
     isDefault = false,
   ) {
     super();
-    this.city = city;
     this.area = area;
     this.street = street;
     this.building = building;
@@ -29,11 +28,10 @@ export class ShippingAddressEntity
     this.isDefault = isDefault;
   }
 
-  @Column()
-  city: string;
-
-  @Column()
-  area: string;
+  @ManyToOne(() => AreaEntity, (areaEntity) => areaEntity.shippingAddresses, {
+    eager: true,
+  })
+  area: AreaEntity;
 
   @Column()
   street: string;

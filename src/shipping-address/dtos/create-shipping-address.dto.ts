@@ -1,11 +1,8 @@
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateShippingAddressDTO {
-  @IsString()
-  city: string;
-
-  @IsString()
-  area: string;
+  @IsNumber()
+  areaId: number;
 
   @IsString()
   street: string;
