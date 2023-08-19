@@ -1,3 +1,5 @@
+import { StreamableFile } from '@nestjs/common';
+
 import { ICustomMulterFileProperties } from './file-storage.types';
 
 export abstract class AbstractFileStorageService {
@@ -10,6 +12,8 @@ export abstract class AbstractFileStorageService {
   ): Promise<void>;
 
   abstract deleteFile(fileStorageIdentifier: string): Promise<void>;
+
+  abstract streamFile(fileName: string): StreamableFile;
 
   abstract getFileURL(fileStorageIdentifier: string): Promise<string>;
 }
