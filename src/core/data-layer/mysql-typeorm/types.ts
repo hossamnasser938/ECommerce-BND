@@ -8,3 +8,5 @@ export class PaginateConfig<
 > extends AbstractPaginateConfig {
   otherOptions?: FindManyOptions<T>;
 }
+
+export type DB_TYPE = 'mysql' | 'mariadb';
