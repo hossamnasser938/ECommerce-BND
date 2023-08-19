@@ -3,8 +3,10 @@ import { DataSourceOptions } from 'typeorm';
 
 import { ConfigWrapperModule } from '../config-wrapper/config-wrapper.module';
 import { ConfigWrapperService } from '../config-wrapper/config-wrapper.service';
+import { AreaEntity } from '../core/data-layer/mysql-typeorm/entities/area.entity';
 import { CartItemEntity } from '../core/data-layer/mysql-typeorm/entities/cart-item.entity';
 import { CategoryEntity } from '../core/data-layer/mysql-typeorm/entities/category.entity';
+import { CityEntity } from '../core/data-layer/mysql-typeorm/entities/city.entity';
 import { FavoriteItemEntity } from '../core/data-layer/mysql-typeorm/entities/favorite-item.entity';
 import { FileEntity } from '../core/data-layer/mysql-typeorm/entities/file.entity';
 import { OrderEntity } from '../core/data-layer/mysql-typeorm/entities/order.entity';
@@ -24,6 +26,8 @@ const entities = [
   CartItemEntity,
   FavoriteItemEntity,
   ShippingAddressEntity,
+  CityEntity,
+  AreaEntity,
   OrderEntity,
   FileEntity,
 ];

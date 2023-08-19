@@ -1,0 +1,6 @@
+{
+  "cities": [
+    { "name": "Cairo", "areas": ["Tahrir", "Abbasiya", "New Cairo"] },
+    { "name": "Giza", "areas": ["Faisal", "Haram", "Dokki", "6th of October"] }
+  ]
+}
