@@ -22,6 +22,18 @@ export class ShippingAddressRepository
     private readonly areaRespository: AreaRepository,
   ) {
     super(shippingAddressEntityRepo);
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const shippingAddressRepositoryInstance = this;
+    ShippingAddressEntity.prototype.setCity = async function () {
+      const area =
+        await shippingAddressRepositoryInstance.areaRespository.getOneById(
+          (this as ShippingAddressEntity).area.id,
+        );
+      const city = area.city;
+      delete city.areas;
+      (this as ShippingAddressEntity).city = city;
+    };
   }
 
   async createOne(

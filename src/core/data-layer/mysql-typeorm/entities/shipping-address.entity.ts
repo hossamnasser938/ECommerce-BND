@@ -1,8 +1,9 @@
 import { IShippingAddress } from 'src/core/entities/shipping-address.entity.abstract';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { AfterLoad, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
 import { AreaEntity } from './area.entity';
+import { CityEntity } from './city.entity';
 import { OrderEntity } from './order.entity';
 import { UserEntity } from './user.entity';
 
@@ -28,6 +29,8 @@ export class ShippingAddressEntity
     this.isDefault = isDefault;
   }
 
+  city: CityEntity;
+
   @ManyToOne(() => AreaEntity, (areaEntity) => areaEntity.shippingAddresses, {
     eager: true,
   })
@@ -50,4 +53,10 @@ export class ShippingAddressEntity
 
   @OneToMany(() => OrderEntity, (order) => order.shippingAddress)
   orders: OrderEntity[];
+
+  @AfterLoad()
+  setCity() {
+    // TODO: discuss with Affan
+    // implementation delegated to shipping address repositoy
+  }
 }
