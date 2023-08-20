@@ -28,4 +28,6 @@ export const ERROR_MESSAGES = {
   AMOUNT_NOT_AVAILABLE: 'Amount requested is not available in stock',
   EMPTY_CART: 'User has emoty cart',
   PRODUCT_ALREADY_FAVORITED: 'Product already favorited by user',
+  INVALID_ORDER_STATUS_TRANSITION:
+    'Invalid received transition with respect to current order status',
 };

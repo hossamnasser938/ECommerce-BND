@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CartService } from 'src/cart/cart.service';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
@@ -7,8 +12,11 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { CreateOrderDTO } from './dtos/create-order.dto';
+import { UpdateOrderStatusDTO } from './dtos/update-order-status.dto';
 import { ORDER_REPOSITORY_PROVIDER_TOKEN } from './order.constants';
 import { IOrderRepository } from './order.repository.abstract';
+import { orderTrackingStateMachineService } from './order-tracking.state-machie';
+import { OrderStatus } from './types';
 
 @Injectable()
 export class OrderService {
@@ -50,6 +58,39 @@ export class OrderService {
     await this.cartService.updateUserInCartItemsWithOrder(orderSaved, user.id);
 
     return orderSaved;
+  }
+
+  async updateOrderStatus(
+    id: Identifier,
+    updateOrderStatusDTO: UpdateOrderStatusDTO,
+  ) {
+    const order = await this.orderRepository.getOneById(id);
+
+    orderTrackingStateMachineService.stop();
+    orderTrackingStateMachineService.start(order.status);
+
+    const isTransitionValid = orderTrackingStateMachineService
+      .getSnapshot()
+      .can(updateOrderStatusDTO.transition);
+
+    if (!isTransitionValid) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.INVALID_ORDER_STATUS_TRANSITION,
+      );
+    }
+
+    orderTrackingStateMachineService.send({
+      type: updateOrderStatusDTO.transition,
+    });
+
+    const newOrderStatus = orderTrackingStateMachineService.getSnapshot()
+      .value as OrderStatus;
+
+    const result = await this.orderRepository.updateOneById(id, {
+      status: newOrderStatus,
+    });
+
+    return !!result;
   }
 
   async deleteOne(id: Identifier) {

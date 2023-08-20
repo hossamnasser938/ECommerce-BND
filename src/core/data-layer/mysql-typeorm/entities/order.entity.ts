@@ -1,6 +1,8 @@
 import { IOrder } from 'src/core/entities/order.entity.abstract';
-import { Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
+import { orderTrackingStateMachine } from '../../../../order/order-tracking.state-machie';
+import { OrderStatus } from '../../../../order/types';
 import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
 import { ShippingAddressEntity } from './shipping-address.entity';
@@ -14,10 +16,14 @@ export class OrderEntity extends BaseEntity implements IOrder {
     cartItems: CartItemEntity[],
   ) {
     super();
+    this.status = orderTrackingStateMachine.initial as OrderStatus;
     this.user = user;
     this.shippingAddress = shippingAddress;
     this.cartItems = cartItems;
   }
+
+  @Column({ enum: OrderStatus })
+  status: OrderStatus;
 
   @ManyToOne(
     () => ShippingAddressEntity,
