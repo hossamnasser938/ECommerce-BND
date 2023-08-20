@@ -3,14 +3,14 @@ import * as moment from 'moment';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IUser } from 'src/core/entities/user.entity.abstract';
 import { IVerificationCode } from 'src/core/entities/verification-code.entity.abstract';
-import { MAIL_SERVICE_PROVIDER_TOKEN } from 'src/mail/mail.constants';
-import { AbstractMailService } from 'src/mail/mail.service.abstract';
+import { MESSAGE_SENDER_SERVICE_PROVIDER_TOKEN } from 'src/message-sender/message-sender.constants';
+import { AbstractMessageSenderService } from 'src/message-sender/message-sender.service.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import {
   VERIFICATION_CODE_MINUTES_VALIDITY,
-  VERIFICATION_EMAIL_SUBJECT,
-  VERIFICATION_EMAIL_TEXT,
+  VERIFICATION_MESSAGE_SUBJECT,
+  VERIFICATION_MESSAGE_TEXT,
 } from '../utils/config-constants';
 import { generateVerificationCode } from '../utils/verification-code-generator';
 import { VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN } from './verification-code.constants';
@@ -21,8 +21,8 @@ export class VerificationCodeService {
   constructor(
     @Inject(VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN)
     private readonly verificationCodeRepository: IVerificationCodeRepository<IVerificationCode>,
-    @Inject(MAIL_SERVICE_PROVIDER_TOKEN)
-    private readonly mailService: AbstractMailService,
+    @Inject(MESSAGE_SENDER_SERVICE_PROVIDER_TOKEN)
+    private readonly messageSenderService: AbstractMessageSenderService,
   ) {}
 
   createOne(user: IUser) {
@@ -35,10 +35,10 @@ export class VerificationCodeService {
   }
 
   sendOne(verificationCode: IVerificationCode) {
-    return this.mailService.sendEmail(
-      verificationCode.user.email,
-      VERIFICATION_EMAIL_SUBJECT,
-      VERIFICATION_EMAIL_TEXT(verificationCode.code),
+    return this.messageSenderService.sendMessage(
+      verificationCode.user,
+      VERIFICATION_MESSAGE_SUBJECT,
+      VERIFICATION_MESSAGE_TEXT(verificationCode.code),
     );
   }
 

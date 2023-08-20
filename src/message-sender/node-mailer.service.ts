@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
-import { AbstractMailService } from './mail.service.abstract';
+import { AbstractMessageSenderService } from './message-sender.service.abstract';
 
 @Injectable()
-export class NodeMailerService extends AbstractMailService {
+export class NodeMailerService extends AbstractMessageSenderService {
   private readonly transporter: nodemailer.Transporter;
 
   constructor(
@@ -24,9 +25,9 @@ export class NodeMailerService extends AbstractMailService {
     });
   }
 
-  async sendEmail(to: string, subject: string, text: string) {
+  async sendMessage(user: IUser, subject: string, text: string) {
     const info = await this.transporter.sendMail({
-      to,
+      to: user.email,
       subject,
       text,
     });
