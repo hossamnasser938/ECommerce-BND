@@ -53,8 +53,15 @@ export class CartService {
 
     const product = await this.productService.findOneById(productId);
 
-    const potentialDuplicateCartItem =
-      await this.cartRepository.getUserInCartItemByProduct(user.id, productId);
+    let potentialDuplicateCartItem: ICartItem;
+
+    try {
+      potentialDuplicateCartItem =
+        await this.cartRepository.getUserInCartItemByProduct(
+          user.id,
+          productId,
+        );
+    } catch (err) {}
 
     if (potentialDuplicateCartItem)
       throw new ConflictException(ERROR_MESSAGES.CART_ITEM_EXIST);

@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
@@ -21,6 +22,7 @@ import { IUser } from 'src/core/entities/user.entity.abstract';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { CreateOrderDTO } from './dtos/create-order.dto';
+import { UpdateOrderStatusDTO } from './dtos/update-order-status.dto';
 import { OrderService } from './order.service';
 
 @UseGuards(AuthGuard)
@@ -55,6 +57,16 @@ export class OrderController {
   createOne(@Body() createOrderDTO: CreateOrderDTO, @Request() request) {
     const user = request.user as IUser;
     return this.orderService.createOne(createOrderDTO, user);
+  }
+
+  @Put(':id')
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  updateOrderStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateOrderStatusDTO: UpdateOrderStatusDTO,
+  ) {
+    return this.orderService.updateOrderStatus(id, updateOrderStatusDTO);
   }
 
   @Roles(Role.Admin)
