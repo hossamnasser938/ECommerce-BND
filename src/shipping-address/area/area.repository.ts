@@ -15,4 +15,11 @@ export class AreaRepository
   ) {
     super(areaEntityRepository);
   }
+
+  getOneById(id: number): Promise<AreaEntity> {
+    return this.areaEntityRepository.findOneOrFail({
+      where: { id },
+      relations: { city: true },
+    });
+  }
 }
