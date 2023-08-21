@@ -1,12 +1,13 @@
 import { Exclude } from 'class-transformer';
 import { Role } from 'src/auth/auth.enums';
 import { IUser } from 'src/core/entities/user.entity.abstract';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
 import { OrderEntity } from './order.entity';
+import { ProfileEntity } from './profile.entity';
 import { ShippingAddressEntity } from './shipping-address.entity';
 import { VerificationCodeEntity } from './verification-code.entity';
 
@@ -15,16 +16,15 @@ export class UserEntity extends BaseEntity implements IUser {
   constructor(
     email: string,
     password: string,
-    name: string,
     roles: Role[],
     verified = false,
   ) {
     super();
     this.email = email;
     this.password = password;
-    this.name = name;
     this.roles = JSON.stringify(roles);
     this.verified = verified;
+    this.profile = new ProfileEntity();
   }
 
   @Column({ unique: true })
@@ -35,13 +35,14 @@ export class UserEntity extends BaseEntity implements IUser {
   password: string;
 
   @Column()
-  name: string;
-
-  @Column()
   roles: string;
 
   @Column()
   verified: boolean;
+
+  @OneToOne(() => ProfileEntity, { eager: true, cascade: true })
+  @JoinColumn()
+  profile: ProfileEntity;
 
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.user)
   cartItems: CartItemEntity[];

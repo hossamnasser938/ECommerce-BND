@@ -13,6 +13,6 @@ import { FileService } from './file.service';
     { provide: FILE_REPOSITORY_PROVIDER_TOKEN, useClass: FileRepository },
     FileService,
   ],
-  exports: [FILE_REPOSITORY_PROVIDER_TOKEN, FileService],
+  exports: [FILE_REPOSITORY_PROVIDER_TOKEN, FileService, FileStorageModule],
 })
 export class FileModule {}

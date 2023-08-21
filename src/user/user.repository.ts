@@ -26,9 +26,9 @@ export class UserRepository
     createUserDTO: CreateUserDTO,
     roles: Role[],
   ): Promise<UserEntity> {
-    const { email, password, name } = createUserDTO;
+    const { email, password } = createUserDTO;
 
-    const user = new UserEntity(email, password, name, roles);
+    const user = new UserEntity(email, password, roles);
     let userSaved: UserEntity;
 
     try {
