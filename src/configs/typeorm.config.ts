@@ -9,6 +9,7 @@ import { CategoryEntity } from '../core/data-layer/mysql-typeorm/entities/catego
 import { CityEntity } from '../core/data-layer/mysql-typeorm/entities/city.entity';
 import { FavoriteItemEntity } from '../core/data-layer/mysql-typeorm/entities/favorite-item.entity';
 import { FileEntity } from '../core/data-layer/mysql-typeorm/entities/file.entity';
+import { NotificationTokenEntity } from '../core/data-layer/mysql-typeorm/entities/notification-token.entity';
 import { OrderEntity } from '../core/data-layer/mysql-typeorm/entities/order.entity';
 import { ProductEntity } from '../core/data-layer/mysql-typeorm/entities/product.entity';
 import { ProfileEntity } from '../core/data-layer/mysql-typeorm/entities/profile.entity';
@@ -32,6 +33,7 @@ const entities = [
   AreaEntity,
   OrderEntity,
   FileEntity,
+  NotificationTokenEntity,
 ];
 
 const MIGRATIONS_FILES = 'dist/migrations/*{.ts,.js}';
