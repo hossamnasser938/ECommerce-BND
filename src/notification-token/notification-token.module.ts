@@ -15,6 +15,9 @@ import { NotificationTokenService } from './notification-token.service';
       useClass: NotificationTokenRepository,
     },
   ],
-  exports: [NotificationTokenService],
+  exports: [
+    NotificationTokenService,
+    NOTIFICATION_TOKEN_REPOSITORY_PROVIDER_TOKEN,
+  ],
 })
 export class NotificationTokenModule {}

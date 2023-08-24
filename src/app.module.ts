@@ -13,6 +13,7 @@ import { MySQLTypeORMExceptionFilter } from './core/data-layer/mysql-typeorm/mys
 import { FavoriteModule } from './favorite/favorite.module';
 import { FileModule } from './file/file.module';
 import { MulterWrapperModule } from './multer-wrapper/multer-wrapper.module';
+import { NotificationModule } from './notification/notification.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
 import { SearchModule } from './search/search.module';
@@ -35,6 +36,7 @@ import { UserModule } from './user/user.module';
     OrderModule,
     FileModule,
     SearchModule,
+    NotificationModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: MySQLTypeORMExceptionFilter }],
 })
