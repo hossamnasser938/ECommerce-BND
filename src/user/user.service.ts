@@ -45,4 +45,8 @@ export class UserService {
   verifyUser(userId: Identifier) {
     return this.updateOne(userId, { verified: true });
   }
+
+  getUserPreference(userId: Identifier) {
+    return this.userRepository.getUserPreference(userId);
+  }
 }

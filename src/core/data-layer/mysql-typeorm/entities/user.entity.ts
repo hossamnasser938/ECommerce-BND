@@ -8,6 +8,7 @@ import { CartItemEntity } from './cart-item.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
 import { NotificationTokenEntity } from './notification-token.entity';
 import { OrderEntity } from './order.entity';
+import { PreferenceEntity } from './preference.entity';
 import { ProfileEntity } from './profile.entity';
 import { ShippingAddressEntity } from './shipping-address.entity';
 import { VerificationCodeEntity } from './verification-code.entity';
@@ -26,6 +27,7 @@ export class UserEntity extends BaseEntity implements IUser {
     this.roles = JSON.stringify(roles);
     this.verified = verified;
     this.profile = new ProfileEntity();
+    this.preference = new PreferenceEntity();
   }
 
   @Column({ unique: true })
@@ -71,4 +73,8 @@ export class UserEntity extends BaseEntity implements IUser {
     (notificationTokenEntity) => notificationTokenEntity.user,
   )
   notificationTokens: NotificationTokenEntity[];
+
+  @OneToOne(() => PreferenceEntity, { cascade: true })
+  @JoinColumn()
+  preference: PreferenceEntity;
 }

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from 'src/auth/auth.enums';
+import { PreferenceEntity } from 'src/core/data-layer/mysql-typeorm/entities/preference.entity';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 import { MYSQL_TYPEORM_ERROR_TYPE_CHECKER } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.error-type-checker';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
@@ -41,5 +42,13 @@ export class UserRepository
     }
 
     return userSaved;
+  }
+
+  async getUserPreference(userId: number): Promise<PreferenceEntity> {
+    const user = await this.userEntityRepository.findOne({
+      where: { id: userId },
+      relations: { preference: true },
+    });
+    return user.preference;
   }
 }

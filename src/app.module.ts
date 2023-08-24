@@ -15,6 +15,7 @@ import { FileModule } from './file/file.module';
 import { MulterWrapperModule } from './multer-wrapper/multer-wrapper.module';
 import { NotificationModule } from './notification/notification.module';
 import { OrderModule } from './order/order.module';
+import { PreferenceModule } from './preference/preference.module';
 import { ProductModule } from './product/product.module';
 import { SearchModule } from './search/search.module';
 import { ShippingAddressModule } from './shipping-address/shipping-address.module';
@@ -37,6 +38,7 @@ import { UserModule } from './user/user.module';
     FileModule,
     SearchModule,
     NotificationModule,
+    PreferenceModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: MySQLTypeORMExceptionFilter }],
 })
