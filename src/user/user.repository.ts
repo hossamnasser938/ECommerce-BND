@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from 'src/auth/auth.enums';
 import { PreferenceEntity } from 'src/core/data-layer/mysql-typeorm/entities/preference.entity';
+import { ProfileEntity } from 'src/core/data-layer/mysql-typeorm/entities/profile.entity';
 import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 import { MYSQL_TYPEORM_ERROR_TYPE_CHECKER } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.error-type-checker';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
@@ -50,5 +51,13 @@ export class UserRepository
       relations: { preference: true },
     });
     return user.preference;
+  }
+
+  async getUserProfile(userId: number): Promise<ProfileEntity> {
+    const user = await this.userEntityRepository.findOne({
+      where: { id: userId },
+      relations: { profile: true },
+    });
+    return user.profile;
   }
 }

@@ -30,4 +30,5 @@ export const ERROR_MESSAGES = {
   PRODUCT_ALREADY_FAVORITED: 'Product already favorited by user',
   INVALID_ORDER_STATUS_TRANSITION:
     'Invalid received transition with respect to current order status',
+  USER_HAS_NO_PHOTO: 'User has no photo',
 };

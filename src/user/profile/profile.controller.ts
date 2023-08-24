@@ -2,17 +2,18 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Inject,
-  Param,
   ParseFilePipe,
-  ParseIntPipe,
   Put,
+  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 import { IMAGES_VALIDATORS } from 'src/multer-wrapper/multer-wrapper.constants';
 import { ExtendedMulterFile } from 'src/multer-wrapper/multer-wrapper.types';
 
@@ -26,21 +27,25 @@ export class ProfileController {
     @Inject(ProfileService) private readonly profileService: ProfileService,
   ) {}
 
-  @Put('data/:profile_id')
-  updateProfileData(
-    @Param('profile_id', ParseIntPipe) profileId: number,
-    @Body() updateProfileDataDTO: UpdateProfileDataDTO,
-  ) {
-    return this.profileService.updateProfileData(
-      profileId,
-      updateProfileDataDTO,
-    );
+  @Get()
+  getUserProfile(@Request() request) {
+    const user = request.user as IUser;
+    return this.profileService.getUserProfile(user.id);
   }
 
-  @Put('photo/:profile_id')
+  @Put('data')
+  updateProfileData(
+    @Request() request,
+    @Body() updateProfileDataDTO: UpdateProfileDataDTO,
+  ) {
+    const user = request.user as IUser;
+    return this.profileService.updateProfileData(user.id, updateProfileDataDTO);
+  }
+
+  @Put('photo')
   @UseInterceptors(FileInterceptor('photo'))
   updateProfilePhoto(
-    @Param('profile_id', ParseIntPipe) profileId: number,
+    @Request() request,
     @UploadedFile(
       new ParseFilePipe({
         validators: IMAGES_VALIDATORS,
@@ -48,14 +53,16 @@ export class ProfileController {
     )
     image: ExtendedMulterFile,
   ) {
+    const user = request.user as IUser;
     return this.profileService.updateProfilePhoto(
-      profileId,
+      user.id,
       image.storageIdentifier,
     );
   }
 
-  @Delete('photo/:photo_id')
-  removeProfilePhoto(@Param('photo_id', ParseIntPipe) photoId: number) {
-    return this.profileService.removeProfilePhoto(photoId);
+  @Delete('photo')
+  removeProfilePhoto(@Request() request) {
+    const user = request.user as IUser;
+    return this.profileService.removeProfilePhoto(user.id);
   }
 }

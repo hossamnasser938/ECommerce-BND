@@ -49,4 +49,8 @@ export class UserService {
   getUserPreference(userId: Identifier) {
     return this.userRepository.getUserPreference(userId);
   }
+
+  getUserProfile(userId: Identifier) {
+    return this.userRepository.getUserProfile(userId);
+  }
 }
