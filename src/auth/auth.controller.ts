@@ -19,6 +19,9 @@ import { RolesGuard } from './roles.guard';
 import { Reflector } from '@nestjs/core';
 import { ChangePasswordDTO } from './models/change-password.dto';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { VerifyDTO } from './models/verify-signup-dto';
+import { ResendCodeDTO } from './models/resend-code.dto';
+import { ResetPasswordDTO } from './models/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -44,6 +47,17 @@ export class AuthController {
     return this.authService.signUp(createUserDTO, [Role.Admin]);
   }
 
+  @Post('verify-signup')
+  verifySignup(@Body() verifyDTO: VerifyDTO) {
+    return this.authService.verifySignUp(verifyDTO);
+  }
+
+  @Post('resend-code')
+  async resendCode(@Body() resendCodeDTO: ResendCodeDTO) {
+    const verificationCode = await this.authService.resendCode(resendCodeDTO);
+    return updateDeleteResponse(!!verificationCode);
+  }
+
   @UseGuards(AuthGuard)
   @Get('me')
   findAuthUser(@Request() request) {
@@ -63,5 +77,29 @@ export class AuthController {
       user,
     );
     return updateDeleteResponse(successfullyChangedPassword);
+  }
+
+  @Post('forget-password')
+  async forgetPassword(@Body() resendCodeDTO: ResendCodeDTO) {
+    const successfullyChangedPassword = await this.authService.resendCode(
+      resendCodeDTO,
+    );
+    return updateDeleteResponse(!!successfullyChangedPassword);
+  }
+
+  @Post('verify-forget-password')
+  async verifyForgetPassword(@Body() verifyDTO: VerifyDTO) {
+    const verifciationCode = await this.authService.verifyForgetPassword(
+      verifyDTO,
+    );
+    return { token: verifciationCode };
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
+    const resettedSuccessfully = await this.authService.resetPassword(
+      resetPasswordDTO,
+    );
+    return updateDeleteResponse(resettedSuccessfully);
   }
 }

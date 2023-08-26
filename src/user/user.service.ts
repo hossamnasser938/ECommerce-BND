@@ -38,6 +38,7 @@ export class UserService {
     user.password = password;
     user.name = name;
     user.roles = JSON.stringify(roles);
+    user.verified = false;
 
     return this.userRepository.save(user);
   }
@@ -58,5 +59,9 @@ export class UserService {
       relations: { cartItems: true },
     });
     return user.cartItems;
+  }
+
+  verifyUser(userId: number) {
+    return this.updateOne(userId, { verified: true });
   }
 }
