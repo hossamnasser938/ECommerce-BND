@@ -3,6 +3,7 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { INotification } from 'src/core/entities/notification.entity.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+import { PreferenceService } from 'src/preference/preference.service';
 import { AbstractPushNotificationSenderService } from 'src/push-notification-sender/push-notification-sender.service.abstract';
 import { PUSH_NOTIFICATION_SENDER_SERVICE_PROVIDER_TOKEN } from 'src/push-notification-sender/push-notifiction-sender.constants';
 
@@ -16,6 +17,8 @@ export class NotificationService {
     private readonly notificationRepository: INotificationRepositoy<INotification>,
     @Inject(PUSH_NOTIFICATION_SENDER_SERVICE_PROVIDER_TOKEN)
     private readonly pushNotificationSenderService: AbstractPushNotificationSenderService,
+    @Inject(PreferenceService)
+    private readonly preferenceService: PreferenceService,
   ) {}
 
   findAll(paginationParametersDTO: PaginationParamsDTO) {
@@ -42,7 +45,16 @@ export class NotificationService {
   }
 
   async sendOne(notification: INotification) {
-    await this.pushNotificationSenderService.sendPushNotification(notification);
+    const { user } = notification;
+
+    const { getNotifications } =
+      await this.preferenceService.getUserPreferences(user.id);
+
+    if (getNotifications) {
+      await this.pushNotificationSenderService.sendPushNotification(
+        notification,
+      );
+    }
   }
 
   async createAndSendOne(title: string, body: string, user: IUser) {

@@ -13,14 +13,14 @@ export class PreferenceService {
     private readonly preferenceRepository: IPreferenceRepositoy<IPreference>,
   ) {}
 
-  async findOneById(userId: Identifier) {
+  async getUserPreferences(userId: Identifier) {
     const preference = await this.preferenceRepository.getUserPreference(
       userId,
     );
     return preference;
   }
 
-  async updateOne(
+  async updateUserPreferences(
     userId: Identifier,
     updatePreferenceDTO: UpdatePreferenceDTO,
   ) {

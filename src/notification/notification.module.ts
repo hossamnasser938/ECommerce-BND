@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationEntity } from 'src/core/data-layer/mysql-typeorm/entities/notification.entity';
 import { NotificationTokenModule } from 'src/notification-token/notification-token.module';
+import { PreferenceModule } from 'src/preference/preference.module';
 import { PushNotificationSenderModule } from 'src/push-notification-sender/push-notification-sender.module';
 
 import { NOTIFICATION_REPOSITORY_PROVIDER_TOKEN } from './notification.constants';
@@ -14,6 +15,7 @@ import { NotificationService } from './notification.service';
     TypeOrmModule.forFeature([NotificationEntity]),
     NotificationTokenModule,
     PushNotificationSenderModule,
+    PreferenceModule,
   ],
   providers: [
     NotificationService,

@@ -23,21 +23,22 @@ export class PreferenceController {
   ) {}
 
   @Get()
-  findOne(@Request() request) {
+  getUserPreference(@Request() request) {
     const user = request.user as IUser;
-    return this.preferenceService.findOneById(user.id);
+    return this.preferenceService.getUserPreferences(user.id);
   }
 
   @Put()
-  async updateOne(
+  async updateUserPreference(
     @Body() updatePreferenceDTO: UpdatePreferenceDTO,
     @Request() request,
   ) {
     const user = request.user as IUser;
-    const updatedSuccessfully = await this.preferenceService.updateOne(
-      user.id,
-      updatePreferenceDTO,
-    );
+    const updatedSuccessfully =
+      await this.preferenceService.updateUserPreferences(
+        user.id,
+        updatePreferenceDTO,
+      );
     return updateDeleteResponse(updatedSuccessfully);
   }
 }
