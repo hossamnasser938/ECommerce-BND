@@ -24,6 +24,21 @@ export class NotificationTokenService {
     );
   }
 
+  async createOneIfNoExists(
+    createNotificationTokenDTO: CreateNotificationTokenDTO,
+    user: IUser,
+  ): Promise<INotificationToken | undefined> {
+    const exists = await this.notificationTokenRepository.exists(
+      createNotificationTokenDTO,
+      user,
+    );
+    if (exists) {
+      return undefined;
+    }
+
+    return this.createOne(createNotificationTokenDTO, user);
+  }
+
   getUserAll(userId) {
     return this.notificationTokenRepository.getUserAll(userId);
   }

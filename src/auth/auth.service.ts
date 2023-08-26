@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Inject,
@@ -10,6 +11,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+import { CreateNotificationTokenDTO } from 'src/notification-token/dtos/create-notification-token.dto';
+import { NotificationTokenService } from 'src/notification-token/notification-token.service';
+import { DeviceType } from 'src/notification-token/notification-token.types';
 import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
@@ -33,10 +37,38 @@ export class AuthService {
     @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(VerificationCodeService)
     private readonly verificationCodeService: VerificationCodeService,
+    @Inject(NotificationTokenService)
+    private readonly notificationTokenService: NotificationTokenService,
   ) {}
 
+  private handleNotificationToken(
+    notificationToken: string,
+    deviceType: DeviceType,
+    user: IUser,
+  ) {
+    if (notificationToken && !deviceType) {
+      throw new BadRequestException(ERROR_MESSAGES.DEVICE_TYPE_MISSING);
+    }
+
+    if (!notificationToken && deviceType) {
+      throw new BadRequestException(ERROR_MESSAGES.NOTIFICATION_TOKEN_MISSING);
+    }
+
+    const createNotificationTokenDTO: CreateNotificationTokenDTO = {
+      value: notificationToken,
+      deviceType,
+    };
+
+    if (notificationToken && deviceType) {
+      this.notificationTokenService.createOneIfNoExists(
+        createNotificationTokenDTO,
+        user,
+      );
+    }
+  }
+
   async signIn(signInDTO: SignInDTO) {
-    const { email, password } = signInDTO;
+    const { email, password, notificationToken, deviceType } = signInDTO;
 
     const user = await this.userService.findOneByEmail(email);
 
@@ -47,6 +79,8 @@ export class AuthService {
 
     if (!user.verified)
       throw new ForbiddenException(ERROR_MESSAGES.VERIFY_ACCOUNT);
+
+    this.handleNotificationToken(notificationToken, deviceType, user);
 
     const payload: IAuthTokenPayload = { sub: user.id, email: user.email };
 

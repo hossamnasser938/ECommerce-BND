@@ -24,6 +24,21 @@ export class NotificationTokenRepository
     return this.notificationTokenRepository.findBy({ user: { id: userId } });
   }
 
+  async exists(
+    createNotificationTokenDTO: CreateNotificationTokenDTO,
+    user: UserEntity,
+  ): Promise<boolean> {
+    const { value, deviceType } = createNotificationTokenDTO;
+
+    const notificationToken = await this.notificationTokenRepository.findOneBy({
+      value,
+      deviceType,
+      user: { id: user.id },
+    });
+
+    return !!notificationToken;
+  }
+
   createOne(
     createNotificationTokenDTO: CreateNotificationTokenDTO,
     user: UserEntity,

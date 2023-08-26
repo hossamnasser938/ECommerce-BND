@@ -31,4 +31,8 @@ export const ERROR_MESSAGES = {
   INVALID_ORDER_STATUS_TRANSITION:
     'Invalid received transition with respect to current order status',
   USER_HAS_NO_PHOTO: 'User has no photo',
+  NOTIFICATION_TOKEN_MISSING:
+    'notificationToken parameter is required when deviceType exists',
+  DEVICE_TYPE_MISSING:
+    'deviceType parameter is required when notificationToken exists',
 };

@@ -9,6 +9,11 @@ export interface INotificationTokenRepository<T extends INotificationToken>
   extends GenericRepository<T> {
   getUserAll(userId: Identifier): Promise<T[]>;
 
+  exists(
+    createNotificationTokenDTO: CreateNotificationTokenDTO,
+    user: IUser,
+  ): Promise<boolean>;
+
   createOne(
     createNotificationTokenDTO: CreateNotificationTokenDTO,
     user: IUser,
