@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { PaginationResponse } from 'src/core/abstract-data-layer/types';
 import { NotificationEntity } from 'src/core/data-layer/mysql-typeorm/entities/notification.entity';
-import { NotificationTokenEntity } from 'src/core/data-layer/mysql-typeorm/entities/notification-token.entity';
+import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
 import { MySQLTypeORMDataLayerRepository } from 'src/core/data-layer/mysql-typeorm/mysql-typeorm.repository';
 import { NOTIFICATION_TOKEN_REPOSITORY_PROVIDER_TOKEN } from 'src/notification-token/notification-token.constants';
 import { NotificationTokenRepository } from 'src/notification-token/notification-token.repository';
@@ -47,9 +47,9 @@ export class NotificationRepository
   async createOne(
     title: string,
     body: string,
-    notificationToken: NotificationTokenEntity,
+    user: UserEntity,
   ): Promise<NotificationEntity> {
-    const notification = new NotificationEntity(title, body, notificationToken);
+    const notification = new NotificationEntity(title, body, user);
 
     return this.notificationEntityRepo.save(notification);
   }

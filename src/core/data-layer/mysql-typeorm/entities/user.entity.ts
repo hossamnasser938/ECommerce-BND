@@ -6,6 +6,7 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
+import { NotificationEntity } from './notification.entity';
 import { NotificationTokenEntity } from './notification-token.entity';
 import { OrderEntity } from './order.entity';
 import { PreferenceEntity } from './preference.entity';
@@ -67,6 +68,12 @@ export class UserEntity extends BaseEntity implements IUser {
 
   @OneToMany(() => OrderEntity, (order) => order.shippingAddress)
   orders: OrderEntity[];
+
+  @OneToMany(
+    () => NotificationEntity,
+    (notificationEntity) => notificationEntity.user,
+  )
+  notifications: NotificationEntity[];
 
   @OneToMany(
     () => NotificationTokenEntity,

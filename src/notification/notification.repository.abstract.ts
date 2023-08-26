@@ -5,7 +5,7 @@ import {
   PaginationResponse,
 } from 'src/core/abstract-data-layer/types';
 import { INotification } from 'src/core/entities/notification.entity.abstract';
-import { INotificationToken } from 'src/core/entities/notification-token.entity.abstract';
+import { IUser } from 'src/core/entities/user.entity.abstract';
 
 export interface INotificationRepositoy<T extends INotification>
   extends GenericRepository<T> {
@@ -14,11 +14,7 @@ export interface INotificationRepositoy<T extends INotification>
     userId: Identifier,
   ): Promise<PaginationResponse<T>>;
 
-  createOne(
-    title: string,
-    body: string,
-    notificationToken: INotificationToken,
-  ): Promise<T>;
+  createOne(title: string, body: string, user: IUser): Promise<T>;
 
   markOneAsRead(id: Identifier, userId: Identifier): Promise<boolean>;
 

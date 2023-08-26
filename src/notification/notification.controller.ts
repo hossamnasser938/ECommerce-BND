@@ -16,7 +16,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { IUser } from 'src/core/entities/user.entity.abstract';
-import { NotificationTokenService } from 'src/notification-token/notification-token.service';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
 import { NotificationService } from './notification.service';
@@ -27,8 +26,6 @@ export class NotificationController {
   constructor(
     @Inject(NotificationService)
     private readonly notificationService: NotificationService,
-    @Inject(NotificationTokenService)
-    private readonly notificationTokenService: NotificationTokenService,
   ) {}
 
   @Roles(Role.Admin)
