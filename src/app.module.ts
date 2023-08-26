@@ -1,40 +1,47 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CategoryModule } from './category/category.module';
-import { ProductModule } from './product/product.module';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { APP_FILTER } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { AUTH_CONSTANTS } from './auth/auth.constants';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
+import { CategoryModule } from './category/category.module';
+import { ConfigWrapperModule } from './config-wrapper/config-wrapper.module';
+import { jwtModuleAsyncOptions } from './configs/jwt.config';
+import { typeOrmModuleAsyncOptions } from './configs/typeorm.config';
+import { MySQLTypeORMExceptionFilter } from './core/data-layer/mysql-typeorm/mysql-typeorm.exeption-filter';
 import { FavoriteModule } from './favorite/favorite.module';
-import { ConfigModule } from '@nestjs/config';
+import { FileModule } from './file/file.module';
+import { MulterWrapperModule } from './multer-wrapper/multer-wrapper.module';
+import { NotificationModule } from './notification/notification.module';
+import { OrderModule } from './order/order.module';
+import { PreferenceModule } from './preference/preference.module';
+import { ProductModule } from './product/product.module';
+import { PushNotificationSenderModule } from './push-notification-sender/push-notification-sender.module';
+import { SearchModule } from './search/search.module';
+import { ShippingAddressModule } from './shipping-address/shipping-address.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'rootpass',
-      database: 'ecommerce',
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
-    JwtModule.register({
-      global: true,
-      secret: AUTH_CONSTANTS.JWT_SECRET,
-    }),
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigWrapperModule,
+    TypeOrmModule.forRootAsync(typeOrmModuleAsyncOptions),
+    JwtModule.registerAsync(jwtModuleAsyncOptions),
+    MulterWrapperModule,
     CategoryModule,
     ProductModule,
     UserModule,
     AuthModule,
     CartModule,
     FavoriteModule,
+    ShippingAddressModule,
+    OrderModule,
+    FileModule,
+    SearchModule,
+    NotificationModule,
+    PreferenceModule,
+    PushNotificationSenderModule,
   ],
-  controllers: [],
-  providers: [],
+  providers: [{ provide: APP_FILTER, useClass: MySQLTypeORMExceptionFilter }],
 })
 export class AppModule {}

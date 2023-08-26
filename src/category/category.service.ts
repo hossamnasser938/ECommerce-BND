@@ -1,56 +1,74 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from './category.entity';
-import { Repository } from 'typeorm';
-import { CreateCategoryDTO } from './models/create-category.dto';
-import { UpdateCategoryDTO } from './models/update-category.dto';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { Inject, Injectable } from '@nestjs/common';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { ICategory } from 'src/core/entities/category.entity.abstract';
+import { FileService } from 'src/file/file.service';
+import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
+import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/fs-file-storeage.constants';
+
+import { CATEGORY_REPOSITORY_PROVIDER_TOKEN } from './category.constants';
+import { ICategoryRepository } from './category.repository.abstract';
+import { CreateCategoryDTO } from './dtos/create-category.dto';
+import { UpdateCategoryDTO } from './dtos/update-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectRepository(Category)
-    private categroyRepositoy: Repository<Category>,
+    @Inject(CATEGORY_REPOSITORY_PROVIDER_TOKEN)
+    private readonly categroyRepositoy: ICategoryRepository<ICategory>,
+    @Inject(FileService) private readonly fileService: FileService,
+    @Inject(FILE_STOREAGE_SERVICE_PROVIDER_TOKEN)
+    private readonly fileStorageService: AbstractFileStorageService,
   ) {}
 
-  async findAll(): Promise<Category[]> {
-    return await this.categroyRepositoy.find({
-      relations: { parentCategory: true },
-    });
+  async findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.categroyRepositoy.getAll(paginationParametersDTO);
   }
 
-  async findOneById(id: number): Promise<Category | null> {
-    const category = await this.categroyRepositoy.findOne({
-      where: { id },
-      relations: { parentCategory: true, childCategories: true },
-    });
-
-    if (!category) throw new NotFoundException();
+  async findOneById(id: Identifier) {
+    const category = await this.categroyRepositoy.getOneById(id);
     return category;
   }
 
-  async createOne(createCategoryDTO: CreateCategoryDTO): Promise<Category> {
-    const { name, parentCategoryId } = createCategoryDTO;
-
-    const parentCategory = await this.findOneById(parentCategoryId);
-    const category = new Category();
-    category.name = name;
-    if (parentCategory) {
-      category.parentCategory = parentCategory;
-    }
-    return this.categroyRepositoy.save(category);
+  async createOne(createCategoryDTO: CreateCategoryDTO) {
+    return this.categroyRepositoy.createOne(createCategoryDTO);
   }
 
   async updateOneById(
-    id: number,
+    id: Identifier,
     updateCategoryDTO: UpdateCategoryDTO,
   ): Promise<boolean> {
-    const result = await this.categroyRepositoy.update(id, updateCategoryDTO);
-    return checkTypeORMUpdateDeleteResult(result);
+    const updated = await this.categroyRepositoy.updateOneById(
+      id,
+      updateCategoryDTO,
+    );
+    return updated;
   }
 
-  async deleteOneById(id: number) {
-    const result = await this.categroyRepositoy.delete(id);
-    return checkTypeORMUpdateDeleteResult(result);
+  async deleteOneById(id: Identifier) {
+    const deleted = await this.categroyRepositoy.deleteOneById(id);
+    return deleted;
+  }
+
+  async addImages(categoryId: Identifier, imagesStorageIdentifiers: string[]) {
+    try {
+      const category = await this.findOneById(categoryId);
+      await this.fileService.createMany(imagesStorageIdentifiers, category);
+      return true;
+    } catch (err) {
+      imagesStorageIdentifiers.forEach((imagesStorageIdentifier) => {
+        this.fileStorageService.deleteFile(imagesStorageIdentifier);
+      });
+      throw err;
+    }
+  }
+
+  async deleteImage(imageId: Identifier) {
+    const deleted = await this.fileService.deleteOne(imageId);
+    return deleted;
+  }
+
+  search(keyword: string) {
+    return this.categroyRepositoy.search(keyword);
   }
 }

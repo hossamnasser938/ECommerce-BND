@@ -5,34 +5,53 @@ import {
   Get,
   Inject,
   Param,
+  ParseFilePipe,
   ParseIntPipe,
   Post,
   Put,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
-import { CreateProductDTO } from './models/create-product.dto';
-import { UpdateProductDTO } from './models/update-product.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import {
+  IMAGES_VALIDATORS,
+  MAX_IMAGES_PER_ONE_UPLOAD,
+} from 'src/multer-wrapper/multer-wrapper.constants';
+import { ExtendedMulterFile } from 'src/multer-wrapper/multer-wrapper.types';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { CreateProductDTO } from './dtos/create-product.dto';
+import { FindCategoryProducts } from './dtos/find-category-products.dto';
+import { UpdateProductDTO } from './dtos/update-product.dto';
+import { ProductService } from './product.service';
 
 @Controller('products')
 export class ProductController {
-  constructor(@Inject(ProductService) private productService: ProductService) {}
+  constructor(
+    @Inject(ProductService) private readonly productService: ProductService,
+  ) {}
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.productService.findAll(paginationParametersDTO);
   }
 
   @Get('category')
-  findAllForCategory(@Query('categoryId', ParseIntPipe) categoryId?: number) {
-    return this.productService.findCategoryProducts(categoryId);
+  findAllForCategory(@Query() findCategoryProducts: FindCategoryProducts) {
+    const { categoryId, ...paginationParametersDTO } = findCategoryProducts;
+
+    return this.productService.findCategoryProducts(
+      categoryId,
+      paginationParametersDTO,
+    );
   }
 
   @Get(':id')
@@ -67,5 +86,31 @@ export class ProductController {
   async deleteOne(@Param('id', ParseIntPipe) id: number) {
     const successfullyDeleted = await this.productService.deleteOneById(id);
     return updateDeleteResponse(successfullyDeleted);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @UseInterceptors(FilesInterceptor('images', MAX_IMAGES_PER_ONE_UPLOAD))
+  @Post(':id/add-images')
+  addImages(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: IMAGES_VALIDATORS,
+      }),
+    )
+    images: ExtendedMulterFile[],
+  ) {
+    const imagesStorageIdentifiers = images.map(
+      (image) => image.storageIdentifier,
+    );
+    return this.productService.addImages(id, imagesStorageIdentifiers);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+  @Delete('delete-image/:id')
+  deleteImage(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.deleteImage(id);
   }
 }

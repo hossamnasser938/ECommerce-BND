@@ -8,51 +8,60 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CartService } from './cart.service';
-import { UserService } from 'src/user/user.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { User } from 'src/user/user.entity';
-import { CreateCartItemDTO } from './models/create-cart-item.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
-import { UpdateCartItemDTO } from './models/update-cart-item.dto';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { CartService } from './cart.service';
+import { CreateCartItemDTO } from './dtos/create-cart-item.dto';
+import { UpdateCartItemDTO } from './dtos/update-cart-item.dto';
+import { UpdateCartItemAmountOperation } from './types/cart.enums';
 
 @UseGuards(AuthGuard)
 @Controller('cart')
 export class CartController {
-  constructor(
-    @Inject(CartService) private cartService: CartService,
-    @Inject(UserService) private userService: UserService,
-  ) {}
+  constructor(@Inject(CartService) private readonly cartService: CartService) {}
 
   @Roles(Role.Admin)
-  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
-  findAll() {
-    return this.cartService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.cartService.findAll(paginationParametersDTO);
   }
 
   @Get()
-  findUserAll(@Request() request) {
-    const user = request.user as User;
-    return this.userService.findCartItems(user.id);
+  findUserAll(
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+    @Request() request,
+  ) {
+    const user = request.user as IUser;
+    return this.cartService.findUserAll(user.id, paginationParametersDTO);
+  }
+
+  @Get('in-cart')
+  findUserInCartItems(@Request() request) {
+    const user = request.user as IUser;
+    return this.cartService.findUserInCartItems(user.id);
   }
 
   @Post()
   createOne(@Body() createCartItemDTO: CreateCartItemDTO, @Req() request) {
-    const user = request.user as User;
+    const user = request.user as IUser;
     return this.cartService.createOne(createCartItemDTO, user);
   }
 
   @Roles(Role.Admin)
-  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Put(':id')
   async updateOne(
     @Param('id', ParseIntPipe) id: number,
@@ -70,11 +79,11 @@ export class CartController {
     @Param('id', ParseIntPipe) id: number,
     @Request() request,
   ) {
-    const user = request.user as User;
+    const user = request.user as IUser;
     const successfullyUpdated = await this.cartService.updateAmount(
       id,
-      user,
-      'increment',
+      user.id,
+      UpdateCartItemAmountOperation.INCREMENT,
     );
     return updateDeleteResponse(successfullyUpdated);
   }
@@ -84,27 +93,27 @@ export class CartController {
     @Param('id', ParseIntPipe) id: number,
     @Request() request,
   ) {
-    const user = request.user as User;
+    const user = request.user as IUser;
     const successfullyUpdated = await this.cartService.updateAmount(
       id,
-      user,
-      'decrement',
+      user.id,
+      UpdateCartItemAmountOperation.DECREMENT,
     );
     return updateDeleteResponse(successfullyUpdated);
   }
 
   @Delete(':id')
   async deleteOne(@Param('id', ParseIntPipe) id: number, @Request() request) {
-    const user = request.user as User;
-    const successfulllyDeleted = await this.cartService.deleteOne(id, user);
+    const user = request.user as IUser;
+    const successfulllyDeleted = await this.cartService.deleteOne(id, user.id);
     return updateDeleteResponse(successfulllyDeleted);
   }
 
   @Post('empty')
   async emptyCart(@Req() request) {
-    const user = request.user as User;
-    const successfullyDeleted = await this.cartService.deleteAllUserCartItems(
-      user,
+    const user = request.user as IUser;
+    const successfullyDeleted = await this.cartService.deleteAllUserInCartItems(
+      user.id,
     );
     return updateDeleteResponse(successfullyDeleted);
   }

@@ -1,12 +1,27 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { VerificationCode } from './verification-code.entity';
+import { VerificationCodeEntity } from 'src/core/data-layer/mysql-typeorm/entities/verification-code.entity';
+import { MessageSenderModule } from 'src/message-sender/message-sender.module';
+
+import { VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN } from './verification-code.constants';
+import { VerificationCodeRepository } from './verification-code.repository';
 import { VerificationCodeService } from './verification-code.service';
-import { NodeMailerModule } from 'src/node-mailer/node-mailer.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([VerificationCode]), NodeMailerModule],
-  providers: [VerificationCodeService],
-  exports: [VerificationCodeService],
+  imports: [
+    TypeOrmModule.forFeature([VerificationCodeEntity]),
+    MessageSenderModule,
+  ],
+  providers: [
+    VerificationCodeService,
+    {
+      provide: VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN,
+      useClass: VerificationCodeRepository,
+    },
+  ],
+  exports: [
+    VerificationCodeService,
+    VERIFICATION_CODE_REPOSITORY_PROVIDER_TOKEN,
+  ],
 })
 export class VerificationCodeModule {}

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Inject,
@@ -8,47 +9,78 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { compare, hash } from 'bcrypt';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { CreateNotificationTokenDTO } from 'src/notification-token/dtos/create-notification-token.dto';
+import { NotificationTokenService } from 'src/notification-token/notification-token.service';
+import { DeviceType } from 'src/notification-token/notification-token.types';
+import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
 import { UserService } from 'src/user/user.service';
-import { hash, compare } from 'bcrypt';
-import { IAuthTokenPayload } from './models/auth-token-payload.model';
-import { SignInDTO } from './models/signin.dto';
-import { CreateUserDTO } from 'src/user/models/create-user.dto';
-import { Role } from './auth.enums';
-import { ChangePasswordDTO } from './models/change-password.dto';
-import { User } from 'src/user/user.entity';
-import { VerificationCodeService } from './verification-code/verification-code.service';
-import { VerifyDTO } from './models/verify-signup-dto';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
-import { ResendCodeDTO } from './models/resend-code.dto';
-import { ResetPasswordDTO } from './models/reset-password.dto';
+
+import { Role } from './auth.enums';
+import { ChangePasswordDTO } from './dtos/change-password.dto';
+import { ResendCodeDTO } from './dtos/resend-code.dto';
+import { ResetPasswordDTO } from './dtos/reset-password.dto';
+import { SignInDTO } from './dtos/signin.dto';
+import { VerifyDTO } from './dtos/verify-signup-dto';
+import { IAuthTokenPayload } from './types/auth-token-payload.model';
+import { VerificationCodeService } from './verification-code/verification-code.service';
 
 const SALT = 10;
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(UserService) private userService: UserService,
-    @Inject(JwtService) private jwtService: JwtService,
+    @Inject(UserService) private readonly userService: UserService,
+    @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(VerificationCodeService)
-    private verificationCodeService: VerificationCodeService,
+    private readonly verificationCodeService: VerificationCodeService,
+    @Inject(NotificationTokenService)
+    private readonly notificationTokenService: NotificationTokenService,
   ) {}
 
+  private handleNotificationToken(
+    notificationToken: string,
+    deviceType: DeviceType,
+    user: IUser,
+  ) {
+    if (notificationToken && !deviceType) {
+      throw new BadRequestException(ERROR_MESSAGES.DEVICE_TYPE_MISSING);
+    }
+
+    if (!notificationToken && deviceType) {
+      throw new BadRequestException(ERROR_MESSAGES.NOTIFICATION_TOKEN_MISSING);
+    }
+
+    const createNotificationTokenDTO: CreateNotificationTokenDTO = {
+      value: notificationToken,
+      deviceType,
+    };
+
+    if (notificationToken && deviceType) {
+      this.notificationTokenService.createOneIfNoExists(
+        createNotificationTokenDTO,
+        user,
+      );
+    }
+  }
+
   async signIn(signInDTO: SignInDTO) {
-    const { email, password } = signInDTO;
+    const { email, password, notificationToken, deviceType } = signInDTO;
 
     const user = await this.userService.findOneByEmail(email);
 
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
     const samePassword = await compare(password, user.password);
     if (!samePassword) {
-      throw new UnauthorizedException();
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
     if (!user.verified)
-      throw new ForbiddenException('Please verify youe account first');
+      throw new ForbiddenException(ERROR_MESSAGES.VERIFY_ACCOUNT);
+
+    this.handleNotificationToken(notificationToken, deviceType, user);
 
     const payload: IAuthTokenPayload = { sub: user.id, email: user.email };
 
@@ -66,11 +98,11 @@ export class AuthService {
   async verifySignUp(verifyDTO: VerifyDTO) {
     const { email, code } = verifyDTO;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
 
-    if (user.verified) throw new ConflictException('User already verified');
+    if (user.verified)
+      throw new ConflictException(ERROR_MESSAGES.ACCOUNT_ALREADY_VERIFIED);
 
-    const isVerified = await this.verificationCodeService.verify(user, code);
+    const isVerified = await this.verificationCodeService.verify(user.id, code);
     if (!isVerified) throw new InternalServerErrorException();
 
     const successfullyVerified = await this.userService.verifyUser(user.id);
@@ -80,20 +112,19 @@ export class AuthService {
   async resendCode(resendCode: ResendCodeDTO) {
     const { email } = resendCode;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
 
     return this.verificationCodeService.createAndSendOne(user);
   }
 
-  async changePassword(changePasswordDTO: ChangePasswordDTO, user: User) {
+  async changePassword(changePasswordDTO: ChangePasswordDTO, user: IUser) {
     const { oldPassword, newPassword } = changePasswordDTO;
 
     const samePassword = await compare(oldPassword, user.password);
     if (!samePassword)
-      throw new UnauthorizedException('Incorrect old password');
+      throw new UnauthorizedException(ERROR_MESSAGES.INCORRECT_OLD_PASSWORD);
 
     if (oldPassword === newPassword)
-      throw new ForbiddenException('New password is the same old password');
+      throw new ForbiddenException(ERROR_MESSAGES.SAME_PASSWORD);
 
     const hashedNewPassword = await hash(newPassword, SALT);
 
@@ -105,9 +136,8 @@ export class AuthService {
   async verifyForgetPassword(verifyDTO: VerifyDTO) {
     const { email, code } = verifyDTO;
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
 
-    const isVerified = await this.verificationCodeService.verify(user, code);
+    const isVerified = await this.verificationCodeService.verify(user.id, code);
     if (!isVerified) throw new InternalServerErrorException();
 
     return (await this.verificationCodeService.createOne(user)).code;
@@ -117,9 +147,11 @@ export class AuthService {
     const { token, email, newPassword } = resetPasswordDTO;
 
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(`No user with email = ${email}`);
 
-    const isVerified = await this.verificationCodeService.verify(user, token);
+    const isVerified = await this.verificationCodeService.verify(
+      user.id,
+      token,
+    );
     if (!isVerified) throw new InternalServerErrorException();
 
     const hashedNewPassword = await hash(newPassword, SALT);

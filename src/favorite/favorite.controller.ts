@@ -4,51 +4,60 @@ import {
   Get,
   Inject,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { FavoriteService } from './favorite.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { User } from 'src/user/user.entity';
-import { FavoriteDTO } from './models/favorite.dto';
-import { updateDeleteResponse } from 'src/utils/helper-functions';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+import { updateDeleteResponse } from 'src/utils/helper-functions';
+
+import { FavoriteService } from './favorite.service';
+import { FavoriteDTO } from './dtos/favorite.dto';
 
 @UseGuards(AuthGuard)
 @Controller('favorites')
 export class FavoriteController {
   constructor(
-    @Inject(FavoriteService) private favoriteService: FavoriteService,
+    @Inject(FavoriteService) private readonly favoriteService: FavoriteService,
   ) {}
 
   @Roles(Role.Admin)
-  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Get('all')
-  findAll() {
-    return this.favoriteService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.favoriteService.findAll(paginationParametersDTO);
   }
 
   @Get()
-  findUserAll(@Request() request) {
-    const user = request.user as User;
-    return this.favoriteService.findUserFavorites(user);
+  findUserAll(
+    @Request() request,
+    @Query() paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    const user = request.user as IUser;
+    return this.favoriteService.findUserFavorites(
+      user.id,
+      paginationParametersDTO,
+    );
   }
 
   @Post('favorite')
   favorite(@Body() favoriteDTO: FavoriteDTO, @Request() request) {
-    const user = request.user as User;
-    return this.favoriteService.favorite(favoriteDTO, user);
+    const user = request.user as IUser;
+    return this.favoriteService.favorite(favoriteDTO, user.id);
   }
 
   @Post('unfavorite')
   async unfavorite(@Body() favoriteDTO: FavoriteDTO, @Request() request) {
-    const user = request.user as User;
+    const user = request.user as IUser;
     const successfullyUnfavorited = await this.favoriteService.unfavorite(
       favoriteDTO,
-      user,
+      user.id,
     );
 
     return updateDeleteResponse(successfullyUnfavorited);

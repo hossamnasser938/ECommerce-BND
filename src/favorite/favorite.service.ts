@@ -1,58 +1,58 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FavoriteItem } from './favorite-item.entity';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
-import { FavoriteDTO } from './models/favorite.dto';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IFavoriteItem } from 'src/core/entities/favorite-item.entity.abstract';
 import { ProductService } from 'src/product/product.service';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { ERROR_MESSAGES } from 'src/utils/error-messages';
+
+import { FavoriteDTO } from './dtos/favorite.dto';
+import { FAVORITE_REPOSITORY_PROVIDER_TOKEN } from './favorite.constants';
+import { IFavoriteRepository } from './favorite.repository.abstract';
 
 @Injectable()
 export class FavoriteService {
   constructor(
-    @InjectRepository(FavoriteItem)
-    private favoriteItemRepository: Repository<FavoriteItem>,
-    @Inject(ProductService) private productService: ProductService,
+    @Inject(FAVORITE_REPOSITORY_PROVIDER_TOKEN)
+    private readonly favoriteRepository: IFavoriteRepository<IFavoriteItem>,
+    @Inject(ProductService) private readonly productService: ProductService,
   ) {}
 
-  findAll() {
-    return this.favoriteItemRepository.find();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.favoriteRepository.getAll(paginationParametersDTO);
   }
 
-  findUserFavorites(user: User) {
-    return this.favoriteItemRepository.findBy({ user });
+  findUserFavorites(
+    userId: Identifier,
+    paginationParametersDTO: PaginationParamsDTO,
+  ) {
+    return this.favoriteRepository.getAllByCondition(paginationParametersDTO, {
+      user: { id: userId },
+    });
   }
 
-  async favorite(favoriteDTO: FavoriteDTO, user: User) {
+  async favorite(favoriteDTO: FavoriteDTO, userId: Identifier) {
     const { productId } = favoriteDTO;
     const product = await this.productService.findOneById(productId);
-    if (!product)
-      throw new NotFoundException(`No product with id = ${productId}`);
 
     const potentialDuplicateFavoriteItem =
-      await this.favoriteItemRepository.findOneBy({ product, user });
+      await this.favoriteRepository.getOneByCondition({
+        product: { id: productId },
+        user: { id: userId },
+      });
     if (potentialDuplicateFavoriteItem)
-      throw new ConflictException('Product already favorited by user');
+      throw new ConflictException(ERROR_MESSAGES.PRODUCT_ALREADY_FAVORITED);
 
-    const favoriteItem = new FavoriteItem();
-    favoriteItem.product = product;
-    favoriteItem.user = user;
-
-    return this.favoriteItemRepository.save(favoriteItem);
+    return this.favoriteRepository.createOne(favoriteDTO, userId);
   }
 
-  async unfavorite(favoriteDTO: FavoriteDTO, user: User) {
+  async unfavorite(favoriteDTO: FavoriteDTO, userId: Identifier) {
     const { productId } = favoriteDTO;
     const product = await this.productService.findOneById(productId);
-    if (!product)
-      throw new NotFoundException(`No product with id = ${productId}`);
 
-    const result = await this.favoriteItemRepository.delete({ product, user });
-    return checkTypeORMUpdateDeleteResult(result);
+    const deleted = await this.favoriteRepository.deleteOneByCondition({
+      product: { id: productId },
+      user: { id: userId },
+    });
+    return deleted;
   }
 }

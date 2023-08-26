@@ -7,7 +7,7 @@ jobs:
     parameters:
       env_vars_keys:
         description: keys of env variables to be populated into dot env file
-        default: 'NODEMAILER_USER NODEMAILER_PASSWORD JWT_SECRET DB_HOST DB_PORT DB_USERNAME DB_PASSWORD DB_NAME HTTP_PROTOCOL HOST PORT'
+        default: 'NODEMAILER_USER NODEMAILER_PASSWORD JWT_SECRET DB_TYPE DB_HOST DB_PORT DB_USERNAME DB_PASSWORD DB_NAME DB_MIGRATIONS_TABLE_NAME HTTP_PROTOCOL HOST PORT GCS_MOUNTED_FOLDER_NAME'
         type: string
     steps:
       - run:

@@ -1,14 +1,21 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.entity';
-import { UserService } from './user.service';
+import { UserEntity } from 'src/core/data-layer/mysql-typeorm/entities/user.entity';
+
+import { ProfileModule } from './profile/profile.module';
+import { USER_REPOSITORY_PROVIDER_TOKEN } from './user.constants';
 import { UserController } from './user.controller';
+import { UserRepository } from './user.repository';
+import { UserService } from './user.service';
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [UserService],
-  exports: [UserService],
+  imports: [TypeOrmModule.forFeature([UserEntity]), ProfileModule],
+  providers: [
+    UserService,
+    { provide: USER_REPOSITORY_PROVIDER_TOKEN, useClass: UserRepository },
+  ],
   controllers: [UserController],
+  exports: [UserService, USER_REPOSITORY_PROVIDER_TOKEN],
 })
 export class UserModule {}

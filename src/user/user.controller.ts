@@ -7,30 +7,31 @@ import {
   Param,
   ParseIntPipe,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/auth/auth.decorators';
 import { Role } from 'src/auth/auth.enums';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { Reflector } from '@nestjs/core';
-import { UpdateUserDTO } from './models/update-user.dto';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { updateDeleteResponse } from 'src/utils/helper-functions';
 
-@Controller('users')
-export class UserController {
-  constructor(@Inject(UserService) private userService: UserService) {}
+import { UpdateUserDTO } from './dtos/update-user.dto';
+import { UserService } from './user.service';
 
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+@Controller('users')
+@Roles(Role.Admin)
+@UseGuards(AuthGuard, new RolesGuard(new Reflector()))
+export class UserController {
+  constructor(@Inject(UserService) private readonly userService: UserService) {}
+
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() paginationParametersDTO: PaginationParamsDTO) {
+    return this.userService.findAll(paginationParametersDTO);
   }
 
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Put(':id')
   async updateOne(
     @Param('id', ParseIntPipe) id: number,
@@ -44,8 +45,6 @@ export class UserController {
     return updateDeleteResponse(successfullyUpdated);
   }
 
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, new RolesGuard(new Reflector()))
   @Delete(':id')
   async deleteOne(@Param('id', ParseIntPipe) id: number) {
     const successfullyDeleted = await this.userService.deleteOne(id);

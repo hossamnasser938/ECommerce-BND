@@ -1,67 +1,56 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { Inject, Injectable } from '@nestjs/common';
 import { Role } from 'src/auth/auth.enums';
-import { CreateUserDTO } from './models/create-user.dto';
-import { UpdateUserDTO } from './models/update-user.dto';
-import { checkTypeORMUpdateDeleteResult } from 'src/utils/helper-functions';
+import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
+import { Identifier } from 'src/core/abstract-data-layer/types';
+import { IUser } from 'src/core/entities/user.entity.abstract';
+
+import { CreateUserDTO } from './dtos/create-user.dto';
+import { UpdateUserDTO } from './dtos/update-user.dto';
+import { USER_REPOSITORY_PROVIDER_TOKEN } from './user.constants';
+import { IUserRepository } from './user.repository.abstract';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @Inject(USER_REPOSITORY_PROVIDER_TOKEN)
+    private readonly userRepository: IUserRepository<IUser>,
   ) {}
 
-  findAll() {
-    return this.userRepository.find();
+  findAll(paginationParametersDTO: PaginationParamsDTO) {
+    return this.userRepository.getAll(paginationParametersDTO);
   }
 
   findOneByEmail(email: string) {
-    return this.userRepository.findOneBy({ email });
+    return this.userRepository.getOneByCondition({ email });
   }
 
-  findOneById(id: number) {
-    return this.userRepository.findOneBy({ id });
+  findOneById(id: Identifier) {
+    return this.userRepository.getOneById(id);
   }
 
   async createOne(createUserDTO: CreateUserDTO, roles: Role[]) {
-    const { email, password, name } = createUserDTO;
-
-    const potentialDuplicateUser = await this.findOneByEmail(email);
-    if (potentialDuplicateUser) {
-      throw new ConflictException();
-    }
-
-    const user = new User();
-    user.email = email;
-    user.password = password;
-    user.name = name;
-    user.roles = JSON.stringify(roles);
-    user.verified = false;
-
-    return this.userRepository.save(user);
+    return this.userRepository.createOne(createUserDTO, roles);
   }
 
-  async updateOne(id: number, updateUserDTO: UpdateUserDTO) {
-    const result = await this.userRepository.update(id, updateUserDTO);
-    return checkTypeORMUpdateDeleteResult(result);
+  async updateOne(id: Identifier, updateUserDTO: UpdateUserDTO) {
+    const updated = await this.userRepository.updateOneById(id, updateUserDTO);
+    return updated;
   }
 
-  async deleteOne(id: number) {
-    const result = await this.userRepository.delete(id);
-    return checkTypeORMUpdateDeleteResult(result);
+  async deleteOne(id: Identifier) {
+    const deleted = await this.userRepository.deleteOneById(id);
+    return deleted;
   }
 
-  async findCartItems(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: { cartItems: true },
-    });
-    return user.cartItems;
-  }
-
-  verifyUser(userId: number) {
+  verifyUser(userId: Identifier) {
     return this.updateOne(userId, { verified: true });
+  }
+
+  getUserPreference(userId: Identifier) {
+    return this.userRepository.getUserPreference(userId);
+  }
+
+  getUserProfile(userId: Identifier) {
+    return this.userRepository.getUserProfile(userId);
   }
 }

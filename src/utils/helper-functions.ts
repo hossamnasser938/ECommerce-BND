@@ -1,8 +1,10 @@
-import { DeleteResult, UpdateResult } from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { DeleteResult, UpdateResult } from 'typeorm';
+
+import { ERROR_MESSAGES } from './error-messages';
 
 export const successfulUpdateDeleteResponse = (message = '') => {
   return {
@@ -24,18 +26,26 @@ export const updateDeleteResponse = (success: boolean) => {
     : failureUpdateDeleteResponse();
 };
 
-export const checkTypeORMUpdateDeleteResult = (
-  result: UpdateResult | DeleteResult,
+export const handleTypeORMUpdateDeleteResult = ({
+  result,
   multipleEntities = false,
-) => {
-  if (result.affected === 0) throw new NotFoundException();
+  skipCheck = false,
+}: {
+  result: UpdateResult | DeleteResult;
+  multipleEntities?: boolean;
+  skipCheck?: boolean;
+}) => {
+  if (skipCheck) return true;
+
+  if (result.affected === 0)
+    throw new NotFoundException(ERROR_MESSAGES.NO_ENTITIES_AFFECTED);
+
   if (result.affected === 1) return true;
+
   if (result.affected > 1)
     if (multipleEntities) return true;
     else
       throw new InternalServerErrorException(
-        `Dangerous - ${
-          result instanceof UpdateResult ? 'Updated' : 'Deleted'
-        } multiple entities`,
+        ERROR_MESSAGES.MULTIPLE_ENTITIES_AFFECTED,
       );
 };
