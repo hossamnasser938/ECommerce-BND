@@ -1,5 +1,7 @@
+import { Exclude } from 'class-transformer';
 import { IProduct } from 'src/core/entities/product.entity.abstract';
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
@@ -13,6 +15,7 @@ import { BaseEntity } from '../base-entity.abstract';
 import { CartItemEntity } from './cart-item.entity';
 import { CategoryEntity } from './category.entity';
 import { FavoriteItemEntity } from './favorite-item.entity';
+import { FileEntity } from './file.entity';
 import { VisualResourceEntity } from './visual-resource.entity';
 
 @Entity({ name: 'product' })
@@ -42,6 +45,7 @@ export class ProductEntity extends BaseEntity implements IProduct {
   @Column()
   amount: number;
 
+  @Exclude()
   @OneToOne(() => VisualResourceEntity, { cascade: true, eager: true })
   @JoinColumn()
   visualResource: VisualResourceEntity;
@@ -56,4 +60,11 @@ export class ProductEntity extends BaseEntity implements IProduct {
 
   @OneToMany(() => FavoriteItemEntity, (favoriteItem) => favoriteItem.product)
   favoriteItems: FavoriteItemEntity[];
+
+  images?: FileEntity[];
+
+  @AfterLoad()
+  hideVisualResource() {
+    this.images = this.visualResource.images;
+  }
 }

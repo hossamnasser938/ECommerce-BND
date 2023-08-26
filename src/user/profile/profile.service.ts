@@ -45,7 +45,7 @@ export class ProfileService {
 
       const profile = await this.profileRepository.getOneById(userProfile.id);
       profile.visualResource.images.forEach(async (image) => {
-        await this.removeProfilePhoto(image.id);
+        await this.fileService.deleteOne(image.id);
       });
       await this.fileService.createOne(photoStorageIdentifier, profile);
       return true;

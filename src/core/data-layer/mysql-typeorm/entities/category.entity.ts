@@ -1,5 +1,7 @@
+import { Exclude } from 'class-transformer';
 import { ICategory } from 'src/core/entities/category.entity.abstract';
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
@@ -10,6 +12,7 @@ import {
 } from 'typeorm';
 
 import { BaseEntity } from '../base-entity.abstract';
+import { FileEntity } from './file.entity';
 import { ProductEntity } from './product.entity';
 import { VisualResourceEntity } from './visual-resource.entity';
 
@@ -26,6 +29,7 @@ export class CategoryEntity extends BaseEntity implements ICategory {
   @Column()
   name: string;
 
+  @Exclude()
   @OneToOne(() => VisualResourceEntity, { cascade: true, eager: true })
   @JoinColumn()
   visualResource: VisualResourceEntity;
@@ -38,4 +42,11 @@ export class CategoryEntity extends BaseEntity implements ICategory {
 
   @OneToMany(() => ProductEntity, (product) => product.category)
   products: ProductEntity[];
+
+  images?: FileEntity[];
+
+  @AfterLoad()
+  hideVisualResource() {
+    this.images = this.visualResource.images;
+  }
 }

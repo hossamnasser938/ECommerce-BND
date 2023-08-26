@@ -1,5 +1,6 @@
 import { BaseEntity } from './base-entity.abstract';
 import { ICategory } from './category.entity.abstract';
+import { IFile } from './file.entity.abstract';
 import { IVisualResource } from './visual-resource.entity.abstract';
 
 export interface IProduct extends BaseEntity {
@@ -8,4 +9,5 @@ export interface IProduct extends BaseEntity {
   amount: number;
   category: ICategory;
   visualResource: IVisualResource;
+  images?: IFile[];
 }
