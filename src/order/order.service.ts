@@ -9,12 +9,14 @@ import { PaginationParamsDTO } from 'src/core/abstract-data-layer/dtos';
 import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IOrder } from 'src/core/entities/order.entity.abstract';
 import { IUser } from 'src/core/entities/user.entity.abstract';
+import { NotificationService } from 'src/notification/notification.service';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { CreateOrderDTO } from './dtos/create-order.dto';
 import { UpdateOrderStatusDTO } from './dtos/update-order-status.dto';
 import { ORDER_REPOSITORY_PROVIDER_TOKEN } from './order.constants';
 import { IOrderRepository } from './order.repository.abstract';
+import { ORDER_STATUS_NOTIFICATION_MAPPER } from './order-notification-messages';
 import { orderTrackingStateMachineService } from './order-tracking.state-machie';
 import { OrderStatus } from './types';
 
@@ -25,6 +27,8 @@ export class OrderService {
     private readonly orderRepository: IOrderRepository<IOrder>,
     @Inject(CartService)
     private readonly cartService: CartService,
+    @Inject(NotificationService)
+    private readonly notificationService: NotificationService,
   ) {}
 
   findAll(paginationParametersDTO: PaginationParamsDTO) {
@@ -89,6 +93,17 @@ export class OrderService {
     const result = await this.orderRepository.updateOneById(id, {
       status: newOrderStatus,
     });
+
+    const notificationData = ORDER_STATUS_NOTIFICATION_MAPPER[newOrderStatus];
+    try {
+      await this.notificationService.createAndSendOne(
+        notificationData.title,
+        notificationData.body,
+        order.user,
+      );
+    } catch (err) {
+      console.log('failed to send push notification for order', order);
+    }
 
     return !!result;
   }

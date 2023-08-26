@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CartModule } from 'src/cart/cart.module';
 import { OrderEntity } from 'src/core/data-layer/mysql-typeorm/entities/order.entity';
+import { NotificationModule } from 'src/notification/notification.module';
 import { ShippingAddressModule } from 'src/shipping-address/shipping-address.module';
 
 import { ORDER_REPOSITORY_PROVIDER_TOKEN } from './order.constants';
@@ -14,6 +15,7 @@ import { OrderService } from './order.service';
     TypeOrmModule.forFeature([OrderEntity]),
     ShippingAddressModule,
     CartModule,
+    NotificationModule,
   ],
   providers: [
     OrderService,
