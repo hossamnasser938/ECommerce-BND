@@ -85,7 +85,7 @@ export class AuthService {
     const payload: IAuthTokenPayload = { sub: user.id, email: user.email };
 
     const jwt = this.jwtService.sign(payload);
-    return { access_token: jwt };
+    return { access_token: jwt, user };
   }
 
   async signUp(createUserDTO: CreateUserDTO, roles: Role[] = [Role.User]) {
