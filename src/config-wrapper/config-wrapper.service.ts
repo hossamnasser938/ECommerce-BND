@@ -25,6 +25,9 @@ export class ConfigWrapperService {
     'DB_MIGRATIONS_TABLE_NAME',
   );
 
+  GOOGLE_CLOUD_MYSQL_INSTANCE_UNIX_SOCKET: string =
+    this.configService.get<string>('GOOGLE_CLOUD_MYSQL_INSTANCE_UNIX_SOCKET');
+
   HTTP_PROTOCOL: string = this.configService.get<string>('HTTP_PROTOCOL');
   HOST: string = this.configService.get<string>('HOST');
   PORT: number = this.configService.get<number>('PORT');

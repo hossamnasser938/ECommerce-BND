@@ -67,6 +67,7 @@ export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
     database: configWrapperService.DB_NAME,
     migrationsTableName: configWrapperService.DB_MIGRATIONS_TABLE_NAME,
     migrations: [MIGRATIONS_FILES],
+    socketPath: process.env.GOOGLE_CLOUD_MYSQL_INSTANCE_UNIX_SOCKET,
     synchronize: false,
     entities,
   }),
