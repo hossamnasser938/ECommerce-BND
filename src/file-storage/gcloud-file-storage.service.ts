@@ -48,10 +48,16 @@ export class GCloudFileStorageService extends AbstractFileStorageService {
     const destinationFile = this.bucket.file(fileName);
     const outStream = destinationFile.createWriteStream();
 
+    let size = 0;
+    file.stream.on('data', (chunk) => {
+      size += chunk.length;
+    });
+
     file.stream.pipe(outStream);
     outStream.on('error', cb);
     outStream.on('finish', function () {
-      cb(null, { storageIdentifier: fileName, size: 1000 });
+      console.log('size', size);
+      cb(null, { storageIdentifier: fileName, size });
     });
   }
 
