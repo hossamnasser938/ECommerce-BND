@@ -86,7 +86,7 @@ export class FSFileStorageService extends AbstractFileStorageService {
   async getFileURL(fileName: string): Promise<string> {
     const httpPtotocol = this.configWrapperService.HTTP_PROTOCOL;
     const host = this.configWrapperService.HOST;
-    const port = this.configWrapperService.PORT;
+    const port = this.configWrapperService.HOST_PORT;
 
     return `${httpPtotocol}://${host}:${port}/${FileStreamingRoute}/${fileName}`;
   }

@@ -28,9 +28,11 @@ export class ConfigWrapperService {
   GOOGLE_CLOUD_MYSQL_INSTANCE_UNIX_SOCKET: string =
     this.configService.get<string>('GOOGLE_CLOUD_MYSQL_INSTANCE_UNIX_SOCKET');
 
+  PORT: number = this.configService.get<number>('PORT'); // app port
+
   HTTP_PROTOCOL: string = this.configService.get<string>('HTTP_PROTOCOL');
   HOST: string = this.configService.get<string>('HOST');
-  PORT: number = this.configService.get<number>('PORT');
+  HOST_PORT: string = this.configService.get<string>('HOST_PORT');
 
   GCS_MOUNTED_FOLDER_NAME: string = this.configService.get<string>(
     'GCS_MOUNTED_FOLDER_NAME',
