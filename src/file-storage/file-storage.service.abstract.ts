@@ -1,8 +1,12 @@
 import { StreamableFile } from '@nestjs/common';
+import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
 
+import { FileStreamingRoute } from './file-storage.constants';
 import { ICustomMulterFileProperties } from './file-storage.types';
 
 export abstract class AbstractFileStorageService {
+  constructor(readonly configWrapperService: ConfigWrapperService) {}
+
   abstract saveFile(
     file: Express.Multer.File,
     cb: (
@@ -15,5 +19,11 @@ export abstract class AbstractFileStorageService {
 
   abstract streamFile(fileName: string): StreamableFile;
 
-  abstract getFileURL(fileStorageIdentifier: string): Promise<string>;
+  async getFileURL(fileName: string): Promise<string> {
+    const httpPtotocol = this.configWrapperService.HTTP_PROTOCOL;
+    const host = this.configWrapperService.HOST;
+    const port = this.configWrapperService.HOST_PORT;
+
+    return `${httpPtotocol}://${host}:${port}/${FileStreamingRoute}/${fileName}`;
+  }
 }

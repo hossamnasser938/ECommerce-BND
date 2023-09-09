@@ -37,4 +37,6 @@ export class ConfigWrapperService {
   GCS_MOUNTED_FOLDER_NAME: string = this.configService.get<string>(
     'GCS_MOUNTED_FOLDER_NAME',
   );
+
+  GCS_BUCKET_NAME: string = this.configService.get<string>('GCS_BUCKET_NAME');
 }

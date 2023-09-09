@@ -3,7 +3,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
 import { FileStorageModule } from 'src/file-storage/file-storage-module';
-import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/fs-file-storeage.constants';
+import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/file-storeage.constants';
 
 import { ExtendedMulterFile } from './multer-wrapper.types';
 

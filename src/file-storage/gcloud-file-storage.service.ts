@@ -1,13 +1,5 @@
+import { Bucket, Storage } from '@google-cloud/storage';
 import { Inject, StreamableFile } from '@nestjs/common';
-import {
-  createReadStream,
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  unlinkSync,
-} from 'fs';
-import { homedir } from 'os';
-import * as path from 'path';
 import { ConfigWrapperService } from 'src/config-wrapper/config-wrapper.service';
 import { FileEntity } from 'src/core/data-layer/mysql-typeorm/entities/file.entity';
 import { uuid } from 'uuidv4';
@@ -15,32 +7,27 @@ import { uuid } from 'uuidv4';
 import { AbstractFileStorageService } from './file-storage.service.abstract';
 import { ICustomMulterFileProperties } from './file-storage.types';
 
-export class FSFileStorageService extends AbstractFileStorageService {
+export class GCloudFileStorageService extends AbstractFileStorageService {
+  private storage: Storage;
+  private bucket: Bucket;
+
   constructor(
     @Inject(ConfigWrapperService)
     configWrapperService: ConfigWrapperService,
   ) {
     super(configWrapperService);
-    this.prepareDestination();
+
+    this.storage = new Storage();
+    this.bucket = this.storage.bucket(configWrapperService.GCS_BUCKET_NAME);
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const fsFileStorageServiceInstance = this;
+    const gcloudFileStorageServiceInstance = this;
     FileEntity.prototype.setPath = async function () {
-      (this as FileEntity).url = await fsFileStorageServiceInstance.getFileURL(
-        (this as FileEntity).storageIdentifier,
-      );
+      (this as FileEntity).url =
+        await gcloudFileStorageServiceInstance.getFileURL(
+          (this as FileEntity).storageIdentifier,
+        );
     };
-  }
-
-  private UPLOADS_DESTINATION = path.join(
-    homedir(),
-    this.configWrapperService.GCS_MOUNTED_FOLDER_NAME,
-  );
-
-  private prepareDestination(): void {
-    if (!existsSync(this.UPLOADS_DESTINATION)) {
-      mkdirSync(this.UPLOADS_DESTINATION);
-    }
   }
 
   private constructFileName(mimeType: string) {
@@ -48,10 +35,6 @@ export class FSFileStorageService extends AbstractFileStorageService {
     const uniqueId = uuid();
     const fileName = `${uniqueId}.${extension}`;
     return fileName;
-  }
-
-  getFilePath(fileName: string): string {
-    return path.join(this.UPLOADS_DESTINATION, fileName);
   }
 
   async saveFile(
@@ -62,23 +45,22 @@ export class FSFileStorageService extends AbstractFileStorageService {
     ) => void,
   ): Promise<void> {
     const fileName = this.constructFileName(file.mimetype);
-    const filePath = this.getFilePath(fileName);
-    const outStream = createWriteStream(filePath);
+    const destinationFile = this.bucket.file(fileName);
+    const outStream = destinationFile.createWriteStream();
 
     file.stream.pipe(outStream);
     outStream.on('error', cb);
     outStream.on('finish', function () {
-      cb(null, { storageIdentifier: fileName, size: outStream.bytesWritten });
+      cb(null, { storageIdentifier: fileName, size: 1000 });
     });
   }
 
   async deleteFile(fileName: string): Promise<void> {
-    const filePath = this.getFilePath(fileName);
-    unlinkSync(filePath);
+    await this.bucket.file(fileName).delete();
   }
 
   streamFile(fileName: string) {
-    const fileStream = createReadStream(this.getFilePath(fileName));
+    const fileStream = this.bucket.file(fileName).createReadStream();
     return new StreamableFile(fileStream);
   }
 }

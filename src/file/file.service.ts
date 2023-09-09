@@ -3,7 +3,7 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IFile } from 'src/core/entities/file.entity.abstract';
 import { IVisualResource } from 'src/core/entities/visual-resource.entity.abstract';
 import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
-import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/fs-file-storeage.constants';
+import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/file-storeage.constants';
 
 import { FILE_REPOSITORY_PROVIDER_TOKEN } from './file.constants';
 import { IFileRepository } from './file.repository.abstract';

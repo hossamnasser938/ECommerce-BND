@@ -3,7 +3,7 @@ import { Identifier } from 'src/core/abstract-data-layer/types';
 import { IProfile } from 'src/core/entities/profile-entity.abstract';
 import { FileService } from 'src/file/file.service';
 import { AbstractFileStorageService } from 'src/file-storage/file-storage.service.abstract';
-import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/fs-file-storeage.constants';
+import { FILE_STOREAGE_SERVICE_PROVIDER_TOKEN } from 'src/file-storage/file-storeage.constants';
 import { ERROR_MESSAGES } from 'src/utils/error-messages';
 
 import { UpdateProfileDataDTO } from './dtos/update-profile-data.dto';
@@ -45,7 +45,7 @@ export class ProfileService {
 
       const profile = await this.profileRepository.getOneById(userProfile.id);
       profile.visualResource.images.forEach(async (image) => {
-        await this.removeProfilePhoto(image.id);
+        await this.fileStorageService.deleteFile(image.storageIdentifier);
       });
       await this.fileService.createOne(photoStorageIdentifier, profile);
       return true;
